@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class FormApplicationDetail extends Model
+{
+    public $timestamps = false;
+    protected $fillable = ['application_id', 'appeal_message', 'ip_address', 'user_agent'];
+
+    public function application(): BelongsTo { return $this->belongsTo(Application::class); }
+}
