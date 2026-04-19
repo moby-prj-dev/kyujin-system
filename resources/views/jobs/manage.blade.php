@@ -169,7 +169,7 @@
 </div>
 @endif
 
-<form method="POST" action="{{ route('jobs.update', ['token' => $job->token]) }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('jobs.update', ['token' => $job->token]) }}" enctype="multipart/form-data" autocomplete="off">
 @csrf
 @method('PUT')
 
