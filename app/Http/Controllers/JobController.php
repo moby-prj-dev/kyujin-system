@@ -7,7 +7,10 @@ use App\Models\AuditLog;
 use App\Models\BillingAgreement;
 use App\Models\Job;
 use App\Models\JobAppeal;
+use App\Models\JobArea;
 use App\Models\JobCondition;
+use App\Models\JobEmploymentType;
+use App\Models\JobJobType;
 use App\Models\MasterAppeal;
 use App\Models\MasterArea;
 use App\Models\MasterCondition;
@@ -16,6 +19,7 @@ use App\Models\MasterJobType;
 use App\Services\SeoGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class JobController extends Controller
 {
@@ -23,200 +27,232 @@ class JobController extends Controller
         private SeoGeneratorService $seoGenerator
     ) {}
 
-    /**
-     * 求人登録フォーム表示
-     */
     public function create()
     {
-        $areas           = MasterArea::active()->orderBy('prefecture')->orderBy('sort_order')->get()->groupBy('prefecture');
+        $areas           = MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get()->groupBy('region');
         $jobTypes        = MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category');
         $employmentTypes = MasterEmploymentType::active()->orderBy('sort_order')->get();
         $conditions      = MasterCondition::active()->orderBy('sort_order')->get()->groupBy('category');
         $appeals         = MasterAppeal::active()->orderBy('sort_order')->get()->groupBy('category');
-
         $agreementText    = config('billing.agreement_text');
         $agreementVersion = config('billing.agreement_version');
 
         return view('jobs.create', compact(
-            'areas', 'jobTypes', 'employmentTypes',
-            'conditions', 'appeals',
+            'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
             'agreementText', 'agreementVersion'
         ));
     }
 
-    /**
-     * 求人登録処理
-     */
     public function store(StoreJobRequest $request)
     {
         DB::transaction(function () use ($request, &$job) {
-            // 1. 求人レコード作成（token は Model の boot で自動生成）
+            $photoPath = $request->hasFile('photo')
+                ? $request->file('photo')->store('job_photos', 'public')
+                : null;
+
             $job = Job::create([
-                'area_id'            => $request->area_id,
-                'job_type_id'        => $request->job_type_id,
-                'employment_type_id' => $request->employment_type_id,
-                'status'             => Job::STATUS_DRAFT,
-                'contact_email'      => $request->contact_email,
-                'contact_phone'      => $request->contact_phone,
-                'title'              => '（生成中）',
+                'status'        => Job::STATUS_DRAFT,
+                'contact_email' => $request->contact_email,
+                'contact_phone' => $request->contact_phone,
+                'free_text'     => $request->free_text,
+                'photo_path'    => $photoPath,
+                'title'         => '（生成中）',
             ]);
 
-            // 2. 勤務条件を保存
-            foreach ($request->conditions as $conditionId) {
-                JobCondition::create([
-                    'job_id'       => $job->id,
-                    'condition_id' => $conditionId,
-                ]);
+            foreach ($request->areas as $id) {
+                JobArea::create(['job_id' => $job->id, 'area_id' => $id]);
+            }
+            foreach ($request->job_types as $id) {
+                JobJobType::create(['job_id' => $job->id, 'job_type_id' => $id]);
+            }
+            foreach ($request->employment_types as $id) {
+                JobEmploymentType::create(['job_id' => $job->id, 'employment_type_id' => $id]);
+            }
+            foreach ($request->conditions as $id) {
+                JobCondition::create(['job_id' => $job->id, 'condition_id' => $id]);
+            }
+            foreach ($request->appeals as $id) {
+                JobAppeal::create(['job_id' => $job->id, 'appeal_id' => $id]);
             }
 
-            // 3. アピールポイントを保存
-            foreach ($request->appeals as $appealId) {
-                JobAppeal::create([
-                    'job_id'    => $job->id,
-                    'appeal_id' => $appealId,
-                ]);
-            }
-
-            // 4. 同意情報を保存
             BillingAgreement::create([
-                'job_id'                  => $job->id,
-                'agreement_flag'          => true,
-                'agreement_text'          => config('billing.agreement_text'),
-                'agreement_text_version'  => config('billing.agreement_version'),
-                'agreed_at'               => now(),
-                'agreed_ip'               => $request->ip(),
-                'user_agent'              => $request->userAgent(),
+                'job_id'                 => $job->id,
+                'agreement_flag'         => true,
+                'agreement_text'         => config('billing.agreement_text'),
+                'agreement_text_version' => config('billing.agreement_version'),
+                'agreed_at'              => now(),
+                'agreed_ip'              => $request->ip(),
+                'user_agent'             => $request->userAgent(),
             ]);
 
-            // 5. SEOテキスト自動生成
-            $job->load(['area', 'jobType', 'employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
+            $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
             $this->seoGenerator->generate($job);
 
-            // 6. ステータスを公開に変更
-            $job->update(['status' => Job::STATUS_ACTIVE]);
+            $job->update([
+                'status'     => Job::STATUS_ACTIVE,
+                'expires_at' => now()->addMonths(3),
+            ]);
 
-            // 7. 監査ログ
-            AuditLog::record(
-                AuditLog::ENTITY_JOB,
-                $job->id,
-                AuditLog::ACTION_JOB_CREATED,
-                AuditLog::ACTOR_SYSTEM,
-                [
-                    'area_id'            => $job->area_id,
-                    'job_type_id'        => $job->job_type_id,
-                    'employment_type_id' => $job->employment_type_id,
-                    'contact_email'      => $job->contact_email,
-                    'status'             => $job->status,
-                ]
-            );
-
-            AuditLog::record(
-                AuditLog::ENTITY_AGREEMENT,
-                $job->id,
-                AuditLog::ACTION_AGREEMENT_SAVED,
-                AuditLog::ACTOR_SYSTEM,
-                [
-                    'job_id'                 => $job->id,
-                    'agreement_text_version' => config('billing.agreement_version'),
-                    'agreed_ip'              => $request->ip(),
-                ]
-            );
-
-            AuditLog::record(
-                AuditLog::ENTITY_JOB,
-                $job->id,
-                AuditLog::ACTION_LP_GENERATED,
-                AuditLog::ACTOR_SYSTEM,
-                [
-                    'seo_title'        => $job->seo_title,
-                    'meta_description' => $job->meta_description,
-                ]
-            );
+            AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
+                'contact_email' => $job->contact_email,
+                'status'        => $job->status,
+            ]);
+            AuditLog::record(AuditLog::ENTITY_AGREEMENT, $job->id, AuditLog::ACTION_AGREEMENT_SAVED, AuditLog::ACTOR_SYSTEM, [
+                'agreement_text_version' => config('billing.agreement_version'),
+                'agreed_ip'              => $request->ip(),
+            ]);
+            AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_LP_GENERATED, AuditLog::ACTOR_SYSTEM, [
+                'seo_title'        => $job->seo_title,
+                'meta_description' => $job->meta_description,
+            ]);
         });
 
-        return redirect()->route('jobs.complete', ['token' => $job->token]);
+        return redirect()->route('jobs.manage', ['token' => $job->token]);
     }
 
-    /**
-     * 求人登録完了画面
-     */
-    public function complete(string $token)
+    public function manage(string $token)
     {
-        $job = Job::scopeByToken(Job::query(), $token)->firstOrFail();
-        $editUrl = route('jobs.edit', ['token' => $token]);
-
-        return view('jobs.complete', compact('job', 'editUrl'));
-    }
-
-    /**
-     * 求人編集フォーム表示
-     */
-    public function edit(string $token)
-    {
-        $job = Job::with(['jobConditions', 'jobAppeals'])
+        $job = Job::with(['jobAreas.area', 'jobJobTypes', 'jobEmploymentTypes', 'jobConditions', 'jobAppeals'])
             ->where('token', $token)
             ->firstOrFail();
 
-        $areas           = MasterArea::active()->orderBy('prefecture')->orderBy('sort_order')->get()->groupBy('prefecture');
+        $areas           = MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get()->groupBy('region');
         $jobTypes        = MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category');
         $employmentTypes = MasterEmploymentType::active()->orderBy('sort_order')->get();
         $conditions      = MasterCondition::active()->orderBy('sort_order')->get()->groupBy('category');
         $appeals         = MasterAppeal::active()->orderBy('sort_order')->get()->groupBy('category');
 
-        $selectedConditions = $job->jobConditions->pluck('condition_id')->toArray();
-        $selectedAppeals    = $job->jobAppeals->pluck('appeal_id')->toArray();
+        $selectedAreas           = $job->jobAreas->pluck('area_id')->toArray();
+        $selectedJobTypes        = $job->jobJobTypes->pluck('job_type_id')->toArray();
+        $selectedEmploymentTypes = $job->jobEmploymentTypes->pluck('employment_type_id')->toArray();
+        $selectedConditions      = $job->jobConditions->pluck('condition_id')->toArray();
+        $selectedAppeals         = $job->jobAppeals->pluck('appeal_id')->toArray();
 
-        return view('jobs.edit', compact(
-            'job', 'areas', 'jobTypes', 'employmentTypes',
-            'conditions', 'appeals',
-            'selectedConditions', 'selectedAppeals'
+        $applications = $job->applications()->orderByDesc('applied_at')->paginate(20);
+
+        return view('jobs.manage', compact(
+            'job', 'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
+            'selectedAreas', 'selectedJobTypes', 'selectedEmploymentTypes',
+            'selectedConditions', 'selectedAppeals', 'applications'
         ));
     }
 
-    /**
-     * 求人更新処理
-     */
     public function update(Request $request, string $token)
     {
         $job = Job::where('token', $token)->firstOrFail();
 
         $request->validate([
-            'area_id'            => ['required', 'integer', 'exists:master_areas,id'],
-            'job_type_id'        => ['required', 'integer', 'exists:master_job_types,id'],
-            'employment_type_id' => ['required', 'integer', 'exists:master_employment_types,id'],
+            'areas'              => ['required', 'array', 'min:1'],
+            'areas.*'            => ['integer', 'exists:master_areas,id'],
+            'job_types'          => ['required', 'array', 'min:1'],
+            'job_types.*'        => ['integer', 'exists:master_job_types,id'],
+            'employment_types'   => ['required', 'array', 'min:1'],
+            'employment_types.*' => ['integer', 'exists:master_employment_types,id'],
             'conditions'         => ['required', 'array', 'min:1'],
             'conditions.*'       => ['integer', 'exists:master_conditions,id'],
             'appeals'            => ['required', 'array', 'min:1'],
             'appeals.*'          => ['integer', 'exists:master_appeals,id'],
             'contact_email'      => ['required', 'email'],
-            'contact_phone'      => ['required', 'string'],
+            'contact_phone'      => ['required', 'regex:/^[0-9]{10,11}$/'],
+            'free_text'          => ['nullable', 'string', 'max:2000'],
+            'photo'              => ['nullable', 'image', 'max:5120'],
         ]);
 
         DB::transaction(function () use ($request, $job) {
+            $photoPath = $job->photo_path;
+            if ($request->hasFile('photo')) {
+                if ($photoPath) {
+                    Storage::disk('public')->delete($photoPath);
+                }
+                $photoPath = $request->file('photo')->store('job_photos', 'public');
+            }
+
             $job->update([
-                'area_id'            => $request->area_id,
-                'job_type_id'        => $request->job_type_id,
-                'employment_type_id' => $request->employment_type_id,
-                'contact_email'      => $request->contact_email,
-                'contact_phone'      => $request->contact_phone,
+                'contact_email' => $request->contact_email,
+                'contact_phone' => $request->contact_phone,
+                'free_text'     => $request->free_text,
+                'photo_path'    => $photoPath,
             ]);
 
-            // 条件・アピールを一旦削除して再登録
+            $job->jobAreas()->delete();
+            $job->jobJobTypes()->delete();
+            $job->jobEmploymentTypes()->delete();
             $job->jobConditions()->delete();
             $job->jobAppeals()->delete();
 
-            foreach ($request->conditions as $conditionId) {
-                JobCondition::create(['job_id' => $job->id, 'condition_id' => $conditionId]);
+            foreach ($request->areas as $id) {
+                JobArea::create(['job_id' => $job->id, 'area_id' => $id]);
             }
-            foreach ($request->appeals as $appealId) {
-                JobAppeal::create(['job_id' => $job->id, 'appeal_id' => $appealId]);
+            foreach ($request->job_types as $id) {
+                JobJobType::create(['job_id' => $job->id, 'job_type_id' => $id]);
+            }
+            foreach ($request->employment_types as $id) {
+                JobEmploymentType::create(['job_id' => $job->id, 'employment_type_id' => $id]);
+            }
+            foreach ($request->conditions as $id) {
+                JobCondition::create(['job_id' => $job->id, 'condition_id' => $id]);
+            }
+            foreach ($request->appeals as $id) {
+                JobAppeal::create(['job_id' => $job->id, 'appeal_id' => $id]);
             }
 
-            // SEO再生成
-            $job->load(['area', 'jobType', 'employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
+            $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
             app(SeoGeneratorService::class)->generate($job);
         });
 
-        return redirect()->route('jobs.complete', ['token' => $token])->with('updated', true);
+        return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function close(string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+        $job->update([
+            'status'    => Job::STATUS_CLOSED,
+            'paused_at' => now(),
+        ]);
+
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
+            'action'    => 'closed',
+            'paused_at' => now()->toDateTimeString(),
+        ]);
+
+        return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function reopen(string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+
+        $expiresAt = $job->expires_at;
+        if ($job->paused_at && $expiresAt) {
+            $pausedSeconds = now()->diffInSeconds($job->paused_at);
+            $expiresAt = $expiresAt->addSeconds($pausedSeconds);
+        }
+
+        $job->update([
+            'status'     => Job::STATUS_ACTIVE,
+            'paused_at'  => null,
+            'expires_at' => $expiresAt,
+        ]);
+
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
+            'action'     => 'reopened',
+            'expires_at' => $expiresAt?->toDateTimeString(),
+        ]);
+
+        return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function destroy(string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
+            'action' => 'soft_deleted',
+        ]);
+
+        $job->delete();
+
+        return redirect('/')->with('success', '求人を完全削除しました。');
     }
 }

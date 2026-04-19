@@ -10,6 +10,15 @@
         .form-section { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
         .form-section h5 { font-weight: 700; border-left: 4px solid #0d6efd; padding-left: 10px; margin-bottom: 16px; }
         .check-group label { cursor: pointer; }
+        .form-check-input { border-color: #999; border-width: 2px; }
+        .form-check-input:checked { border-color: #0d6efd; }
+        .form-control, .form-select { border-color: #999; border-width: 1.5px; }
+        .form-control:focus, .form-select:focus { border-color: #0d6efd; border-width: 2px; }
+        .form-section { border: 2px solid #aaa; }
+        .tab-content { border: 2px solid #aaa; border-top: none; border-radius: 0 0 6px 6px; padding: 12px; }
+        .nav-tabs { border-bottom: 2px solid #aaa; }
+        .nav-tabs .nav-link { border-color: #aaa; }
+        .nav-tabs .nav-link.active { border-bottom-color: #fff; }
         .agreement-box { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 16px; }
     </style>
 </head>

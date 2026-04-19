@@ -11,107 +11,155 @@
 @if($errors->any())
 <div class="alert alert-danger">
     <ul class="mb-0">
-        @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
+        @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
     </ul>
 </div>
 @endif
 
-<form method="POST" action="{{ route('jobs.store') }}">
+<form id="jobCreateForm" method="POST" action="{{ route('jobs.store') }}" enctype="multipart/form-data">
 @csrf
 
 {{-- エリア --}}
 <div class="form-section">
-    <h5>勤務エリア <span class="text-danger">*</span></h5>
-    <select name="area_id" class="form-select @error('area_id') is-invalid @enderror" required>
-        <option value="">選択してください</option>
-        @foreach($areas as $prefecture => $areaList)
-            <optgroup label="{{ $prefecture }}">
-                @foreach($areaList as $area)
-                    <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
-                        {{ $area->region }} / {{ $area->name }}
-                    </option>
-                @endforeach
-            </optgroup>
+    <h5>勤務エリア（沖縄） <span class="text-danger">*</span> <small class="text-muted fw-normal">（複数選択可）</small></h5>
+    <ul class="nav nav-tabs mb-3">
+        @foreach($areas as $region => $areaList)
+        <li class="nav-item">
+            <button type="button" class="nav-link {{ $loop->first ? 'active' : '' }}"
+                    data-bs-toggle="tab" data-bs-target="#area-tab-{{ $loop->index }}">{{ $region }}</button>
+        </li>
         @endforeach
-    </select>
-    @error('area_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </ul>
+    <div class="tab-content">
+        @foreach($areas as $region => $areaList)
+        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="area-tab-{{ $loop->index }}">
+            <div class="row check-group">
+                @foreach($areaList as $area)
+                <div class="col-md-3 col-6 mb-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="areas[]"
+                               id="area_{{ $area->id }}" value="{{ $area->id }}"
+                               {{ in_array($area->id, old('areas', [])) ? 'checked' : '' }}>
+                        <label class="form-check-label small" for="area_{{ $area->id }}">{{ $area->name }}</label>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @error('areas') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
 {{-- 職種 --}}
 <div class="form-section">
-    <h5>職種 <span class="text-danger">*</span></h5>
-    <select name="job_type_id" class="form-select @error('job_type_id') is-invalid @enderror" required>
-        <option value="">選択してください</option>
+    <h5>職種 <span class="text-danger">*</span> <small class="text-muted fw-normal">（複数選択可）</small></h5>
+    <ul class="nav nav-tabs mb-3">
         @foreach($jobTypes as $category => $typeList)
-            <optgroup label="{{ $category }}">
-                @foreach($typeList as $type)
-                    <option value="{{ $type->id }}" {{ old('job_type_id') == $type->id ? 'selected' : '' }}>
-                        {{ $type->name }}
-                    </option>
-                @endforeach
-            </optgroup>
+        <li class="nav-item">
+            <button type="button" class="nav-link {{ $loop->first ? 'active' : '' }}"
+                    data-bs-toggle="tab" data-bs-target="#jt-tab-{{ $loop->index }}">{{ $category }}</button>
+        </li>
         @endforeach
-    </select>
-    @error('job_type_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </ul>
+    <div class="tab-content">
+        @foreach($jobTypes as $category => $typeList)
+        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="jt-tab-{{ $loop->index }}">
+            <div class="row check-group">
+                @foreach($typeList as $type)
+                <div class="col-md-4 col-6 mb-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="job_types[]"
+                               id="jt_{{ $type->id }}" value="{{ $type->id }}"
+                               {{ in_array($type->id, old('job_types', [])) ? 'checked' : '' }}>
+                        <label class="form-check-label small" for="jt_{{ $type->id }}">{{ $type->name }}</label>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @error('job_types') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
 {{-- 雇用形態 --}}
 <div class="form-section">
-    <h5>雇用形態 <span class="text-danger">*</span></h5>
-    <div class="d-flex flex-wrap gap-3">
+    <h5>雇用形態 <span class="text-danger">*</span> <small class="text-muted fw-normal">（複数選択可）</small></h5>
+    <div class="d-flex flex-wrap gap-2">
         @foreach($employmentTypes as $et)
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="employment_type_id"
+        <div>
+            <input class="btn-check" type="checkbox" name="employment_types[]"
                    id="et_{{ $et->id }}" value="{{ $et->id }}"
-                   {{ old('employment_type_id') == $et->id ? 'checked' : '' }} required>
-            <label class="form-check-label" for="et_{{ $et->id }}">{{ $et->name }}</label>
+                   {{ in_array($et->id, old('employment_types', [])) ? 'checked' : '' }}>
+            <label class="btn btn-outline-primary" for="et_{{ $et->id }}">{{ $et->name }}</label>
         </div>
         @endforeach
     </div>
-    @error('employment_type_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+    @error('employment_types') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
 </div>
 
 {{-- 勤務条件 --}}
 <div class="form-section">
     <h5>勤務条件 <span class="text-danger">*</span> <small class="text-muted fw-normal">（複数選択可）</small></h5>
-    @foreach($conditions as $category => $condList)
-        <p class="text-muted small mb-1 mt-3"><strong>{{ $category }}</strong></p>
-        <div class="row check-group">
-            @foreach($condList as $cond)
-            <div class="col-md-4 col-6 mb-1">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="conditions[]"
-                           id="cond_{{ $cond->id }}" value="{{ $cond->id }}"
-                           {{ in_array($cond->id, old('conditions', [])) ? 'checked' : '' }}>
-                    <label class="form-check-label small" for="cond_{{ $cond->id }}">{{ $cond->name }}</label>
+    <ul class="nav nav-tabs mb-3">
+        @foreach($conditions as $category => $condList)
+        <li class="nav-item">
+            <button type="button" class="nav-link {{ $loop->first ? 'active' : '' }}"
+                    data-bs-toggle="tab" data-bs-target="#cond-tab-{{ $loop->index }}">{{ $category }}</button>
+        </li>
+        @endforeach
+    </ul>
+    <div class="tab-content">
+        @foreach($conditions as $category => $condList)
+        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="cond-tab-{{ $loop->index }}">
+            <div class="row check-group">
+                @foreach($condList as $cond)
+                <div class="col-md-4 col-6 mb-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="conditions[]"
+                               id="cond_{{ $cond->id }}" value="{{ $cond->id }}"
+                               {{ in_array($cond->id, old('conditions', [])) ? 'checked' : '' }}>
+                        <label class="form-check-label small" for="cond_{{ $cond->id }}">{{ $cond->name }}</label>
+                    </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
-    @endforeach
+        @endforeach
+    </div>
     @error('conditions') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
 {{-- アピールポイント --}}
 <div class="form-section">
     <h5>アピールポイント <span class="text-danger">*</span> <small class="text-muted fw-normal">（複数選択可）</small></h5>
-    @foreach($appeals as $category => $appealList)
-        <p class="text-muted small mb-1 mt-3"><strong>{{ $category }}</strong></p>
-        <div class="row check-group">
-            @foreach($appealList as $appeal)
-            <div class="col-md-4 col-6 mb-1">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="appeals[]"
-                           id="appeal_{{ $appeal->id }}" value="{{ $appeal->id }}"
-                           {{ in_array($appeal->id, old('appeals', [])) ? 'checked' : '' }}>
-                    <label class="form-check-label small" for="appeal_{{ $appeal->id }}">{{ $appeal->name }}</label>
+    <ul class="nav nav-tabs mb-3">
+        @foreach($appeals as $category => $appealList)
+        <li class="nav-item">
+            <button type="button" class="nav-link {{ $loop->first ? 'active' : '' }}"
+                    data-bs-toggle="tab" data-bs-target="#appeal-tab-{{ $loop->index }}">{{ $category }}</button>
+        </li>
+        @endforeach
+    </ul>
+    <div class="tab-content">
+        @foreach($appeals as $category => $appealList)
+        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="appeal-tab-{{ $loop->index }}">
+            <div class="row check-group">
+                @foreach($appealList as $appeal)
+                <div class="col-md-4 col-6 mb-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="appeals[]"
+                               id="appeal_{{ $appeal->id }}" value="{{ $appeal->id }}"
+                               {{ in_array($appeal->id, old('appeals', [])) ? 'checked' : '' }}>
+                        <label class="form-check-label small" for="appeal_{{ $appeal->id }}">{{ $appeal->name }}</label>
+                    </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
-    @endforeach
+        @endforeach
+    </div>
     @error('appeals') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
@@ -127,9 +175,25 @@
     <div class="mb-0">
         <label class="form-label">電話番号</label>
         <input type="tel" name="contact_phone" class="form-control @error('contact_phone') is-invalid @enderror"
-               value="{{ old('contact_phone') }}" placeholder="03-0000-0000" required>
+               value="{{ old('contact_phone') }}" placeholder="09012345678" required>
+        <div class="form-text">ハイフンなしで入力してください（例：09012345678）</div>
         @error('contact_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
+</div>
+
+{{-- 自由記述 --}}
+<div class="form-section">
+    <h5>自由記述 <small class="text-muted fw-normal">（任意）</small></h5>
+    <textarea name="free_text" class="form-control @error('free_text') is-invalid @enderror"
+              rows="5" placeholder="求人に関する補足情報など、自由にご記入ください。">{{ old('free_text') }}</textarea>
+    @error('free_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
+{{-- 写真 --}}
+<div class="form-section">
+    <h5>写真 <small class="text-muted fw-normal">（任意・1枚・5MB以内）</small></h5>
+    <input type="file" name="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
+    @error('photo') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
 {{-- 同意 --}}
@@ -143,9 +207,7 @@
         <input class="form-check-input @error('agreement_flag') is-invalid @enderror"
                type="checkbox" name="agreement_flag" id="agreement_flag" value="1"
                {{ old('agreement_flag') ? 'checked' : '' }} required>
-        <label class="form-check-label fw-bold" for="agreement_flag">
-            上記の内容に同意します
-        </label>
+        <label class="form-check-label fw-bold" for="agreement_flag">上記の内容に同意します</label>
         @error('agreement_flag') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 </div>
@@ -157,4 +219,46 @@
 </form>
 </div>
 </div>
+
+<script>
+const STORAGE_KEY = 'job_create_form';
+
+function saveForm() {
+    const form = document.getElementById('jobCreateForm');
+    const data = {};
+    new FormData(form).forEach((val, key) => {
+        if (key === 'photo' || key === '_token') return;
+        if (!data[key]) data[key] = [];
+        data[key].push(val);
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function restoreForm() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const data = JSON.parse(saved);
+
+    Object.entries(data).forEach(([key, values]) => {
+        const name = key.replace('[]', '');
+        document.querySelectorAll(`[name="${key}"], [name="${name}"]`).forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                el.checked = values.includes(el.value);
+            } else if (el.tagName === 'SELECT') {
+                [...el.options].forEach(o => o.selected = values.includes(o.value));
+            } else if (el.tagName === 'TEXTAREA' || el.type === 'text' || el.type === 'email' || el.type === 'tel') {
+                el.value = values[0] ?? '';
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    restoreForm();
+    const form = document.getElementById('jobCreateForm');
+    form.addEventListener('change', saveForm);
+    form.addEventListener('input', saveForm);
+    form.addEventListener('submit', () => localStorage.removeItem(STORAGE_KEY));
+});
+</script>
 @endsection
