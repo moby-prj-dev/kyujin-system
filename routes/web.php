@@ -10,7 +10,12 @@ Route::get('/', function () {
 // 求人管理（掲載主向け）
 // -----------------------------------------------
 Route::get('/jobs/create', [\App\Http\Controllers\JobController::class, 'create'])->name('jobs.create');
-Route::post('/jobs', [\App\Http\Controllers\JobController::class, 'store'])->name('jobs.store');
+Route::post('/jobs', [\App\Http\Controllers\JobController::class, 'store'])->middleware('throttle:5,60')->name('jobs.store');
+Route::get('/jobs/verify-sent', [\App\Http\Controllers\JobController::class, 'verifySent'])->name('jobs.verify_sent');
+Route::get('/jobs/verify/{verificationToken}', [\App\Http\Controllers\JobVerificationController::class, 'verify'])->name('jobs.verify');
+Route::get('/jobs/duplicate', [\App\Http\Controllers\JobController::class, 'duplicate'])->name('jobs.duplicate');
+Route::get('/jobs/resend', [\App\Http\Controllers\JobResendController::class, 'show'])->name('jobs.resend.show');
+Route::post('/jobs/resend', [\App\Http\Controllers\JobResendController::class, 'resend'])->middleware('throttle:5,60')->name('jobs.resend');
 Route::get('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'manage'])->name('jobs.manage');
 Route::put('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'update'])->name('jobs.update');
 Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class, 'close'])->name('jobs.close');
@@ -34,5 +39,37 @@ Route::post('/webhook/line', [\App\Http\Controllers\LineWebhookController::class
 // -----------------------------------------------
 Route::get('/lp/{token}', [\App\Http\Controllers\LpController::class, 'show'])->name('lp.show');
 Route::get('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'show'])->name('lp.apply');
-Route::post('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'store'])->name('lp.apply.store');
+Route::post('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'store'])->middleware('throttle:10,60')->name('lp.apply.store');
 Route::get('/lp/{token}/apply/thanks', [\App\Http\Controllers\ApplyController::class, 'thanks'])->name('lp.apply.thanks');
+
+// -----------------------------------------------
+// 管理画面
+// -----------------------------------------------
+Route::get('/admin/login',  [\App\Http\Controllers\Admin\AuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.post');
+Route::get('/admin/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
+
+Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', fn() => redirect()->route('admin.jobs.index'));
+
+    // 求人・企業一覧
+    Route::get('/jobs', [\App\Http\Controllers\Admin\JobController::class, 'index'])->name('jobs.index');
+
+    // 応募一覧
+    Route::get('/applications', [\App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
+    Route::patch('/applications/{application}', [\App\Http\Controllers\Admin\ApplicationController::class, 'update'])->name('applications.update');
+
+    // 請求管理
+    Route::get('/billings', [\App\Http\Controllers\Admin\BillingController::class, 'index'])->name('billings.index');
+    Route::patch('/billings/{billing}/status', [\App\Http\Controllers\Admin\BillingController::class, 'updateStatus'])->name('billings.status');
+    Route::post('/billings/{billing}/send', [\App\Http\Controllers\Admin\BillingController::class, 'send'])->name('billings.send');
+    Route::post('/billings/generate', [\App\Http\Controllers\Admin\BillingController::class, 'generate'])->name('billings.generate');
+});
+
+// -----------------------------------------------
+// 固定ページ
+// -----------------------------------------------
+Route::view('/company', 'pages.company')->name('company');
+Route::view('/privacy-policy', 'pages.privacy_policy')->name('privacy-policy');
+Route::view('/terms', 'pages.terms')->name('terms');
+Route::view('/legal', 'pages.legal')->name('legal');

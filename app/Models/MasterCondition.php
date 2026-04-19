@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class MasterCondition extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['category', 'name', 'question_text', 'slug', 'sort_order', 'is_active'];
-    protected $casts = ['is_active' => 'boolean'];
+    protected $fillable = ['category', 'name', 'question_text', 'slug', 'sort_order', 'is_active', 'score', 'is_main_candidate'];
+    protected $casts = ['is_active' => 'boolean', 'is_main_candidate' => 'boolean'];
 
     public function jobConditions(): HasMany { return $this->hasMany(JobCondition::class, 'condition_id'); }
     public function formDesiredConditions(): HasMany { return $this->hasMany(FormDesiredCondition::class, 'condition_id'); }

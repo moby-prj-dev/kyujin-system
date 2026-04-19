@@ -28,9 +28,9 @@ class LpController extends Controller
 
         try {
             LpView::create([
-                'job_listing_id' => $job->id,
-                'ip_address'     => $request->ip(),
-                'user_agent'     => substr($request->userAgent() ?? '', 0, 500),
+                'job_id'     => $job->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr($request->userAgent() ?? '', 0, 500),
             ]);
         } catch (\Exception $e) {
             \Log::warning('lp_view記録失敗: ' . $e->getMessage());

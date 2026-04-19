@@ -12,17 +12,20 @@ class Job extends Model
 {
     use SoftDeletes;
     protected $table = 'job_listings';
-    protected $fillable = ['title','seo_title','meta_description','description_generated','free_text','photo_path','status','token','contact_email','contact_phone','expires_at','paused_at'];
+    protected $fillable = ['company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','photo_path','status','token','contact_email','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at'];
 
     protected $casts = [
-        'expires_at' => 'datetime',
-        'paused_at'  => 'datetime',
+        'expires_at'         => 'datetime',
+        'paused_at'          => 'datetime',
+        'email_verified_at'  => 'datetime',
+        'lp_tags'            => 'array',
     ];
 
-    const STATUS_DRAFT  = 'draft';
-    const STATUS_ACTIVE = 'active';
-    const STATUS_PAUSED = 'paused';
-    const STATUS_CLOSED = 'closed';
+    const STATUS_PENDING = 'pending';
+    const STATUS_DRAFT   = 'draft';
+    const STATUS_ACTIVE  = 'active';
+    const STATUS_PAUSED  = 'paused';
+    const STATUS_CLOSED  = 'closed';
 
     protected static function boot(): void
     {
