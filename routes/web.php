@@ -18,6 +18,21 @@ Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');
 
 // -----------------------------------------------
+// LINE LIFF（求職者向け）
+// -----------------------------------------------
+Route::get('/liff/{token}', [\App\Http\Controllers\LiffController::class, 'show'])->name('liff.show');
+Route::post('/liff/{token}/apply', [\App\Http\Controllers\LiffController::class, 'store'])->name('liff.apply.store');
+Route::get('/liff/{token}/thanks', [\App\Http\Controllers\LiffController::class, 'thanks'])->name('liff.thanks');
+
+// -----------------------------------------------
+// LINE Webhook（LINEサーバーからのコールバック）
+// -----------------------------------------------
+Route::post('/webhook/line', [\App\Http\Controllers\LineWebhookController::class, 'handle'])->name('webhook.line');
+
+// -----------------------------------------------
 // 求人LP（求職者向け）
 // -----------------------------------------------
 Route::get('/lp/{token}', [\App\Http\Controllers\LpController::class, 'show'])->name('lp.show');
+Route::get('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'show'])->name('lp.apply');
+Route::post('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'store'])->name('lp.apply.store');
+Route::get('/lp/{token}/apply/thanks', [\App\Http\Controllers\ApplyController::class, 'thanks'])->name('lp.apply.thanks');

@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Application;
+use App\Models\Job;
+use App\Models\LineApplicationDetail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class LiffController extends Controller
+{
+    private function findActiveJob(string $token): Job
+    {
+        $job = Job::where('token', $token)->where('status', 'active')->firstOrFail();
+        if ($job->expires_at && $job->expires_at->isPast()) {
+            abort(404);
+        }
+        return $job;
+    }
+
+    public function show(string $token)
+    {
+        $job    = $this->findActiveJob($token);
+        $liffId = config('line.liff_id');
+
+        return view('lp.liff', compact('job', 'liffId'));
+    }
+
+    public function store(Request $request, string $token)
+    {
+        $job = $this->findActiveJob($token);
+
+        $request->validate([
+            'applicant_name' => ['required', 'string', 'max:100'],
+            'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
+            'line_user_id'   => ['required', 'string'],
+            'line_display_name' => ['nullable', 'string'],
+        ], [
+            'applicant_name.required' => 'お名前を入力してください。',
+            'phone.required'          => '電話番号を入力してください。',
+            'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
+            'line_user_id.required'   => 'LINEログインが完了していません。',
+        ]);
+
+        DB::transaction(function () use ($request, $job) {
+            $application = Application::create([
+                'job_id'           => $job->id,
+                'application_type' => Application::TYPE_LINE,
+                'applicant_name'   => $request->applicant_name,
+                'phone'            => $request->phone,
+                'email'            => null,
+                'status'           => Application::STATUS_RECEIVED,
+                'applied_at'       => now(),
+            ]);
+
+            LineApplicationDetail::create([
+                'application_id' => $application->id,
+                'line_user_id'   => $request->line_user_id,
+                'line_session_id' => $request->line_session_id,
+                'raw_answers_json' => [
+                    'display_name' => $request->line_display_name,
+                ],
+            ]);
+
+            $this->notifyEmployer($job, $application);
+        });
+
+        return response()->json(['redirect' => route('liff.thanks', ['token' => $token])]);
+    }
+
+    public function thanks(string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+        return view('lp.liff_thanks', compact('job'));
+    }
+
+    private function notifyEmployer(Job $job, Application $application): void
+    {
+        if (empty($job->contact_email)) {
+            return;
+        }
+
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                implode("\n", [
+                    "【求人応募通知】LINEから新しい応募が届きました",
+                    "",
+                    "■ 応募者情報",
+                    "氏名：{$application->applicant_name}",
+                    "電話：{$application->phone}",
+                    "応募方法：LINE",
+                    "",
+                    "■ 求人管理ページ",
+                    url('/jobs/' . $job->token),
+                ]),
+                fn($message) => $message
+                    ->to($job->contact_email)
+                    ->subject('【求人応募通知】LINEから新しい応募が届きました')
+            );
+        } catch (\Exception $e) {
+            Log::warning('LINE応募通知メール送信失敗: ' . $e->getMessage());
+        }
+    }
+}
