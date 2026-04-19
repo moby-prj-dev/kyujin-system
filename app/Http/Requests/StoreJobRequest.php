@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use GuzzleHttp\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreJobRequest extends FormRequest
@@ -11,9 +12,62 @@ class StoreJobRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $mutations = [];
+
+        if ($this->has('contact_email')) {
+            $mutations['contact_email'] = strtolower(trim($this->contact_email));
+        }
+
+        if ($this->has('contact_phone')) {
+            $phone = $this->contact_phone;
+            $phone = mb_convert_kana($phone, 'n');          // 全角数字→半角
+            $phone = preg_replace('/[^0-9]/', '', $phone);  // 数字以外除去
+            $mutations['contact_phone'] = $phone;
+        }
+
+        if ($mutations) {
+            $this->merge($mutations);
+        }
+    }
+
+    public function withValidator($validator): void
+    {
+        $siteKey = config('services.recaptcha.site_key');
+        if (!$siteKey) return;
+
+        $validator->after(function ($validator) {
+            $token     = $this->input('recaptcha_token');
+            $secretKey = config('services.recaptcha.secret_key');
+
+            if (!$token) {
+                $validator->errors()->add('recaptcha_token', 'reCAPTCHA認証に失敗しました。再度お試しください。');
+                return;
+            }
+
+            try {
+                $client   = new Client(['timeout' => 5]);
+                $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'form_params' => ['secret' => $secretKey, 'response' => $token],
+                ]);
+                $result = json_decode($response->getBody()->getContents(), true);
+
+                if (!($result['success'] ?? false) || ($result['score'] ?? 0) < 0.5) {
+                    $validator->errors()->add('recaptcha_token', 'ボットの可能性が検出されました。再度お試しください。');
+                }
+            } catch (\Exception $e) {
+                // reCAPTCHA検証失敗時は通過させる（UX優先）
+            }
+        });
+    }
+
     public function rules(): array
     {
         return [
+            'recaptcha_token'     => ['nullable', 'string'],
+            'company_name'        => ['required', 'string', 'max:100'],
+            'title'               => ['nullable', 'string', 'max:60'],
             'areas'               => ['required', 'array', 'min:1'],
             'areas.*'             => ['integer', 'exists:master_areas,id'],
             'job_types'           => ['required', 'array', 'min:1'],
@@ -35,6 +89,7 @@ class StoreJobRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'company_name.required'       => '会社名を入力してください。',
             'areas.required'              => 'エリアを1つ以上選択してください。',
             'areas.min'                   => 'エリアを1つ以上選択してください。',
             'job_types.required'          => '職種を1つ以上選択してください。',

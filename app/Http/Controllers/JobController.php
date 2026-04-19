@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobRequest;
+use App\Mail\JobVerificationMail;
 use App\Models\AuditLog;
 use App\Models\BillingAgreement;
 use App\Models\Job;
@@ -19,7 +20,9 @@ use App\Models\MasterJobType;
 use App\Services\SeoGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class JobController extends Controller
 {
@@ -45,18 +48,36 @@ class JobController extends Controller
 
     public function store(StoreJobRequest $request)
     {
-        DB::transaction(function () use ($request, &$job) {
+        // prepareForValidation で正規化済み
+        $email = $request->contact_email;
+        $phone = $request->contact_phone;
+
+        $activeStatuses = [Job::STATUS_PENDING, Job::STATUS_DRAFT, Job::STATUS_ACTIVE, Job::STATUS_PAUSED];
+
+        $emailMatch = Job::where('contact_email', $email)->whereIn('status', $activeStatuses)->exists();
+        $phoneMatch = Job::where('contact_phone', $phone)->whereIn('status', $activeStatuses)->exists();
+
+        if ($emailMatch || $phoneMatch) {
+            $pattern = ($emailMatch && $phoneMatch) ? 'both' : ($emailMatch ? 'email' : 'phone');
+            return redirect()->route('jobs.duplicate')
+                ->with('duplicate_pattern', $pattern)
+                ->with('duplicate_email', $emailMatch ? $email : null);
+        }
+
+        DB::transaction(function () use ($request, $email, &$job) {
             $photoPath = $request->hasFile('photo')
                 ? $request->file('photo')->store('job_photos', 'public')
                 : null;
 
             $job = Job::create([
-                'status'        => Job::STATUS_DRAFT,
-                'contact_email' => $request->contact_email,
-                'contact_phone' => $request->contact_phone,
-                'free_text'     => $request->free_text,
-                'photo_path'    => $photoPath,
-                'title'         => '（生成中）',
+                'company_name'             => $request->company_name,
+                'status'                   => Job::STATUS_PENDING,
+                'contact_email'            => $email,
+                'contact_phone'            => $request->contact_phone,
+                'free_text'                => $request->free_text,
+                'photo_path'               => $photoPath,
+                'title'                    => $request->filled('title') ? $request->title : '（生成中）',
+                'email_verification_token' => Str::random(64),
             ]);
 
             foreach ($request->areas as $id) {
@@ -85,14 +106,6 @@ class JobController extends Controller
                 'user_agent'             => $request->userAgent(),
             ]);
 
-            $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
-            $this->seoGenerator->generate($job);
-
-            $job->update([
-                'status'     => Job::STATUS_ACTIVE,
-                'expires_at' => now()->addMonths(3),
-            ]);
-
             AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
                 'contact_email' => $job->contact_email,
                 'status'        => $job->status,
@@ -101,13 +114,24 @@ class JobController extends Controller
                 'agreement_text_version' => config('billing.agreement_version'),
                 'agreed_ip'              => $request->ip(),
             ]);
-            AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_LP_GENERATED, AuditLog::ACTOR_SYSTEM, [
-                'seo_title'        => $job->seo_title,
-                'meta_description' => $job->meta_description,
-            ]);
         });
 
-        return redirect()->route('jobs.manage', ['token' => $job->token]);
+        Mail::to($email)->send(new JobVerificationMail($job));
+
+        return redirect()->route('jobs.verify_sent', ['email' => $email]);
+    }
+
+    public function verifySent(Request $request)
+    {
+        return view('jobs.verify_sent', ['email' => $request->query('email', '')]);
+    }
+
+    public function duplicate()
+    {
+        if (!session('duplicate_pattern')) {
+            return redirect()->route('jobs.create');
+        }
+        return view('jobs.duplicate');
     }
 
     public function manage(string $token)
@@ -142,6 +166,8 @@ class JobController extends Controller
         $job = Job::where('token', $token)->firstOrFail();
 
         $request->validate([
+            'company_name'       => ['required', 'string', 'max:100'],
+            'title'              => ['required', 'string', 'max:60'],
             'areas'              => ['required', 'array', 'min:1'],
             'areas.*'            => ['integer', 'exists:master_areas,id'],
             'job_types'          => ['required', 'array', 'min:1'],
@@ -152,8 +178,6 @@ class JobController extends Controller
             'conditions.*'       => ['integer', 'exists:master_conditions,id'],
             'appeals'            => ['required', 'array', 'min:1'],
             'appeals.*'          => ['integer', 'exists:master_appeals,id'],
-            'contact_email'      => ['required', 'email'],
-            'contact_phone'      => ['required', 'regex:/^[0-9]{10,11}$/'],
             'free_text'          => ['nullable', 'string', 'max:2000'],
             'photo'              => ['nullable', 'image', 'max:5120'],
         ]);
@@ -168,10 +192,10 @@ class JobController extends Controller
             }
 
             $job->update([
-                'contact_email' => $request->contact_email,
-                'contact_phone' => $request->contact_phone,
-                'free_text'     => $request->free_text,
-                'photo_path'    => $photoPath,
+                'company_name' => $request->company_name,
+                'title'        => $request->title,
+                'free_text'    => $request->free_text,
+                'photo_path'   => $photoPath,
             ]);
 
             $job->jobAreas()->delete();

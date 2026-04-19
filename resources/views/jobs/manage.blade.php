@@ -3,11 +3,16 @@
 @section('title', '求人管理')
 
 @section('content')
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-gear me-2"></i>求人管理</h1>
+        <p>このURLを保管してください。求人の編集・応募確認はここから行えます。</p>
+    </div>
+</div>
+
+<div class="container">
 <div class="row justify-content-center">
 <div class="col-lg-9">
-
-<h2 class="mb-1 fw-bold">求人管理ページ</h2>
-<p class="text-muted small mb-4">このURLを保管してください。求人の編集・応募確認はここから行えます。</p>
 
 @if(session('updated'))
 <div class="alert alert-success">求人情報を更新しました。</div>
@@ -168,6 +173,23 @@
 @csrf
 @method('PUT')
 
+{{-- 会社名 --}}
+<div class="mb-3">
+    <label class="form-label fw-bold">会社名 <span class="text-danger">*</span></label>
+    <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror"
+           value="{{ old('company_name', $job->company_name) }}" required>
+    @error('company_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
+{{-- タイトル --}}
+<div class="mb-3">
+    <label class="form-label fw-bold">求人タイトル <span class="text-danger">*</span></label>
+    <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+           value="{{ old('title', $job->title) }}" required maxlength="60">
+    <div class="form-text">LP上部に表示されるタイトルです（60文字以内）</div>
+    @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
 {{-- エリア --}}
 <div class="mb-3">
     <label class="form-label fw-bold">勤務エリア（沖縄） <span class="text-danger">*</span> <small class="text-muted fw-normal">（複数選択可）</small></label>
@@ -314,23 +336,20 @@
 
 {{-- 連絡先 --}}
 <div class="mb-3">
-    <label class="form-label fw-bold">メールアドレス <span class="text-danger">*</span></label>
-    <input type="email" name="contact_email" class="form-control @error('contact_email') is-invalid @enderror"
-           value="{{ old('contact_email', $job->contact_email) }}" required>
-    @error('contact_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    <label class="form-label fw-bold">メールアドレス <i class="bi bi-lock-fill text-secondary ms-1" style="font-size:.8rem;"></i></label>
+    <input type="email" name="contact_email" class="form-control bg-light text-muted"
+           value="{{ $job->contact_email }}" readonly style="cursor:not-allowed;">
 </div>
 <div class="mb-3">
-    <label class="form-label fw-bold">電話番号 <span class="text-danger">*</span></label>
-    <input type="tel" name="contact_phone" class="form-control @error('contact_phone') is-invalid @enderror"
-           value="{{ old('contact_phone', $job->contact_phone) }}" placeholder="09012345678" required>
-    <div class="form-text">ハイフンなしで入力してください（例：09012345678）</div>
-    @error('contact_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    <label class="form-label fw-bold">電話番号 <i class="bi bi-lock-fill text-secondary ms-1" style="font-size:.8rem;"></i></label>
+    <input type="tel" name="contact_phone" class="form-control bg-light text-muted"
+           value="{{ $job->contact_phone }}" readonly style="cursor:not-allowed;">
 </div>
 
 <div class="mb-3">
     <label class="form-label fw-bold">自由記述 <small class="text-muted fw-normal">（任意）</small></label>
     <textarea name="free_text" class="form-control @error('free_text') is-invalid @enderror"
-              rows="5" placeholder="求人に関する補足情報など、自由にご記入ください。">{{ old('free_text', $job->free_text) }}</textarea>
+              rows="6" placeholder="求人に関する補足情報など、自由にご記入ください。">{{ old('free_text', $job->free_text ?? $job->description_generated) }}</textarea>
     @error('free_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
@@ -352,6 +371,7 @@
 </form>
 </div>
 
+</div>
 </div>
 </div>
 @endsection

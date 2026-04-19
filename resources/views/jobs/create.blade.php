@@ -2,11 +2,23 @@
 
 @section('title', '求人登録')
 
+@if(config('services.recaptcha.site_key'))
+@push('head')
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+@endpush
+@endif
+
 @section('content')
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-building me-2"></i>求人登録</h1>
+        <p>フォームに入力するだけで求人を無料掲載。AIがタイトルと本文を自動生成します。</p>
+    </div>
+</div>
+
+<div class="container">
 <div class="row justify-content-center">
 <div class="col-lg-8">
-
-<h2 class="mb-4 fw-bold">求人登録</h2>
 
 @if($errors->any())
 <div class="alert alert-danger">
@@ -18,6 +30,26 @@
 
 <form id="jobCreateForm" method="POST" action="{{ route('jobs.store') }}" enctype="multipart/form-data">
 @csrf
+<input type="hidden" name="recaptcha_token" id="recaptchaToken">
+
+{{-- 会社名 --}}
+<div class="form-section">
+    <h5>会社名 <span class="text-danger">*</span></h5>
+    <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror"
+           value="{{ old('company_name') }}" placeholder="株式会社〇〇" required>
+    @error('company_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
+{{-- タイトル --}}
+<div class="form-section">
+    <h5>求人タイトル <small class="text-muted fw-normal">（任意・60文字以内）</small></h5>
+    <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+           value="{{ old('title') }}" placeholder="例：那覇市｜未経験OK！介護求人（ホームヘルパー）" maxlength="60">
+    <div class="form-text d-flex align-items-center gap-1 text-info">
+        <i class="bi bi-stars"></i> 未入力の場合、AIが自動でタイトルを生成します
+    </div>
+    @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
 
 {{-- エリア --}}
 <div class="form-section">
@@ -183,9 +215,12 @@
 
 {{-- 自由記述 --}}
 <div class="form-section">
-    <h5>自由記述 <small class="text-muted fw-normal">（任意）</small></h5>
+    <h5>求人本文 <small class="text-muted fw-normal">（任意・2000文字以内）</small></h5>
     <textarea name="free_text" class="form-control @error('free_text') is-invalid @enderror"
-              rows="5" placeholder="求人に関する補足情報など、自由にご記入ください。">{{ old('free_text') }}</textarea>
+              rows="6" placeholder="仕事内容・職場環境・求める人物像など、自由にご記入ください。&#10;&#10;例：&#10;〇〇市にある小規模デイサービスです。スタッフ同士の仲が良く、&#10;未経験の方でも安心して働ける環境が整っています。">{{ old('free_text') }}</textarea>
+    <div class="form-text d-flex align-items-center gap-1 text-info">
+        <i class="bi bi-stars"></i> 未入力の場合、AIが自動で求人本文を生成します
+    </div>
     @error('free_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
@@ -219,9 +254,25 @@
 </form>
 </div>
 </div>
+</div>
 
 <script>
-const STORAGE_KEY = 'job_create_form';
+@if(config('services.recaptcha.site_key'))
+document.getElementById('jobCreateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'job_store'}).then(function(token) {
+            document.getElementById('recaptchaToken').value = token;
+            form.submit();
+        });
+    });
+});
+@endif
+</script>
+
+<script>
+const STORAGE_KEY = 'job_create_form_v1';
 
 function saveForm() {
     const form = document.getElementById('jobCreateForm');
@@ -231,17 +282,25 @@ function saveForm() {
         if (!data[key]) data[key] = [];
         data[key].push(val);
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {}
+    updateTabBadges();
 }
 
 function restoreForm() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return;
-    const data = JSON.parse(saved);
+    let saved;
+    try {
+        saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+    } catch (e) { return; }
+
+    let data;
+    try { data = JSON.parse(saved); } catch (e) { return; }
 
     Object.entries(data).forEach(([key, values]) => {
         const name = key.replace('[]', '');
-        document.querySelectorAll(`[name="${key}"], [name="${name}"]`).forEach(el => {
+        document.querySelectorAll(`[name="${CSS.escape(key)}"], [name="${CSS.escape(name)}"]`).forEach(el => {
             if (el.type === 'checkbox' || el.type === 'radio') {
                 el.checked = values.includes(el.value);
             } else if (el.tagName === 'SELECT') {
@@ -253,12 +312,35 @@ function restoreForm() {
     });
 }
 
+function updateTabBadges() {
+    document.querySelectorAll('[data-bs-target]').forEach(btn => {
+        const paneId = btn.getAttribute('data-bs-target');
+        const pane = document.querySelector(paneId);
+        if (!pane) return;
+        const count = pane.querySelectorAll('input[type="checkbox"]:checked').length;
+        let badge = btn.querySelector('.tab-count-badge');
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'tab-count-badge badge bg-primary ms-1';
+                btn.appendChild(badge);
+            }
+            badge.textContent = count;
+        } else if (badge) {
+            badge.remove();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     restoreForm();
+    updateTabBadges();
     const form = document.getElementById('jobCreateForm');
     form.addEventListener('change', saveForm);
     form.addEventListener('input', saveForm);
-    form.addEventListener('submit', () => localStorage.removeItem(STORAGE_KEY));
+    form.addEventListener('submit', () => {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    });
 });
 </script>
 @endsection
