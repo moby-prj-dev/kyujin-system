@@ -28,7 +28,7 @@
 </div>
 @endif
 
-<form id="jobCreateForm" method="POST" action="{{ route('jobs.store') }}" enctype="multipart/form-data">
+<form id="jobCreateForm" method="POST" action="{{ route('jobs.store') }}" enctype="multipart/form-data" autocomplete="off">
 @csrf
 <input type="hidden" name="recaptcha_token" id="recaptchaToken">
 

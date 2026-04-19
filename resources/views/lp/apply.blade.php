@@ -167,7 +167,7 @@
     </div>
     @endif
 
-    <form method="POST" action="{{ route('lp.apply.store', ['token' => $job->token]) }}">
+    <form method="POST" action="{{ route('lp.apply.store', ['token' => $job->token]) }}" autocomplete="off">
     @csrf
 
     {{-- 基本情報 --}}
