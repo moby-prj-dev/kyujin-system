@@ -3,15 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Job extends Model
 {
+    use SoftDeletes;
     protected $table = 'job_listings';
-    protected $fillable = ['area_id','job_type_id','employment_type_id','title','seo_title','meta_description','description_generated','status','token','contact_email','contact_phone'];
+    protected $fillable = ['title','seo_title','meta_description','description_generated','free_text','photo_path','status','token','contact_email','contact_phone','expires_at','paused_at'];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'paused_at'  => 'datetime',
+    ];
 
     const STATUS_DRAFT  = 'draft';
     const STATUS_ACTIVE = 'active';
@@ -22,13 +28,13 @@ class Job extends Model
     {
         parent::boot();
         static::creating(function (Job $job) {
-            if (empty($job->token)) { $job->token = Str::random(64); }
+            if (empty($job->token)) { $job->token = Str::random(32); }
         });
     }
 
-    public function area(): BelongsTo { return $this->belongsTo(MasterArea::class, 'area_id'); }
-    public function jobType(): BelongsTo { return $this->belongsTo(MasterJobType::class, 'job_type_id'); }
-    public function employmentType(): BelongsTo { return $this->belongsTo(MasterEmploymentType::class, 'employment_type_id'); }
+    public function jobAreas(): HasMany { return $this->hasMany(JobArea::class); }
+    public function jobJobTypes(): HasMany { return $this->hasMany(JobJobType::class); }
+    public function jobEmploymentTypes(): HasMany { return $this->hasMany(JobEmploymentType::class); }
     public function jobConditions(): HasMany { return $this->hasMany(JobCondition::class); }
     public function jobAppeals(): HasMany { return $this->hasMany(JobAppeal::class); }
     public function billingAgreement(): HasOne { return $this->hasOne(BillingAgreement::class); }

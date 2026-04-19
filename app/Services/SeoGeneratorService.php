@@ -11,9 +11,10 @@ class SeoGeneratorService
      */
     public function generate(Job $job): void
     {
-        $area           = $job->area->name;
-        $jobType        = $job->jobType->name;
-        $employmentType = $job->employmentType->name;
+        $area     = $job->jobAreas->map(fn($a) => $a->area->name)->first() ?? '';
+        $areaFull = $job->jobAreas->map(fn($a) => $a->area->name)->implode('・');
+        $jobType  = $job->jobJobTypes->map(fn($j) => $j->jobType->name)->first() ?? '';
+        $employmentType = $job->jobEmploymentTypes->map(fn($e) => $e->employmentType->name)->implode('・');
 
         $conditions = $job->jobConditions()
             ->with('condition')
@@ -36,7 +37,7 @@ class SeoGeneratorService
 
         $job->seo_title            = $templates[$templateIndex];
         $job->meta_description     = $this->generateMeta($area, $jobType, $employmentType, $conditionStr, $appealStr);
-        $job->description_generated = $this->generateDescription($area, $jobType, $employmentType, $conditions, $appeals);
+        $job->description_generated = $this->generateDescription($areaFull, $jobType, $employmentType, $conditions, $appeals);
         $job->title                = "{$area}の{$jobType}求人";
         $job->save();
     }
