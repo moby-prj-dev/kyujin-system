@@ -69,7 +69,7 @@ RECAPTCHA_SECRET_KEY=
 
 # 管理画面ログイン
 ADMIN_ID=admin
-ADMIN_PASSWORD=change_me_now      # ← 必ず変更すること
+ADMIN_PASSWORD=@password      # ← 必ず変更すること
 
 # 課金同意文
 BILLING_AGREEMENT_TEXT="応募が発生した場合、1件あたり3,000円の課金が発生します。"
