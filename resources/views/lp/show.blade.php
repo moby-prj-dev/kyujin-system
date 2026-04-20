@@ -10,6 +10,7 @@
       gtag('config', 'AW-18106143411');
     </script>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $job->seo_title }}</title>
     <meta name="description" content="{{ $job->meta_description }}">
