@@ -1,433 +1,306 @@
-# Care Entry（ケア・エントリー）引継ぎドキュメント
+# Care Entry（ケア・エントリー）引継ぎ資料
 
-作成日：2026/04/20  
-担当：moby0619
+> 作成日：2026-04-21
 
 ---
 
-## 1. システム概要
+## 1. サービス概要
 
-沖縄特化・介護福祉分野の**成果報酬型求人プラットフォーム**。
+**Care Entry（ケア・エントリー）** は、沖縄県の介護・福祉事業者向け成果報酬型求人掲載サービスです。
 
-- 掲載主がフォームで求人情報を登録すると、AIがタイトル・本文を自動生成しSEO最適化されたLPを公開
-- 求職者はLPからLINEまたはフォームで応募できる
-- 無料トライアル（掲載開始3か月 または 有効応募3件）終了後、有効応募1件につき3,000円の成果報酬が発生
-- 掲載主はトークンURLで求人管理・応募確認ができる（ログイン不要）
-- 運営者は管理画面（`/admin`）で企業・応募・請求を一元管理
+- 求人掲載主（事業者）が求人を登録し、求職者が LINE または Web フォームから応募する
+- 掲載開始から **3か月間** または **有効応募3件** までは無料
+- 無料期間終了後は **有効応募1件につき3,000円（税別）** が発生
+- 月次で請求書メールを送付し、振込入金を確認して管理画面でステータス更新
 
 ---
 
 ## 2. 技術スタック
 
 | 項目 | 内容 |
-|---|---|
-| フレームワーク | Laravel 11 |
-| PHP | 8.4 |
-| 開発環境 | Laravel Sail（Docker） |
-| DB | MySQL 8.0 |
-| フロントエンド | Bootstrap 5.3（CDN）+ Bootstrap Icons |
-| AI文章生成 | Google Gemini API（`gemini-2.5-flash-lite`） |
-| メール（ローカル） | Mailpit（http://localhost:8025） |
-| メール（本番） | 未設定（Resend/SendGrid 推奨） |
-| ファイルストレージ | Laravel Storage（public disk） |
-| スパム対策 | reCAPTCHA v3（キー未設定） |
+|------|------|
+| フレームワーク | Laravel 11 / PHP 8.4 |
+| DB | MySQL（Docker: Sail） |
+| メール送信 | Resend |
+| LINE連携 | LINE Messaging API SDK |
+| AI生成 | Google Gemini API（求人LP文章自動生成） |
+| ストレージ | ローカル public disk（求人写真） |
+| キュー | Database |
+| キャッシュ | Database |
+| 管理画面認証 | セッションベース（ADMIN_ID / ADMIN_PASSWORD） |
+| フロントエンド | Bootstrap 5 |
+| 開発環境 | Docker（Laravel Sail） |
 
 ---
 
-## 3. 環境構築
+## 3. 環境構築手順
+
+### 開発環境（ローカル）
 
 ```bash
-cp .env.example .env
-# .env を編集（後述）
+# 1. リポジトリクローン後
+cp .env.example .env  # または既存の .env を配置
 
+# 2. パッケージインストール
+./vendor/bin/sail composer install
+
+# 3. Sail 起動
 ./vendor/bin/sail up -d
+
+# 4. マイグレーション＆シーダー
 ./vendor/bin/sail artisan migrate --seed
+
+# 5. ストレージリンク
 ./vendor/bin/sail artisan storage:link
 ```
 
+### 本番環境（care-entry.net）
+
+```bash
+# デプロイ後
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan storage:link
+```
+
 ---
 
-## 4. .env 主要設定
+## 4. 環境変数（.env）
 
-```env
-APP_NAME="Care Entry"
-APP_URL=http://localhost          # 本番：https://care-entry.net
+### 必須設定項目
 
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_USERNAME=sail
-DB_PASSWORD=password
-FORWARD_DB_PORT=3307              # ローカルMySQL競合回避（DBeaver接続はポート3307）
-
-# AI文章生成（Google Gemini）
-GEMINI_API_KEY=AIzaSy...
-GEMINI_MODEL=gemini-2.5-flash-lite
-
-# reCAPTCHA v3（未設定）
-RECAPTCHA_SITE_KEY=
-RECAPTCHA_SECRET_KEY=
-
-# 管理画面ログイン
-ADMIN_ID=admin
-ADMIN_PASSWORD=@password      # ← 必ず変更すること
-
-# 課金同意文
-BILLING_AGREEMENT_TEXT="応募が発生した場合、1件あたり3,000円の課金が発生します。"
-BILLING_AGREEMENT_VERSION="v1.0"
-```
+| キー | 説明 |
+|------|------|
+| `APP_KEY` | Laravelアプリケーションキー（`artisan key:generate`） |
+| `APP_URL` | 本番: `https://care-entry.net` / ローカル: `http://localhost` |
+| `DB_HOST / DB_DATABASE / DB_USERNAME / DB_PASSWORD` | DB接続情報 |
+| `RESEND_API_KEY` | Resend APIキー（メール送信） |
+| `MAIL_FROM_ADDRESS` | 送信元メール `noreply@care-entry.net` |
+| `LINE_CHANNEL_SECRET` | LINE Messaging API チャンネルシークレット |
+| `LINE_CHANNEL_ACCESS_TOKEN` | LINE Messaging API アクセストークン |
+| `LINE_LIFF_ID` | LINE LIFF ID |
+| `GEMINI_API_KEY` | Google Gemini API キー（LP文章生成） |
+| `GEMINI_MODEL` | 使用するGeminiモデル（現在: `gemini-2.5-flash-lite`） |
+| `ADMIN_ID` | 管理画面ログインID |
+| `ADMIN_PASSWORD` | 管理画面ログインパスワード（本番前に必ず変更） |
 
 ---
 
 ## 5. ルート一覧
 
-### 掲載主向け（求人管理）
+### 求人掲載主向け
 
 | メソッド | URL | 説明 |
-|---|---|---|
-| GET | /jobs/create | 求人登録フォーム |
-| POST | /jobs | 求人登録（throttle:5,60） |
-| GET | /jobs/verify-sent | メール確認案内 |
-| GET | /jobs/verify/{token} | メール認証リンク |
-| GET | /jobs/duplicate | 重複登録案内 |
-| GET | /jobs/resend | リンク再送フォーム |
-| POST | /jobs/resend | リンク再送処理（throttle:5,60） |
-| GET | /jobs/{token} | 求人管理ページ |
-| PUT | /jobs/{token} | 求人更新 |
-| PATCH | /jobs/{token}/close | 掲載停止 |
-| PATCH | /jobs/{token}/reopen | 掲載再開 |
-| DELETE | /jobs/{token} | 完全削除（論理削除） |
+|----------|-----|------|
+| GET | `/jobs/create` | 求人作成フォーム |
+| POST | `/jobs` | 求人作成・保存 |
+| GET | `/jobs/verify-sent` | メール確認待ち画面 |
+| GET | `/jobs/verify/{token}` | メールアドレス確認 |
+| GET | `/jobs/duplicate` | 重複求人警告画面 |
+| GET | `/jobs/resend` | 確認メール再送フォーム |
+| POST | `/jobs/resend` | 確認メール再送実行 |
+| GET | `/jobs/{token}` | 求人管理ページ |
+| PUT | `/jobs/{token}` | 求人情報更新 |
+| PATCH | `/jobs/{token}/close` | 掲載停止 |
+| PATCH | `/jobs/{token}/reopen` | 掲載再開 |
+| DELETE | `/jobs/{token}` | 求人完全削除 |
+| GET | `/jobs/check-trial` | トライアル終了判定（JSON） |
 
-### 求職者向け（LP・応募）
+### 求職者向け
 
 | メソッド | URL | 説明 |
-|---|---|---|
-| GET | /lp/{token} | 求人LP |
-| GET | /lp/{token}/apply | 応募フォーム |
-| POST | /lp/{token}/apply | 応募登録（throttle:10,60） |
-| GET | /lp/{token}/apply/thanks | 応募完了 |
-| GET | /liff/{token} | LINE LIFF |
+|----------|-----|------|
+| GET | `/lp/{token}` | 求人LP |
+| GET | `/lp/{token}/apply` | フォーム応募画面 |
+| POST | `/lp/{token}/apply` | フォーム応募送信 |
+| GET | `/lp/{token}/apply/thanks` | 応募完了画面 |
+| GET | `/liff/{token}` | LINE LIFF画面 |
+| POST | `/liff/{token}/apply` | LINE応募送信 |
+| GET | `/liff/{token}/thanks` | LINE応募完了画面 |
+| POST | `/webhook/line` | LINE Webhook |
 
 ### 管理画面
 
 | メソッド | URL | 説明 |
-|---|---|---|
-| GET | /admin/login | ログイン画面 |
-| POST | /admin/login | ログイン処理 |
-| GET | /admin/logout | ログアウト |
-| GET | /admin/jobs | 企業・求人一覧 |
-| GET | /admin/applications | 応募一覧 |
-| PATCH | /admin/applications/{id} | 有効/無効切替 |
-| GET | /admin/billings | 請求管理 |
-| PATCH | /admin/billings/{id}/status | ステータス変更 |
-| POST | /admin/billings/{id}/send | 請求メール再送 |
-| POST | /admin/billings/generate | 月次集計実行 |
-
-### 固定ページ
-
-| URL | 説明 |
-|---|---|
-| /company | 運営者情報 |
-| /privacy-policy | プライバシーポリシー |
-| /terms | 利用規約 |
-| /legal | 特定商取引法に基づく表記 |
+|----------|-----|------|
+| GET | `/admin/login` | ログイン |
+| GET | `/admin/jobs` | 企業・求人一覧 |
+| GET | `/admin/applications` | 応募一覧 |
+| PATCH | `/admin/applications/{id}` | 応募の有効/無効切り替え |
+| GET | `/admin/billings` | 請求管理 |
+| POST | `/admin/billings/generate` | 月次請求生成・メール送信 |
+| PATCH | `/admin/billings/{id}/status` | 請求ステータス更新 |
+| POST | `/admin/billings/{id}/send` | 請求メール再送 |
 
 ---
 
-## 6. 主要ファイル構成
+## 6. 主要ビジネスロジック
+
+### 6-1. 求人掲載フロー
 
 ```
-app/
-├── Http/
-│   ├── Controllers/
-│   │   ├── JobController.php              # 求人登録・管理・更新・停止・削除
-│   │   ├── JobVerificationController.php  # メール認証処理・SEO生成・公開
-│   │   ├── JobResendController.php        # 確認・管理リンク再送
-│   │   ├── LpController.php               # LP表示・閲覧ログ
-│   │   ├── ApplyController.php            # フォーム応募
-│   │   ├── LiffController.php             # LINE LIFF応募
-│   │   └── Admin/
-│   │       ├── AuthController.php         # 管理者ログイン
-│   │       ├── JobController.php          # 企業・求人一覧
-│   │       ├── ApplicationController.php  # 応募一覧・有効/無効切替
-│   │       └── BillingController.php      # 請求管理・集計・送信
-│   ├── Middleware/
-│   │   └── AdminAuth.php                  # 管理画面認証
-│   └── Requests/
-│       └── StoreJobRequest.php            # 求人登録バリデーション・reCAPTCHA
-├── Models/
-│   ├── Job.php                            # 求人（SoftDeletes）
-│   ├── Application.php                    # 応募（is_valid / is_billable）
-│   ├── BillingSummary.php                 # 月次請求サマリー
-│   └── ...（各マスター・ピボットモデル）
-├── Services/
-│   ├── SeoGeneratorService.php            # Gemini API でタイトル・本文生成
-│   ├── ApplicationValidationService.php   # 有効応募判定
-│   └── BillingService.php                 # 月次集計・請求メール送信
-├── Mail/
-│   ├── JobVerificationMail.php            # メール認証
-│   ├── JobManageLinkMail.php              # 管理リンク再送
-│   ├── TrialEndingWarningMail.php         # トライアル終了7日前警告
-│   └── BillingSummaryMail.php             # 月次請求
-└── Console/Commands/
-    ├── SendTrialWarnings.php              # 警告メール送信コマンド
-    └── GenerateMonthlyBillings.php        # 月次請求集計コマンド
-
-resources/views/
-├── layouts/app.blade.php                  # 共通レイアウト
-├── welcome.blade.php                      # トップページ（LP形式）
-├── jobs/
-│   ├── create.blade.php                   # 求人登録フォーム
-│   ├── manage.blade.php                   # 求人管理
-│   ├── verify_sent.blade.php              # メール確認案内
-│   ├── duplicate.blade.php                # 重複登録案内
-│   └── resend.blade.php                   # リンク再送フォーム
-├── lp/
-│   ├── show.blade.php                     # 求人LP
-│   ├── apply.blade.php                    # 応募フォーム
-│   └── thanks.blade.php                   # 応募完了
-├── admin/
-│   ├── layouts/app.blade.php              # 管理画面レイアウト
-│   ├── login.blade.php                    # ログイン
-│   ├── jobs/index.blade.php               # 企業・求人一覧
-│   ├── applications/index.blade.php       # 応募一覧
-│   └── billings/index.blade.php           # 請求管理
-├── emails/
-│   ├── job_verification.blade.php         # メール認証メール
-│   ├── job_manage_link.blade.php          # 管理リンクメール
-│   ├── trial_ending_warning.blade.php     # トライアル終了警告メール
-│   └── billing_summary.blade.php          # 請求メール
-└── pages/
-    ├── company.blade.php                  # 運営者情報
-    ├── privacy_policy.blade.php           # プライバシーポリシー
-    ├── terms.blade.php                    # 利用規約
-    └── legal.blade.php                    # 特定商取引法
-
-routes/
-├── web.php                                # 全ルート定義
-└── console.php                            # スケジューラー定義
+① 求人作成フォーム入力
+② メールアドレス確認メール送信
+③ 確認リンクをクリック → ステータス: active
+④ Gemini API で LP タイトル・本文自動生成
+⑤ LP が公開される（/lp/{token}）
 ```
 
----
-
-## 7. データベース設計
-
-### `job_listings`（求人）
-
-| カラム | 型 | 説明 |
-|---|---|---|
-| id | bigint | PK |
-| token | varchar(32) | 管理URL用トークン |
-| status | enum | pending / draft / active / paused / closed |
-| company_name | varchar | 会社名 |
-| title | varchar | 求人タイトル |
-| seo_title | varchar | SEOタイトル（AI生成） |
-| meta_description | text | メタディスクリプション（AI生成） |
-| description_generated | text | LP本文（AI生成） |
-| free_text | text | 掲載主の自由記述 |
-| photo_path | varchar | 写真パス |
-| contact_email | varchar | 連絡先メール（企業識別キー） |
-| contact_phone | varchar | 連絡先電話（ハイフンなし） |
-| expires_at | timestamp | 掲載期限（登録日+3か月＝トライアル終了日） |
-| email_verification_token | varchar(64) | メール認証トークン |
-| email_verified_at | timestamp | メール認証完了日時 |
-| trial_warning_sent_at | timestamp | 7日前警告メール送信日時 |
-| deleted_at | timestamp | 論理削除 |
-
-### `applications`（応募）
-
-| カラム | 型 | 説明 |
-|---|---|---|
-| job_id | bigint | FK |
-| applicant_name | varchar | 応募者名 |
-| phone | varchar | 電話番号（元データ） |
-| normalized_phone | varchar | 電話番号（正規化済） |
-| email | varchar | メール（元データ） |
-| normalized_email | varchar | メール（正規化済・小文字） |
-| application_type | enum | line / form |
-| status | enum | received / confirmed / closed |
-| applied_at | timestamp | 応募日時 |
-| is_valid | boolean | 有効応募フラグ |
-| invalid_reason | varchar | 無効理由（後述） |
-| is_billable | boolean | 請求対象フラグ |
-| counted_at | timestamp | 有効応募確定日時 |
-
-**invalid_reason の値：**
-
-| 値 | 意味 |
-|---|---|
-| missing_required_fields | 必須項目不足 |
-| duplicate_application | 重複応募 |
-| spam_or_bot | スパム/ボット |
-| test_submission | テスト投稿 |
-| manually_invalidated | 管理者手動無効 |
-
-### `billing_summaries`（月次請求サマリー）
-
-| カラム | 型 | 説明 |
-|---|---|---|
-| contact_email | varchar | 企業識別（会社のメールアドレス） |
-| billing_month | varchar(7) | 対象月（例：2026-04） |
-| valid_count | int | 当月の有効応募件数 |
-| billable_count | int | 当月の請求対象件数 |
-| unit_price | int | 単価（3000固定） |
-| total_amount | int | 合計金額 |
-| status | enum | unbilled / sent / paid / on_hold |
-| sent_at | timestamp | 請求メール送信日時 |
-
----
-
-## 8. 課金・トライアルロジック
-
-### 無料トライアルの条件
-
-同一メールアドレスを持つ全求人票を「1社」として集計する。
+### 6-2. 応募フロー
 
 ```
-以下のいずれか早い方で終了：
-① 最初の求人票の expires_at（掲載開始から3か月）
-② 会社全体の有効応募数が3件に到達
+① 求職者が LP から応募（フォームまたは LINE LIFF）
+② ApplicationValidationService で自動判定
+   - 必須項目チェック
+   - テスト投稿フィルタ（名前で判定）
+   - スパム/ボット判定
+   - 重複応募チェック（同一求人内のメールor電話）
+③ is_valid = true の場合、課金対象判定
+④ 掲載主へ応募通知メール送信
 ```
 
-### 有効応募の判定フロー（ApplicationValidationService）
+### 6-3. 課金判定ロジック
+
+| 条件 | is_billable |
+|------|------------|
+| 応募日時がトライアル期間内 かつ 有効応募累計が3件未満 | false（無料） |
+| 応募日時がトライアル終了後 | true（課金） |
+| 有効応募累計が3件以上（当該応募除く） | true（課金） |
+| is_valid = false | false（課金なし） |
+| 管理者が手動で有効化した応募 | false（課金なし） |
+
+> **重要**: `is_billable` は応募受付時点で確定。後から再計算しない。
+> `billable_snapshot` カラムに受付時の値を保持している。
+
+### 6-4. トライアル終了判定
+
+以下のいずれかで「トライアル終了」と判定（`JobController::isTrialEnded()`）：
+
+1. 最初の求人の `expires_at` を過ぎている（掲載開始から3か月）
+2. 会社全体の有効応募累計が3件以上
+
+### 6-5. 月次請求フロー
 
 ```
-応募登録
-  ↓
-① 必須項目チェック（名前 + メールor電話）
-  ↓
-② メール・電話の正規化
-  ↓
-③ テスト投稿チェック（"テスト"/"test"/"あああ" 等）
-  ↓
-④ スパムチェック（"spam"/"bot@" 等）
-  ↓
-⑤ 同一求人内の重複チェック（normalized_email / normalized_phone）
-  ↓
-⑥ 有効/無効を確定 → is_valid・invalid_reason をセット
-  ↓
-⑦（有効の場合）トライアル終了判定 → is_billable をセット
+① 毎月1日8:00 に billing:generate-monthly が自動実行
+② 前月の有効応募を集計 → BillingSummary レコード作成
+③ 課金対象がある場合、請求メールを自動送信
+④ 管理画面で入金確認後、ステータスを「入金済」に手動更新
 ```
 
-### 請求単価
-
-- 有効応募 1件 = **3,000円（税別）**
-
----
-
-## 9. 自動メール一覧
-
-| メール | タイミング | 送付先 | 仕組み |
-|---|---|---|---|
-| メール認証 | 求人登録時 | 掲載企業 | JobVerificationMail |
-| 管理リンク再送 | 再送リクエスト時 | 掲載企業 | JobManageLinkMail |
-| 応募通知 | 応募発生時（即時） | 掲載企業 | Mail::raw（ApplyController） |
-| トライアル終了7日前警告 | 毎朝9時（cron） | 掲載企業 | TrialEndingWarningMail |
-| 月次請求 | 毎月1日8時（cron） | 掲載企業 | BillingSummaryMail |
-
----
-
-## 10. スケジューラー設定
-
-`routes/console.php` に定義済み。本番サーバーで以下を `crontab -e` に追加する。
-
-```
-* * * * * cd /var/www/care-entry && php artisan schedule:run >> /dev/null 2>&1
-```
-
-確認コマンド：
-
-```bash
-php artisan schedule:list
-php artisan billing:send-trial-warnings      # 手動実行
-php artisan billing:generate-monthly         # 手動実行（前月）
-php artisan billing:generate-monthly --month=2026-04  # 月指定
-```
-
----
-
-## 11. 管理画面（/admin）
-
-### ログイン
-
-- URL：`/admin/login`
-- ID：`.env` の `ADMIN_ID`
-- パスワード：`.env` の `ADMIN_PASSWORD`
-
-### 画面一覧
-
-| 画面 | URL | 主な機能 |
-|---|---|---|
-| 企業・求人一覧 | /admin/jobs | トライアル状態・有効/無効/請求対象件数・請求額を企業単位で表示 |
-| 応募一覧 | /admin/applications | 応募データ・有効/無効の手動切替・絞り込み |
-| 請求管理 | /admin/billings | 月次集計実行・ステータス管理・請求メール再送 |
-
-### トライアル状態の表示
-
-| 状態 | 意味 |
-|---|---|
-| 無料期間内 | トライアル継続中 |
-| 終了まで7日以内 | 警告ゾーン |
-| 無料期間終了 | 終了・請求対象なし |
-| 請求対象あり | 課金発生中 |
-
----
-
-## 12. 本番公開前チェックリスト
-
-- [ ] `ADMIN_PASSWORD` を安全なパスワードに変更
-- [ ] `APP_URL` を `https://care-entry.net` に変更
-- [ ] SMTP設定（Resend / SendGrid 推奨）
-- [ ] `RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` を設定
-- [ ] サーバーに cron 追加（スケジューラー）
-- [ ] `php artisan storage:link` 実行済み確認
-- [ ] `php artisan config:cache` で設定キャッシュ
-
----
-
-## 13. よくあるトラブルと対処
-
-| 症状 | 原因 | 対処 |
-|---|---|---|
-| DBeaver から接続できない | ローカルMySQL(3306)との競合 | ポート3307で接続 |
-| 画像が表示されない | storage:link 未実行 | `sail artisan storage:link` |
-| LP が404になる | status が active でない / expires_at 超過 | 管理ページでステータス確認 |
-| AIが文章を生成しない | Gemini APIキー / モデル名の誤り | `.env` 確認後 `artisan config:clear` |
-| メールが届かない | SMTP未設定 / Mailpit未起動 | ローカルは http://localhost:8025 で確認 |
-| 管理画面にログインできない | ADMIN_ID/PASSWORD の不一致 | `.env` を確認・`config:clear` を実行 |
-| 月次集計が動かない | cron 未設定 | サーバーの crontab を確認 |
-
----
-
-## 14. 未実装・今後の対応
-
-### 優先度：高（本番稼働に必要）
-
-- SMTP本番設定（Resend/SendGrid）
-- reCAPTCHA v3 キー設定
-- cron 設定
-- 請求メールへの振込先口座情報追加
-
-### 優先度：中
-
-- 応募詳細（希望職種・メッセージ）を管理画面で表示
-- 掲載期限切れ通知メール
-- LINE LIFF の `LINE_LIFF_ID` 設定・動作確認
-
-### 優先度：低
-
-- 領収書・請求書 PDF 発行
-- 未払い督促メール
-- 管理画面での求人直接編集・削除
-- 複数管理者アカウント対応
-
----
-
-## 15. 運営者情報
+**振込先口座**
 
 | 項目 | 内容 |
-|---|---|
-| 事業者名 | ケアエントリー運営事務局 |
-| 所在地 | 沖縄県豊見城市 |
-| 電話番号 | 070-9401-9492 |
-| メール | careentry.info@gmail.com |
-| サービスURL | https://care-entry.net |
+|------|------|
+| 銀行 | 住信SBIネット銀行 |
+| 支店 | バナナ支店 |
+| 口座番号 | 9466315 |
+| 名義 | キシモト　ヤスシ |
+
+---
+
+## 7. Cronスケジュール
+
+本番サーバーで以下の cron を設定すること：
+
+```cron
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+| コマンド | 実行タイミング | 内容 |
+|----------|--------------|------|
+| `billing:send-trial-warnings` | 毎日 9:00 | トライアル終了7日前の警告メール送信 |
+| `billing:send-job-expired-notifications` | 毎日 9:10 | 掲載期限切れ通知メール送信 |
+| `billing:generate-monthly` | 毎月1日 8:00 | 前月分請求集計・メール送信 |
+
+---
+
+## 8. 送信メール一覧
+
+| メールクラス | タイミング | 宛先 | 件名 |
+|-------------|-----------|------|------|
+| JobVerificationMail | 求人作成時 | 掲載主 | メールアドレスの確認をお願いします |
+| JobManageLinkMail | 管理リンク再送時 | 掲載主 | 編集用リンクをお送りします |
+| TrialEndingWarningMail | トライアル終了7日前 | 掲載主 | 無料トライアル期間終了のお知らせ |
+| JobExpiredMail | 掲載期限切れ時 | 掲載主 | 求人掲載期間が終了しました |
+| BillingSummaryMail | 月次請求時 | 掲載主 | YYYY-MM ご請求書のご案内 |
+| （応募通知） | 応募受信時 | 掲載主 | 新しい応募が届きました |
+
+---
+
+## 9. 管理画面の使い方
+
+URL: `https://care-entry.net/admin/login`
+
+### 企業・求人一覧（/admin/jobs）
+- 会社ごとの求人状況・トライアル状態を一覧確認
+- トライアル状態: `active`（無料期間中）/ `billing`（課金中）/ `ending_soon`（7日以内終了）/ `ended`（終了）
+
+### 応募一覧（/admin/applications）
+- 全応募を確認（有効・無効・課金対象フィルター対応）
+- 誤判定された応募を手動で有効/無効化可能
+- **手動有効化した応募は課金対象にならない**（仕様）
+
+### 請求管理（/admin/billings）
+- 月次請求の一覧・ステータス管理
+- ステータス遷移: `未請求` → `送付済` → `入金済` / `未払い` / `期限超過` / `保留`
+- 入金確認後は手動でステータスを「入金済」に変更する
+- **期限超過** になると対象企業は新規求人登録・再掲載が不可になる
+
+---
+
+## 10. データベース主要テーブル
+
+| テーブル | 説明 | 主要カラム |
+|---------|------|-----------|
+| `job_listings` | 求人 | status, token, contact_email, expires_at, email_verified_at |
+| `applications` | 応募 | is_valid, invalid_reason, is_billable, billable_snapshot, applied_at |
+| `billing_summaries` | 月次請求集計 | contact_email, billing_month, valid_count, billable_count, total_amount, status |
+| `billing_agreements` | 利用規約同意ログ | job_id, agreement_text_version, agreed_at, agreed_ip |
+| `audit_logs` | 全操作の監査ログ（append-only） | entity_type, entity_id, action_type, action_payload |
+| `master_areas` | 地域マスター | prefecture, region, name, is_active, sort_order |
+| `master_job_types` | 職種マスター | category, name, is_active, score, is_main_candidate |
+| `master_conditions` | 勤務条件マスター | category, name, is_active, score, is_main_candidate |
+| `master_appeals` | アピールマスター | category, name, is_active, score, is_main_candidate |
+
+---
+
+## 11. 本番公開前チェックリスト
+
+- [ ] `ADMIN_PASSWORD` を安全なパスワードに変更
+- [ ] `APP_ENV=production` / `APP_DEBUG=false` に変更
+- [ ] `APP_URL=https://care-entry.net` に設定
+- [ ] `RESEND_API_KEY` を本番用キーに確認
+- [ ] `LINE_LIFF_ID` を本番用に設定
+- [ ] cron 設定（`* * * * * php artisan schedule:run`）
+- [ ] `php artisan config:cache && route:cache && view:cache`
+- [ ] `php artisan storage:link`
+- [ ] SSL 証明書の確認
+
+---
+
+## 12. よくあるトラブルと対処
+
+| 症状 | 原因 | 対処 |
+|------|------|------|
+| メールが届かない | Resend APIキー or 送信元ドメイン未設定 | `.env` の `RESEND_API_KEY` と Resend ダッシュボードのドメイン確認 |
+| LP が表示されない | 求人ステータスが active 以外 | 管理画面で求人ステータスを確認 |
+| 請求が二重に生成される | generate-monthly を手動で複数回実行 | `billing_summaries` テーブルの重複レコードを確認・削除 |
+| 課金件数がおかしい | is_billable の値を確認 | `applications` テーブルの `is_billable`、`billable_snapshot` を確認 |
+| LP文章が生成されない | Gemini API エラー | `GEMINI_API_KEY` 確認、`storage/logs` のログ確認 |
+| 管理画面にログインできない | ADMIN_ID / ADMIN_PASSWORD の不一致 | `.env` の値を確認 |
+
+---
+
+## 13. 連絡先・アカウント情報
+
+| サービス | 情報 |
+|---------|------|
+| サービス問い合わせメール | careentry.info@gmail.com |
+| Resend（メール送信） | アカウント登録メールアドレスで管理 |
+| Mailgun（旧メール、現在未使用） | mg.care-entry.net ドメイン登録済み |
+| LINE Developers | チャンネル: Care Entry |
+| Google Cloud（Gemini API） | APIキーで管理 |
+| 振込口座名義 | キシモト　ヤスシ |

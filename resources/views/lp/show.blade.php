@@ -214,6 +214,10 @@
         <div class="section-card">
             <div class="section-title"><i class="bi bi-briefcase-fill"></i> 求人情報</div>
             <div class="info-row">
+                <span class="info-label"><i class="bi bi-building me-1 text-primary"></i>会社名</span>
+                <span class="info-value">{{ $job->company_name }}</span>
+            </div>
+            <div class="info-row">
                 <span class="info-label"><i class="bi bi-geo-alt me-1 text-primary"></i>勤務地</span>
                 <span class="info-value">{{ $job->jobAreas->map(fn($a) => $a->area->name)->implode('・') ?: '未設定' }}</span>
             </div>
