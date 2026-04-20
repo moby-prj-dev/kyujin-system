@@ -32,10 +32,12 @@ class ApplicationValidationService
             return;
         }
 
-        $application->is_valid    = true;
+        $application->is_valid       = true;
         $application->invalid_reason = null;
-        $application->counted_at  = $application->counted_at ?? now();
-        $application->is_billable = $this->isBillable($application);
+        $application->counted_at     = $application->counted_at ?? now();
+        $billable                    = $this->isBillable($application);
+        $application->is_billable    = $billable;
+        $application->billable_snapshot = $billable;
     }
 
     public function recalculateBillable(Application $application): void
@@ -125,7 +127,7 @@ class ApplicationValidationService
             ->orderBy('email_verified_at')
             ->value('expires_at');
 
-        if ($trialEnd && now()->greaterThan($trialEnd)) {
+        if ($trialEnd && $application->applied_at && $application->applied_at->greaterThan($trialEnd)) {
             return true;
         }
 

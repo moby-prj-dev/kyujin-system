@@ -10,6 +10,7 @@ Route::get('/', function () {
 // 求人管理（掲載主向け）
 // -----------------------------------------------
 Route::get('/jobs/create', [\App\Http\Controllers\JobController::class, 'create'])->name('jobs.create');
+Route::get('/jobs/check-trial', [\App\Http\Controllers\JobController::class, 'checkTrial'])->name('jobs.check_trial');
 Route::post('/jobs', [\App\Http\Controllers\JobController::class, 'store'])->middleware('throttle:5,60')->name('jobs.store');
 Route::get('/jobs/verify-sent', [\App\Http\Controllers\JobController::class, 'verifySent'])->name('jobs.verify_sent');
 Route::get('/jobs/verify/{verificationToken}', [\App\Http\Controllers\JobVerificationController::class, 'verify'])->name('jobs.verify');

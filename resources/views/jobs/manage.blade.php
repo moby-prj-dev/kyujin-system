@@ -18,6 +18,25 @@
 <div class="alert alert-success">求人情報を更新しました。</div>
 @endif
 
+{{-- 未払い・期限超過バナー --}}
+@if($hasOverdue)
+<div class="alert alert-danger d-flex align-items-start gap-2 mb-3">
+    <i class="bi bi-exclamation-octagon-fill fs-5 mt-1 flex-shrink-0"></i>
+    <div>
+        <strong>お支払い期限を過ぎた未払い請求があります。</strong><br>
+        <span style="font-size:0.93rem;">未払い解消まで新規掲載・再掲載はできません。下記「請求情報」をご確認のうえ、お振込みください。</span>
+    </div>
+</div>
+@elseif($hasUnpaid)
+<div class="alert alert-warning d-flex align-items-start gap-2 mb-3">
+    <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+    <div>
+        <strong>未払いの請求があります。</strong><br>
+        <span style="font-size:0.93rem;">請求情報をご確認ください。</span>
+    </div>
+</div>
+@endif
+
 {{-- ステータス・公開URL --}}
 <div class="form-section mb-4">
     <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -27,6 +46,8 @@
                 <span class="badge bg-success fs-6">公開中</span>
             @elseif($job->status === 'paused')
                 <span class="badge bg-warning text-dark fs-6">一時停止</span>
+            @elseif($job->status === 'expired')
+                <span class="badge bg-danger fs-6">期限切れ</span>
             @elseif($job->status === 'closed')
                 <span class="badge bg-secondary fs-6">終了</span>
             @else
@@ -51,14 +72,16 @@
             <span class="fw-bold">{{ $job->created_at->format('Y/m/d') }}</span>
         </div>
         <div>
-            <span class="text-muted small">無料掲載期限</span><br>
-            @if($job->expires_at)
-                @if($job->expires_at->isPast())
-                    <span class="fw-bold text-danger">{{ $job->expires_at->format('Y/m/d') }}（期限切れ）</span>
-                @elseif($job->expires_at->diffInDays(now()) <= 14)
-                    <span class="fw-bold text-warning">{{ $job->expires_at->format('Y/m/d') }}（残り{{ (int)now()->diffInDays($job->expires_at) }}日）</span>
+            <span class="text-muted small">無料掲載</span><br>
+            @if($trialEnded)
+                <span class="fw-bold text-danger">終了（応募時課金）</span>
+                <br><span class="text-muted" style="font-size:0.78rem;">※応募が発生した場合のみ課金されます</span>
+            @elseif($job->expires_at)
+                @php $daysLeft = (int)now()->diffInDays($job->expires_at); @endphp
+                @if($job->expires_at->diffInDays(now()) <= 14)
+                    <span class="fw-bold text-warning">{{ $job->expires_at->format('Y/m/d') }}まで（残り{{ $daysLeft }}日）</span>
                 @else
-                    <span class="fw-bold">{{ $job->expires_at->format('Y/m/d') }}</span>
+                    <span class="fw-bold text-success">{{ $job->expires_at->format('Y/m/d') }}まで（残り{{ $daysLeft }}日）</span>
                 @endif
             @else
                 <span class="text-muted">—</span>
@@ -67,62 +90,218 @@
         <div>
             <span class="text-muted small">応募件数</span><br>
             <span class="fw-bold fs-5">{{ $applications->total() }} 件</span>
+            <br>
+            @if($trialEnded)
+                <span class="small {{ $companyBillableCount > 0 ? 'text-danger fw-bold' : 'text-muted' }}">
+                    課金対象：{{ $companyBillableCount }}件
+                </span>
+            @else
+                @if($freeQuotaRemaining <= 1)
+                    <span class="small text-warning fw-bold">無料枠残り：{{ $freeQuotaRemaining }}件</span>
+                @else
+                    <span class="small text-success">無料枠内（残り{{ $freeQuotaRemaining }}件）</span>
+                @endif
+            @endif
         </div>
     </div>
 </div>
 
 {{-- 応募者一覧 --}}
-<div class="form-section mb-4">
-    <h5>応募者一覧</h5>
-    @if($applications->isEmpty())
-        <p class="text-muted mb-0">まだ応募はありません。</p>
-    @else
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>応募日時</th>
-                        <th>氏名</th>
-                        <th>連絡先</th>
-                        <th>種別</th>
-                        <th>ステータス</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($applications as $app)
-                    <tr>
-                        <td class="text-nowrap">{{ $app->applied_at?->format('Y/m/d H:i') ?? '—' }}</td>
-                        <td>{{ $app->applicant_name ?? '—' }}</td>
-                        <td>
-                            @if($app->phone)<div>{{ $app->phone }}</div>@endif
-                            @if($app->email)<div class="text-muted small">{{ $app->email }}</div>@endif
-                        </td>
-                        <td>
-                            @if($app->application_type === 'line')
-                                <span class="badge bg-success">LINE</span>
-                            @else
-                                <span class="badge bg-primary">フォーム</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($app->status === 'received')
-                                <span class="badge bg-warning text-dark">受付済</span>
-                            @elseif($app->status === 'confirmed')
-                                <span class="badge bg-success">対応済</span>
-                            @else
-                                <span class="badge bg-secondary">クローズ</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+<div class="form-section mb-4 p-0 overflow-hidden">
+    <button class="btn w-100 text-start px-4 py-3 d-flex justify-content-between align-items-center"
+            type="button" data-bs-toggle="collapse" data-bs-target="#applicantList"
+            aria-expanded="false" aria-controls="applicantList"
+            style="background:#f8fafc; border:none; border-radius:0;">
+        <span class="fw-bold" style="font-size:1rem;">
+            <i class="bi bi-people me-2"></i>応募者一覧
+            <span class="text-muted fw-normal ms-1" style="font-size:0.88rem;">（{{ $applications->total() }}件）</span>
+        </span>
+        <i class="bi bi-chevron-down" style="transition:transform .2s;" id="applicantChevron"></i>
+    </button>
+    <div class="collapse" id="applicantList">
+        <div class="px-4 pb-4 pt-2">
+            @if($applications->isEmpty())
+                <p class="text-muted mb-0">まだ応募はありません。</p>
+            @else
+                @php
+                $invalidLabels = \App\Models\Application::INVALID_REASON_LABELS;
+                @endphp
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>応募日時</th>
+                                <th>氏名</th>
+                                <th>連絡先</th>
+                                <th>種別</th>
+                                <th class="text-center">有効性</th>
+                                <th class="text-center">課金</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($applications as $app)
+                            <tr class="{{ $app->is_valid ? '' : 'table-secondary' }}"
+                                style="{{ $app->is_valid ? '' : 'opacity:0.65;' }}">
+                                <td class="text-nowrap">{{ $app->applied_at?->format('Y/m/d H:i') ?? '—' }}</td>
+                                <td>{{ $app->applicant_name ?? '—' }}</td>
+                                <td>
+                                    @if($app->phone)<div>{{ $app->phone }}</div>@endif
+                                    @if($app->email)<div class="text-muted small">{{ $app->email }}</div>@endif
+                                </td>
+                                <td>
+                                    @if($app->application_type === 'line')
+                                        <span class="badge bg-success">LINE</span>
+                                    @else
+                                        <span class="badge bg-primary">フォーム</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($app->is_valid)
+                                        <span class="badge" style="background:#e6f4ea;color:#137333;">有効</span>
+                                    @else
+                                        <span class="badge" style="background:#fce8e6;color:#c62828;">無効</span>
+                                        @if($app->invalid_reason)
+                                        <div class="text-muted" style="font-size:0.75rem;">
+                                            {{ $invalidLabels[$app->invalid_reason] ?? $app->invalid_reason }}
+                                        </div>
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($app->is_billable)
+                                        <span class="badge bg-danger">課金対象</span>
+                                    @elseif($app->is_valid)
+                                        <span class="text-success small">無料枠内</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 d-flex justify-content-center">
+                    {{ $applications->links() }}
+                </div>
+            @endif
         </div>
-        <div class="mt-3 d-flex justify-content-center">
-            {{ $applications->links() }}
-        </div>
-    @endif
+    </div>
 </div>
+<script>
+document.getElementById('applicantList')?.addEventListener('show.bs.collapse', function() {
+    document.getElementById('applicantChevron').style.transform = 'rotate(180deg)';
+});
+document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', function() {
+    document.getElementById('applicantChevron').style.transform = 'rotate(0deg)';
+});
+</script>
+
+{{-- 請求情報 --}}
+@if($billingSummaries->isNotEmpty())
+<div class="form-section mb-4">
+    <h5>請求情報</h5>
+    @php
+        $statusLabels = ['unbilled' => '未払い', 'sent' => '未払い', 'paid' => '支払済', 'on_hold' => '保留'];
+        $statusBadges = ['unbilled' => 'bg-danger', 'sent' => 'bg-warning text-dark', 'paid' => 'bg-success', 'on_hold' => 'bg-secondary'];
+    @endphp
+    <div class="accordion" id="billingAccordion">
+        @foreach($billingSummaries as $i => $bs)
+        <div class="accordion-item border mb-2 rounded-3 overflow-hidden">
+            <h2 class="accordion-header">
+                <button class="accordion-button {{ $i > 0 ? 'collapsed' : '' }} py-3"
+                        type="button" data-bs-toggle="collapse"
+                        data-bs-target="#billing{{ $i }}">
+                    <span class="me-3 fw-bold">{{ $bs->billing_month }}</span>
+                    <span class="me-3 text-muted small">有効応募：{{ $bs->valid_count }}件</span>
+                    <span class="me-3 fw-bold {{ $bs->total_amount > 0 ? 'text-danger' : '' }}">
+                        ¥{{ number_format($bs->total_amount) }}
+                    </span>
+                    <span class="badge {{ $statusBadges[$bs->status] ?? 'bg-secondary' }}">
+                        {{ $statusLabels[$bs->status] ?? $bs->status }}
+                    </span>
+                </button>
+            </h2>
+            <div id="billing{{ $i }}" class="accordion-collapse collapse {{ $i === 0 ? 'show' : '' }}"
+                 data-bs-parent="#billingAccordion">
+                <div class="accordion-body pt-2 pb-3" style="font-size:0.9rem;">
+                    <div class="row g-2 mb-3">
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small">請求月</div>
+                            <div class="fw-bold">{{ $bs->billing_month }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small">有効応募件数</div>
+                            <div class="fw-bold">{{ $bs->valid_count }} 件</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small">請求金額（税別）</div>
+                            <div class="fw-bold {{ $bs->total_amount > 0 ? 'text-danger' : '' }}">
+                                ¥{{ number_format($bs->total_amount) }}
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small">ステータス</div>
+                            <span class="badge {{ $statusBadges[$bs->status] ?? 'bg-secondary' }}">
+                                {{ $statusLabels[$bs->status] ?? $bs->status }}
+                            </span>
+                        </div>
+                    </div>
+                    {{-- 応募明細 --}}
+                    @php
+                        $contactEmail = $job->contact_email;
+                        $billingApps = \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $contactEmail))
+                            ->whereMonth('applied_at', \Carbon\Carbon::parse($bs->billing_month . '-01')->month)
+                            ->whereYear('applied_at', \Carbon\Carbon::parse($bs->billing_month . '-01')->year)
+                            ->orderByDesc('applied_at')
+                            ->get();
+                    @endphp
+                    @if($billingApps->isNotEmpty())
+                    <div class="text-muted small mb-1">応募明細</div>
+                    <table class="table table-sm mb-0" style="font-size:0.85rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>応募日時</th>
+                                <th>応募者名</th>
+                                <th class="text-center">有効/無効</th>
+                                <th class="text-center">課金対象</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($billingApps as $app)
+                            <tr>
+                                <td>{{ $app->applied_at?->format('Y/m/d H:i') ?? '—' }}</td>
+                                <td>{{ $app->applicant_name }}</td>
+                                <td class="text-center">
+                                    @if($app->is_valid)
+                                        <span class="badge" style="background:#e6f4ea;color:#137333;">有効</span>
+                                    @else
+                                        <span class="badge" style="background:#fce8e6;color:#c62828;">無効</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($app->is_billable)
+                                        <span class="badge bg-danger">対象</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
+                    <p class="text-muted small mt-2 mb-0">※応募が発生した分のみ課金されます</p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    <p class="text-muted small mt-2 mb-0">
+        ご不明な点は <a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a> までお問い合わせください。
+    </p>
+</div>
+@endif
 
 {{-- 掲載操作ボタン --}}
 <div class="form-section mb-4">
@@ -136,14 +315,20 @@
                 掲載停止
             </button>
         </form>
-        @elseif($job->status === 'closed' || $job->status === 'paused')
-        <form method="POST" action="{{ route('jobs.reopen', ['token' => $job->token]) }}">
+        @elseif(in_array($job->status, ['closed', 'paused', 'expired']))
+        @if($hasOverdue)
+            <button type="button" class="btn btn-success" disabled
+                    title="未払い請求を解消してから再掲載できます">
+                掲載再開
+            </button>
+        @else
+        <form method="POST" action="{{ route('jobs.reopen', ['token' => $job->token]) }}" id="reopenForm">
             @csrf @method('PATCH')
-            <button type="submit" class="btn btn-success"
-                    onclick="return confirm('掲載を再開しますか？')">
+            <button type="button" class="btn btn-success" id="reopenBtn">
                 掲載再開
             </button>
         </form>
+        @endif
         @endif
 
         <form method="POST" action="{{ route('jobs.destroy', ['token' => $job->token]) }}"
@@ -374,4 +559,56 @@
 </div>
 </div>
 </div>
+
+{{-- 再開時トライアル終了確認モーダル --}}
+<div class="modal fade" id="reopenTrialModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>無料掲載期間の終了
+                </h5>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="mb-3">この求人は無料掲載期間が終了しています。</p>
+                <p class="mb-3">掲載は可能ですが、<br>応募が発生した場合に課金が発生します。</p>
+                <div class="alert alert-warning py-2 mb-2" style="font-size:0.93rem;">
+                    <strong>・1応募：¥3,000（税別）</strong>
+                </div>
+                <p class="text-muted small mb-0">※応募がない場合は料金は発生しません</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary" id="reopenConfirmBtn">掲載する</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+@if(isset($job) && ($job->status === 'closed' || $job->status === 'paused'))
+const reopenTrialModal = new bootstrap.Modal(document.getElementById('reopenTrialModal'));
+
+document.getElementById('reopenBtn')?.addEventListener('click', async function() {
+    const email = '{{ $job->contact_email }}';
+    try {
+        const res = await fetch(`{{ route('jobs.check_trial') }}?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (data.trial_ended) {
+            reopenTrialModal.show();
+            return;
+        }
+    } catch (err) {}
+    if (confirm('掲載を再開しますか？')) {
+        document.getElementById('reopenForm').submit();
+    }
+});
+
+document.getElementById('reopenConfirmBtn')?.addEventListener('click', function() {
+    reopenTrialModal.hide();
+    document.getElementById('reopenForm').submit();
+});
+@endif
+</script>
+
 @endsection

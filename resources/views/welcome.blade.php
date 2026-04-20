@@ -120,7 +120,9 @@
 {{-- ナビゲーション --}}
 <nav class="site-nav">
     <div class="container d-flex justify-content-between align-items-center">
-        <a href="/" class="brand">Care Entry<span>ケアエントリー</span></a>
+        <a href="/" class="brand">
+            <img src="/images/logo.svg" alt="Care Entry ケア・エントリー" height="52">
+        </a>
         <a href="{{ route('jobs.create') }}" class="btn btn-nav btn-primary">
             <i class="bi bi-plus-circle me-1"></i>無料で掲載する
         </a>
