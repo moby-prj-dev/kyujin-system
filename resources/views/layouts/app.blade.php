@@ -46,7 +46,7 @@
             color: var(--primary);
             text-decoration: none;
             display: flex;
-            align-items: baseline;
+            align-items: center;
             gap: 6px;
         }
         .site-nav .brand small {
@@ -213,7 +213,7 @@
 <nav class="site-nav">
     <div class="container d-flex justify-content-between align-items-center">
         <a href="/" class="brand">
-            Care Entry <small>ケア・エントリー</small>
+            <img src="{{ asset('images/logo.svg') }}" alt="Care Entry ケア・エントリー" height="52">
         </a>
         <a href="{{ route('jobs.create') }}" class="btn btn-primary btn-sm rounded-pill px-3">
             <i class="bi bi-plus-circle me-1"></i>無料で掲載する

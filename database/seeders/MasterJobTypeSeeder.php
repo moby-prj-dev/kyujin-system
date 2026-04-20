@@ -18,8 +18,8 @@ class MasterJobTypeSeeder extends Seeder
             ['category' => '介護系', 'name' => '介護スタッフ（訪問介護）',            'slug' => 'care_home_visit'],
             ['category' => '介護系', 'name' => '介護スタッフ（居宅介護）',            'slug' => 'care_home_based'],
             ['category' => '介護系', 'name' => '夜勤専従介護スタッフ',               'slug' => 'care_night_only'],
-            ['category' => '介護系', 'name' => '介護職員初任者研修保有者歓迎',        'slug' => 'care_initial_training'],
-            ['category' => '介護系', 'name' => '介護福祉士歓迎',                     'slug' => 'care_welfare_worker'],
+            ['category' => '介護系', 'name' => '介護職員初任者研修保有者',        'slug' => 'care_initial_training'],
+            ['category' => '介護系', 'name' => '介護福祉士',                     'slug' => 'care_welfare_worker'],
             // ヘルパー系
             ['category' => 'ヘルパー系', 'name' => '訪問ヘルパー',     'slug' => 'helper_visit'],
             ['category' => 'ヘルパー系', 'name' => '生活援助ヘルパー', 'slug' => 'helper_daily_living'],

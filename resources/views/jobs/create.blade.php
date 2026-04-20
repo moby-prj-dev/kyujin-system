@@ -236,7 +236,6 @@
     <h5>応募時課金への同意 <span class="text-danger">*</span></h5>
     <div class="agreement-box mb-3">
         <p class="mb-0 small">{{ $agreementText }}</p>
-        <p class="mb-0 text-muted small mt-1">（同意文言バージョン：{{ $agreementVersion }}）</p>
     </div>
     <div class="form-check">
         <input class="form-check-input @error('agreement_flag') is-invalid @enderror"
@@ -247,28 +246,88 @@
     </div>
 </div>
 
+<input type="hidden" name="trial_confirmed" id="trialConfirmed" value="0">
+
 <div class="text-center mt-4">
     <button type="submit" class="btn btn-primary btn-lg px-5">求人を登録する</button>
 </div>
 
 </form>
+
+{{-- トライアル終了確認モーダル --}}
+<div class="modal fade" id="trialEndedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>無料掲載期間の終了
+                </h5>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="mb-3">この求人は無料掲載期間が終了しています。</p>
+                <p class="mb-3">掲載は可能ですが、<br>応募が発生した場合に課金が発生します。</p>
+                <div class="alert alert-warning py-2 mb-2" style="font-size:0.93rem;">
+                    <strong>・1応募：¥3,000（税別）</strong>
+                </div>
+                <p class="text-muted small mb-0">※応募がない場合は料金は発生しません</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary" id="trialConfirmBtn">掲載する</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 </div>
 </div>
 
 <script>
-@if(config('services.recaptcha.site_key'))
-document.getElementById('jobCreateForm').addEventListener('submit', function(e) {
+const trialEndedModal = new bootstrap.Modal(document.getElementById('trialEndedModal'));
+
+document.getElementById('jobCreateForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const form = this;
+
+    // 確認済みならそのまま送信
+    if (document.getElementById('trialConfirmed').value === '1') {
+        doSubmit(form);
+        return;
+    }
+
+    const email = (document.querySelector('[name="contact_email"]')?.value || '').trim();
+    if (email) {
+        try {
+            const res = await fetch(`{{ route('jobs.check_trial') }}?email=${encodeURIComponent(email)}`);
+            const data = await res.json();
+            if (data.trial_ended) {
+                trialEndedModal.show();
+                return;
+            }
+        } catch (err) {}
+    }
+
+    doSubmit(form);
+});
+
+document.getElementById('trialConfirmBtn').addEventListener('click', function() {
+    trialEndedModal.hide();
+    document.getElementById('trialConfirmed').value = '1';
+    document.getElementById('jobCreateForm').dispatchEvent(new Event('submit'));
+});
+
+function doSubmit(form) {
+    @if(config('services.recaptcha.site_key'))
     grecaptcha.ready(function() {
         grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'job_store'}).then(function(token) {
             document.getElementById('recaptchaToken').value = token;
             form.submit();
         });
     });
-});
-@endif
+    @else
+    form.submit();
+    @endif
+}
 </script>
 
 <script>

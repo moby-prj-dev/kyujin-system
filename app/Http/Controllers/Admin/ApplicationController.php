@@ -46,7 +46,8 @@ class ApplicationController extends Controller
             $application->is_valid       = true;
             $application->invalid_reason = null;
             $application->counted_at     = $application->counted_at ?? now();
-            $application->is_billable    = $service->isBillable($application);
+            // 手動有効化は課金対象にしない（is_billable は受付時点で確定）
+            $application->is_billable    = false;
         } elseif ($action === 'invalidate') {
             $application->is_valid       = false;
             $application->invalid_reason = Application::INVALID_MANUAL;

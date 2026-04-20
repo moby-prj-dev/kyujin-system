@@ -34,7 +34,6 @@ class MasterConditionSeeder extends Seeder
             ['category' => '勤務環境', 'name' => '車通勤OK',        'slug' => 'car_commute',      'question_text' => '車での通勤は可能ですか？'],
             ['category' => '勤務環境', 'name' => 'バイク通勤OK',    'slug' => 'bike_commute',     'question_text' => 'バイクでの通勤は可能ですか？'],
             ['category' => '勤務環境', 'name' => '駅徒歩10分以内',  'slug' => 'near_station',     'question_text' => '最寄り駅から徒歩10分以内の職場をご希望ですか？'],
-            ['category' => '勤務環境', 'name' => 'マイカー通勤OK',  'slug' => 'mycar_commute',    'question_text' => 'マイカーでの通勤は可能ですか？'],
             ['category' => '勤務環境', 'name' => '寮・社宅あり',    'slug' => 'dormitory',        'question_text' => '寮・社宅の利用を希望しますか？'],
             // 待遇
             ['category' => '待遇', 'name' => '交通費全額支給', 'slug' => 'full_commute_fee',   'question_text' => '交通費全額支給の条件でよろしいですか？'],

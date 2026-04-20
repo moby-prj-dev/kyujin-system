@@ -145,7 +145,7 @@
 <nav class="site-nav">
     <div class="container d-flex justify-content-between align-items-center">
         <a href="/" class="brand">
-            Care Entry <small>ケア・エントリー</small>
+            <img src="/images/logo.svg" alt="Care Entry ケア・エントリー" height="52">
         </a>
         <a href="{{ route('lp.show', ['token' => $job->token]) }}"
            class="btn btn-sm btn-outline-secondary rounded-pill px-3" style="font-size:.82rem;">

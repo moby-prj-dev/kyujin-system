@@ -13,7 +13,7 @@ class Application extends Model
         'job_id','application_type','applicant_name',
         'phone','normalized_phone','email','normalized_email',
         'status','applied_at',
-        'is_valid','invalid_reason','is_billable','counted_at',
+        'is_valid','invalid_reason','is_billable','billable_snapshot','counted_at',
     ];
 
     protected $casts = [

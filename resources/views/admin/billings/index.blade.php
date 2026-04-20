@@ -36,6 +36,8 @@
                     <option value="">すべて</option>
                     <option value="unbilled" {{ request('status') === 'unbilled' ? 'selected' : '' }}>未請求</option>
                     <option value="sent"     {{ request('status') === 'sent'     ? 'selected' : '' }}>送付済</option>
+                    <option value="unpaid"   {{ request('status') === 'unpaid'   ? 'selected' : '' }}>未払い</option>
+                    <option value="overdue"  {{ request('status') === 'overdue'  ? 'selected' : '' }}>期限超過</option>
                     <option value="paid"     {{ request('status') === 'paid'     ? 'selected' : '' }}>入金済</option>
                     <option value="on_hold"  {{ request('status') === 'on_hold'  ? 'selected' : '' }}>保留</option>
                 </select>

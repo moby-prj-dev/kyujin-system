@@ -64,6 +64,24 @@ class JobController extends Controller
                 ->with('duplicate_email', $emailMatch ? $email : null);
         }
 
+        // 期限超過未払いチェック
+        $hasOverdue = \App\Models\BillingSummary::where('contact_email', $email)
+            ->where('status', \App\Models\BillingSummary::STATUS_OVERDUE)
+            ->exists();
+        if ($hasOverdue) {
+            return back()->withInput()->withErrors([
+                'contact_email' => 'お支払い期限を過ぎた未払い請求があります。未払い解消後に再度お試しください。',
+            ]);
+        }
+
+        // Section 6: サーバー側でトライアル終了を再確認
+        $trialEnded = $this->isTrialEnded($email);
+        if ($trialEnded && $request->input('trial_confirmed') !== '1') {
+            return back()->withInput()->withErrors([
+                'trial_confirmed' => '課金条件への確認が必要です。再度フォームから送信してください。',
+            ]);
+        }
+
         DB::transaction(function () use ($request, $email, &$job) {
             $photoPath = $request->hasFile('photo')
                 ? $request->file('photo')->store('job_photos', 'public')
@@ -154,10 +172,27 @@ class JobController extends Controller
 
         $applications = $job->applications()->orderByDesc('applied_at')->paginate(20);
 
+        $billingSummaries = \App\Models\BillingSummary::where('contact_email', $job->contact_email)
+            ->orderByDesc('billing_month')
+            ->get();
+
+        $trialEnded  = $this->isTrialEnded($job->contact_email);
+        $hasUnpaid   = $billingSummaries->whereIn('status', [\App\Models\BillingSummary::STATUS_UNPAID])->isNotEmpty();
+        $hasOverdue  = $billingSummaries->whereIn('status', [\App\Models\BillingSummary::STATUS_OVERDUE])->isNotEmpty();
+
+        // 会社全体の有効応募数・課金対象数
+        $companyValidCount    = \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $job->contact_email))
+            ->where('is_valid', true)->count();
+        $companyBillableCount = \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $job->contact_email))
+            ->where('is_billable', true)->count();
+        $freeQuotaRemaining   = max(0, 3 - $companyValidCount);
+
         return view('jobs.manage', compact(
             'job', 'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
             'selectedAreas', 'selectedJobTypes', 'selectedEmploymentTypes',
-            'selectedConditions', 'selectedAppeals', 'applications'
+            'selectedConditions', 'selectedAppeals', 'applications',
+            'billingSummaries', 'trialEnded', 'hasUnpaid', 'hasOverdue',
+            'companyValidCount', 'companyBillableCount', 'freeQuotaRemaining'
         ));
     }
 
@@ -265,6 +300,28 @@ class JobController extends Controller
         ]);
 
         return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function checkTrial(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $email = strtolower(trim($request->query('email', '')));
+        return response()->json(['trial_ended' => $this->isTrialEnded($email)]);
+    }
+
+    private function isTrialEnded(string $email): bool
+    {
+        if (empty($email)) return false;
+
+        $firstJob = Job::where('contact_email', $email)
+            ->whereNotNull('email_verified_at')
+            ->orderBy('email_verified_at')
+            ->first();
+
+        if (! $firstJob) return false;
+
+        return ($firstJob->expires_at && now()->greaterThan($firstJob->expires_at))
+            || \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $email))
+                ->where('is_valid', true)->count() >= 3;
     }
 
     public function destroy(string $token)
