@@ -10,6 +10,7 @@
       gtag('config', 'AW-18106143411');
     </script>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Care Entry（ケアエントリー）｜介護・福祉の成果報酬型求人サービス</title>
     <meta name="description" content="Care Entryは介護・福祉専門の成果報酬型求人サービスです。掲載無料、応募が来てから課金。LINE応募対応でかんたん応募。">
