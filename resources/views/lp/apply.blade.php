@@ -244,7 +244,7 @@
 
     {{-- メッセージ --}}
     <div class="form-section">
-        <div class="section-title"><i class="bi bi-chat-text-fill"></i> メッセージ<span class="required-badge ms-2">必須</span></div>
+        <div class="section-title"><i class="bi bi-chat-text-fill"></i> メッセージ<span class="text-muted fw-normal ms-2" style="font-size:0.85rem;">（任意）</span></div>
         <textarea name="appeal_message"
                   class="form-control @error('appeal_message') is-invalid @enderror"
                   rows="4"

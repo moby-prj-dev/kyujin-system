@@ -45,7 +45,7 @@ class ApplyController extends Controller
             'applicant_name'       => ['required', 'string', 'max:100'],
             'phone'                => ['required', 'regex:/^[0-9]{10,11}$/'],
             'email'                => ['required', 'email', 'max:255'],
-            'appeal_message'       => ['required', 'string', 'max:1000'],
+            'appeal_message'       => ['nullable', 'string', 'max:1000'],
             'desired_conditions'   => ['required', 'array', 'min:1'],
             'desired_conditions.*' => ['integer', 'in:' . implode(',', $jobConditionIds ?: [0])],
             'desired_job_types'    => ['required', 'array', 'min:1'],
@@ -59,7 +59,6 @@ class ApplyController extends Controller
             'desired_job_types.min'       => '希望職種を1つ以上選択してください。',
             'desired_conditions.required' => '希望勤務条件を1つ以上選択してください。',
             'desired_conditions.min'      => '希望勤務条件を1つ以上選択してください。',
-            'appeal_message.required'     => 'メッセージを入力してください。',
         ]);
 
         DB::transaction(function () use ($request, $job, $validationService) {
