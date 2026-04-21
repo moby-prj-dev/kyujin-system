@@ -39,8 +39,10 @@
     </style>
 </head>
 <body>
+@if(app()->environment('production'))
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KLXGD5FL"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+@endif
 
 <nav class="admin-nav navbar navbar-expand-lg">
     <div class="container-fluid">

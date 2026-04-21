@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+@if(app()->environment('production'))
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -16,6 +17,7 @@
       gtag('js', new Date());
       gtag('config', 'AW-18106143411');
     </script>
+@endif
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -65,8 +67,10 @@
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
+@if(app()->environment('production'))
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KLXGD5FL"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+@endif
 
 {{-- ナビ --}}
 <nav class="site-nav">
