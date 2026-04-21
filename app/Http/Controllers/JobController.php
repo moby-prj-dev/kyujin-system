@@ -176,7 +176,7 @@ class JobController extends Controller
         $selectedConditions      = $job->jobConditions->pluck('condition_id')->toArray();
         $selectedAppeals         = $job->jobAppeals->pluck('appeal_id')->toArray();
 
-        $applications = $job->applications()->orderByDesc('applied_at')->paginate(20);
+        $applications = $job->applications()->with('job')->orderByDesc('applied_at')->paginate(20);
 
         $billingSummaries = \App\Models\BillingSummary::where('contact_email', $job->contact_email)
             ->orderByDesc('billing_month')
