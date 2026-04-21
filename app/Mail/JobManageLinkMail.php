@@ -17,7 +17,7 @@ class JobManageLinkMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: '【求人掲載】編集用リンクをお送りします');
+        return new Envelope(subject: '【ケアエントリー】編集用リンクをお送りします');
     }
 
     public function content(): Content

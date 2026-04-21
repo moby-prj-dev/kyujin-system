@@ -21,7 +21,7 @@ class BillingSummaryMail extends Mailable
     public function envelope(): Envelope
     {
         $month = $this->summary->billing_month;
-        return new Envelope(subject: "【Care Entry】{$month} ご請求書のご案内");
+        return new Envelope(subject: "【ケアエントリー】{$month} ご請求書のご案内");
     }
 
     public function content(): Content

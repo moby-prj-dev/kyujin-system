@@ -17,7 +17,7 @@ class JobVerificationMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: '【求人掲載】メールアドレスの確認をお願いします');
+        return new Envelope(subject: '【ケアエントリー】メールアドレスの確認をお願いします');
     }
 
     public function content(): Content

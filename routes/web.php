@@ -19,6 +19,7 @@ Route::get('/jobs/resend', [\App\Http\Controllers\JobResendController::class, 's
 Route::post('/jobs/resend', [\App\Http\Controllers\JobResendController::class, 'resend'])->middleware('throttle:5,60')->name('jobs.resend');
 Route::get('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'manage'])->name('jobs.manage');
 Route::put('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'update'])->name('jobs.update');
+Route::post('/jobs/{token}/continue', [\App\Http\Controllers\JobController::class, 'continue'])->name('jobs.continue');
 Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class, 'close'])->name('jobs.close');
 Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class, 'reopen'])->name('jobs.reopen');
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');

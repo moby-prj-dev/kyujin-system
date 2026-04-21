@@ -18,6 +18,42 @@
 <div class="alert alert-success">求人情報を更新しました。</div>
 @endif
 
+{{-- 継続完了メッセージ --}}
+@if(session('continued'))
+<div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-check-circle-fill fs-5 flex-shrink-0"></i>
+    <div><strong>掲載継続を受け付けました。</strong> 掲載は継続中です。</div>
+</div>
+@endif
+
+{{-- 無料掲載終了間近バナー --}}
+@if(!$trialEnded && $job->status === 'active' && $job->expires_at && !$job->continued_at)
+    @php $daysLeft = (int)now()->diffInDays($job->expires_at, false); @endphp
+    @if($daysLeft <= config('billing.continue_warning_days', 7) && $daysLeft >= 0)
+    <div class="alert alert-warning d-flex align-items-start gap-2 mb-3">
+        <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+        <div class="flex-grow-1">
+            <strong>無料掲載期間がまもなく終了します（残り{{ $daysLeft }}日）</strong><br>
+            <span style="font-size:0.93rem;">掲載を継続する場合は、下の継続ボタンを押してください。</span>
+            <div class="mt-2">
+                <form method="POST" action="{{ route('jobs.continue', ['token' => $job->token]) }}" id="continueForm">
+                    @csrf
+                    <button type="button" class="btn btn-warning btn-sm fw-bold" id="continueBtn">
+                        <i class="bi bi-arrow-repeat me-1"></i>継続する
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+@endif
+@if($job->continued_at)
+<div class="alert alert-info d-flex align-items-center gap-2 mb-3" style="font-size:0.92rem;">
+    <i class="bi bi-check2-circle fs-5 flex-shrink-0"></i>
+    <div>掲載継続済み（{{ $job->continued_at->format('Y/m/d H:i') }}）</div>
+</div>
+@endif
+
 {{-- 未払い・期限超過バナー --}}
 @if($hasOverdue)
 <div class="alert alert-danger d-flex align-items-start gap-2 mb-3">
@@ -586,6 +622,13 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 </div>
 
 <script>
+document.getElementById('continueBtn')?.addEventListener('click', function() {
+    if (confirm('掲載を継続しますか？\n\n無料掲載期間終了後は、有効応募1件につき3,000円（税別）が発生します。\n応募がない場合は料金は発生しません。\n\nOKを押すと掲載継続として反映されます。')) {
+        this.disabled = true;
+        document.getElementById('continueForm').submit();
+    }
+});
+
 @if(isset($job) && ($job->status === 'closed' || $job->status === 'paused'))
 const reopenTrialModal = new bootstrap.Modal(document.getElementById('reopenTrialModal'));
 

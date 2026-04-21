@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobRequest;
+use App\Mail\JobContinuedMail;
 use App\Mail\JobVerificationMail;
 use App\Models\AuditLog;
 use App\Models\BillingAgreement;
@@ -20,6 +21,7 @@ use App\Models\MasterJobType;
 use App\Services\SeoGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -300,6 +302,40 @@ class JobController extends Controller
         ]);
 
         return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function continue(string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+
+        // 二重継続防止
+        if ($job->continued_at) {
+            return redirect()->route('jobs.manage', ['token' => $token])
+                ->with('continued', true);
+        }
+
+        // 継続可能期間チェック（終了間近でない場合は無効）
+        $warningDays = config('billing.continue_warning_days', 7);
+        if (! $job->expires_at || now()->diffInDays($job->expires_at, false) > $warningDays) {
+            return redirect()->route('jobs.manage', ['token' => $token]);
+        }
+
+        $job->update(['continued_at' => now()]);
+
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
+            'action'       => 'continued',
+            'continued_at' => now()->toDateTimeString(),
+        ]);
+
+        try {
+            Mail::to(config('billing.admin_email'))->send(new JobContinuedMail($job));
+            $job->update(['continue_notified_at' => now()]);
+        } catch (\Exception $e) {
+            Log::error("継続通知メール送信失敗 [{$job->contact_email}]: " . $e->getMessage());
+        }
+
+        return redirect()->route('jobs.manage', ['token' => $token])
+            ->with('continued', true);
     }
 
     public function checkTrial(Request $request): \Illuminate\Http\JsonResponse
