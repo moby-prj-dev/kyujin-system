@@ -28,8 +28,10 @@
     </style>
 </head>
 <body>
+@if(app()->environment('production'))
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KLXGD5FL"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+@endif
 <div class="login-wrap">
     <div class="login-card">
         <div class="login-brand">
