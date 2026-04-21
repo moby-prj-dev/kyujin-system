@@ -213,6 +213,44 @@
     </div>
 </div>
 
+{{-- 給与 --}}
+<div class="form-section">
+    <h5>給与 <span class="text-danger">*</span></h5>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label small fw-bold">給与種別 <span class="text-danger">*</span></label>
+            <select name="salary_type" class="form-select @error('salary_type') is-invalid @enderror" required>
+                <option value="">選択してください</option>
+                <option value="monthly" {{ old('salary_type') === 'monthly' ? 'selected' : '' }}>月給</option>
+                <option value="hourly"  {{ old('salary_type') === 'hourly'  ? 'selected' : '' }}>時給</option>
+                <option value="daily"   {{ old('salary_type') === 'daily'   ? 'selected' : '' }}>日給</option>
+                <option value="yearly"  {{ old('salary_type') === 'yearly'  ? 'selected' : '' }}>年収</option>
+                <option value="other"   {{ old('salary_type') === 'other'   ? 'selected' : '' }}>その他</option>
+            </select>
+            @error('salary_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-bold">最低給与額（円） <span class="text-danger">*</span></label>
+            <input type="number" name="salary_min" class="form-control @error('salary_min') is-invalid @enderror"
+                   value="{{ old('salary_min') }}" placeholder="例：200000" min="1" required>
+            @error('salary_min') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-bold">最高給与額（円） <small class="text-muted fw-normal">任意</small></label>
+            <input type="number" name="salary_max" class="form-control @error('salary_max') is-invalid @enderror"
+                   value="{{ old('salary_max') }}" placeholder="例：250000" min="1">
+            @error('salary_max') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+    </div>
+    <div class="mt-3">
+        <label class="form-label small fw-bold">給与補足 <small class="text-muted fw-normal">任意・500文字以内</small></label>
+        <textarea name="salary_note" class="form-control @error('salary_note') is-invalid @enderror"
+                  rows="2" maxlength="500"
+                  placeholder="例：夜勤手当あり、経験・資格により優遇、処遇改善加算含む">{{ old('salary_note') }}</textarea>
+        @error('salary_note') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+</div>
+
 {{-- 自由記述 --}}
 <div class="form-section">
     <h5>求人本文 <small class="text-muted fw-normal">（任意・2000文字以内）</small></h5>

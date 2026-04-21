@@ -95,6 +95,10 @@ class JobController extends Controller
                 'contact_email'            => $email,
                 'contact_phone'            => $request->contact_phone,
                 'free_text'                => $request->free_text,
+                'salary_type'              => $request->salary_type,
+                'salary_min'               => $request->salary_min,
+                'salary_max'               => $request->salary_max ?: null,
+                'salary_note'              => $request->salary_note,
                 'photo_path'               => $photoPath,
                 'title'                    => $request->filled('title') ? $request->title : '（生成中）',
                 'email_verification_token' => Str::random(64),
@@ -216,6 +220,10 @@ class JobController extends Controller
             'appeals'            => ['required', 'array', 'min:1'],
             'appeals.*'          => ['integer', 'exists:master_appeals,id'],
             'free_text'          => ['nullable', 'string', 'max:2000'],
+            'salary_type'        => ['required', 'in:monthly,hourly,daily,yearly,other'],
+            'salary_min'         => ['required', 'integer', 'min:1'],
+            'salary_max'         => ['nullable', 'integer', 'min:1', 'gte:salary_min'],
+            'salary_note'        => ['nullable', 'string', 'max:500'],
             'photo'              => ['nullable', 'image', 'max:5120'],
         ]);
 
@@ -232,6 +240,10 @@ class JobController extends Controller
                 'company_name' => $request->company_name,
                 'title'        => $request->title,
                 'free_text'    => $request->free_text,
+                'salary_type'  => $request->salary_type,
+                'salary_min'   => $request->salary_min,
+                'salary_max'   => $request->salary_max ?: null,
+                'salary_note'  => $request->salary_note,
                 'photo_path'   => $photoPath,
             ]);
 
