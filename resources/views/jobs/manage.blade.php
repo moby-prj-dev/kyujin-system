@@ -698,7 +698,7 @@ document.getElementById('continueBtn')?.addEventListener('click', function() {
     }
 });
 
-@if(isset($job) && ($job->status === 'closed' || $job->status === 'paused'))
+@if(isset($job) && in_array($job->status, ['closed', 'paused', 'expired']))
 const reopenTrialModal = new bootstrap.Modal(document.getElementById('reopenTrialModal'));
 
 document.getElementById('reopenBtn')?.addEventListener('click', async function() {
