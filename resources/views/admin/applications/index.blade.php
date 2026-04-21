@@ -6,13 +6,28 @@
     <h1 class="page-title mb-0"><i class="bi bi-people me-2"></i>応募一覧</h1>
 </div>
 
+{{-- 求人絞り込み中バナー --}}
+@if($filterJob)
+<div class="alert alert-info d-flex align-items-center justify-content-between py-2 mb-3">
+    <span>
+        <i class="bi bi-funnel-fill me-1"></i>
+        <strong>{{ $filterJob->company_name }}</strong> ／ {{ $filterJob->title ?: '（タイトル未設定）' }} の応募のみ表示中
+    </span>
+    <a href="{{ route('admin.applications.index') }}" class="btn btn-sm btn-outline-secondary ms-3">すべて表示</a>
+</div>
+@endif
+
 {{-- フィルター --}}
 <div class="card mb-3">
     <div class="card-body py-3">
         <form method="GET" class="row g-2 align-items-end">
+            @if($filterJob)
+                <input type="hidden" name="job_id" value="{{ $filterJob->id }}">
+            @endif
             <div class="col-md-3">
                 <label class="form-label small fw-bold mb-1">メールアドレス</label>
-                <input type="text" name="email" class="form-control form-control-sm" value="{{ request('email') }}" placeholder="example@company.com">
+                <input type="text" name="email" class="form-control form-control-sm"
+                       value="{{ request('email') }}" placeholder="example@company.com">
             </div>
             <div class="col-md-2">
                 <label class="form-label small fw-bold mb-1">有効/無効</label>
@@ -32,7 +47,8 @@
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary btn-sm">絞り込む</button>
-                <a href="{{ route('admin.applications.index') }}" class="btn btn-outline-secondary btn-sm ms-1">リセット</a>
+                <a href="{{ route('admin.applications.index', $filterJob ? ['job_id' => $filterJob->id] : []) }}"
+                   class="btn btn-outline-secondary btn-sm ms-1">リセット</a>
             </div>
         </form>
     </div>
@@ -64,8 +80,18 @@
                     <td class="text-nowrap" style="font-size:0.82rem;">
                         {{ $app->applied_at?->format('Y/m/d H:i') ?? '—' }}
                     </td>
-                    <td style="font-size:0.82rem; max-width:160px;">
-                        <span class="d-block text-truncate">{{ $app->job?->company_name ?? '—' }}</span>
+                    <td style="font-size:0.82rem; max-width:180px;">
+                        @if($app->job)
+                        <a href="{{ route('admin.applications.index', ['job_id' => $app->job->id]) }}"
+                           class="text-decoration-none text-reset d-block text-truncate"
+                           title="{{ $app->job->company_name }}">
+                            {{ $app->job->company_name }}
+                        </a>
+                        <span class="text-muted d-block text-truncate" style="font-size:0.78rem;"
+                              title="{{ $app->job->title }}">{{ $app->job->title ?: '—' }}</span>
+                        @else
+                        <span class="text-muted">—</span>
+                        @endif
                     </td>
                     <td>{{ $app->applicant_name }}</td>
                     <td style="font-size:0.82rem; max-width:160px;">
