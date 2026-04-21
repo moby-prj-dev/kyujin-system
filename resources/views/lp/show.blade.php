@@ -230,6 +230,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="info-label"><i class="bi bi-building me-1 text-primary"></i>会社名</span>
                 <span class="info-value">{{ $job->company_name }}</span>
             </div>
+            @if($job->salary_type && $job->salary_min)
+            <div class="info-row">
+                <span class="info-label"><i class="bi bi-cash-stack me-1 text-primary"></i>給与</span>
+                <span class="info-value">
+                    {{ $job->salaryText() }}
+                    @if($job->salary_note)
+                    <div class="text-muted" style="font-size:0.85rem;font-weight:400;margin-top:2px;">{{ $job->salary_note }}</div>
+                    @endif
+                </span>
+            </div>
+            @endif
             <div class="info-row">
                 <span class="info-label"><i class="bi bi-geo-alt me-1 text-primary"></i>勤務地</span>
                 <span class="info-value">{{ $job->jobAreas->map(fn($a) => $a->area->name)->implode('・') ?: '未設定' }}</span>
