@@ -196,6 +196,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>応募日時</th>
+                                <th>応募先求人</th>
                                 <th>氏名</th>
                                 <th>連絡先</th>
                                 <th>種別</th>
@@ -208,6 +209,14 @@
                             <tr class="{{ $app->is_valid ? '' : 'table-secondary' }}"
                                 style="{{ $app->is_valid ? '' : 'opacity:0.65;' }}">
                                 <td class="text-nowrap">{{ $app->applied_at?->format('Y/m/d H:i') ?? '—' }}</td>
+                                <td style="max-width:180px;">
+                                    <div class="fw-bold text-truncate" title="{{ $app->job->title ?? '' }}">
+                                        {{ $app->job->title ?: '（タイトル未設定）' }}
+                                    </div>
+                                    <div class="text-muted small text-truncate" title="{{ $app->job->company_name ?? '' }}">
+                                        {{ $app->job->company_name ?? '—' }}
+                                    </div>
+                                </td>
                                 <td>{{ $app->applicant_name ?? '—' }}</td>
                                 <td>
                                     @if($app->phone)<div>{{ $app->phone }}</div>@endif
@@ -688,6 +697,9 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
     </div>
 </div>
 
+@endsection
+
+@push('scripts')
 <script>
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
@@ -722,5 +734,4 @@ document.getElementById('reopenConfirmBtn')?.addEventListener('click', function(
 });
 @endif
 </script>
-
-@endsection
+@endpush
