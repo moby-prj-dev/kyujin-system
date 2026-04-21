@@ -157,10 +157,22 @@
                             @endif
                         </td>
                         <td class="text-center">
+                            @php $total = (int)$job->applications_count; @endphp
                             <a href="{{ route('admin.applications.index', ['job_id' => $job->id]) }}"
-                               class="fw-bold text-decoration-none {{ (int)$job->applications_count > 0 ? 'text-primary' : 'text-muted' }}">
-                                {{ $job->applications_count }}
+                               class="fw-bold text-decoration-none {{ $total > 0 ? 'text-primary' : 'text-muted' }}">
+                                {{ $total }}
                             </a>
+                            @if($total > 0)
+                            <div style="font-size:0.72rem; line-height:1.5; white-space:nowrap;">
+                                <span class="text-success">有効 {{ (int)$job->valid_count_sub }}</span>
+                                @if((int)$job->invalid_count_sub > 0)
+                                <span class="text-muted"> / 無効 {{ (int)$job->invalid_count_sub }}</span>
+                                @endif
+                                @if((int)$job->billable_count_sub > 0)
+                                <br><span class="text-danger">課金 {{ (int)$job->billable_count_sub }}</span>
+                                @endif
+                            </div>
+                            @endif
                         </td>
                         <td class="text-center text-nowrap" style="font-size:0.82rem;">
                             @if($expiresAt)
