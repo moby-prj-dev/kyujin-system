@@ -40,7 +40,20 @@ class ApplicationController extends Controller
             ? Job::find($request->job_id)
             : null;
 
-        return view('admin.applications.index', compact('applications', 'filterJob'));
+        $summaryQuery = Application::query();
+        if ($request->filled('job_id'))   { $summaryQuery->where('job_id', $request->job_id); }
+        if ($request->filled('email'))    { $summaryQuery->where(fn($q) => $q->where('email', 'like', '%'.$request->email.'%')->orWhereHas('job', fn($q2) => $q2->where('contact_email', 'like', '%'.$request->email.'%'))); }
+        if ($request->filled('validity')) { $summaryQuery->where('is_valid', $request->validity === 'valid'); }
+        if ($request->filled('billable')) { $summaryQuery->where('is_billable', $request->billable === '1'); }
+
+        $summaryCounts = $summaryQuery->selectRaw('
+            COUNT(*) AS total,
+            SUM(is_valid = 1) AS valid_count,
+            SUM(is_valid = 0) AS invalid_count,
+            SUM(is_billable = 1) AS billable_count
+        ')->first();
+
+        return view('admin.applications.index', compact('applications', 'filterJob', 'summaryCounts'));
     }
 
     public function update(Request $request, Application $application, ApplicationValidationService $service)

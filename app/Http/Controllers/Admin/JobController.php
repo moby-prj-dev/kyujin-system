@@ -16,7 +16,9 @@ class JobController extends Controller
             ->selectRaw('
                 job_listings.*,
                 (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id) AS applications_count,
-                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1) AS valid_count_sub
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1) AS valid_count_sub,
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 0) AS invalid_count_sub,
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_billable = 1) AS billable_count_sub
             ')
             ->whereNull('deleted_at');
 

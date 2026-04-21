@@ -55,9 +55,23 @@
 </div>
 
 <div class="card">
-    <div class="card-header px-4 py-3">
-        応募一覧
-        <span class="text-muted fw-normal ms-2" style="font-size:0.82rem;">{{ $applications->total() }}件</span>
+    <div class="card-header px-4 py-3 d-flex flex-wrap align-items-center gap-3">
+        <span>応募一覧</span>
+        <span class="text-muted fw-normal" style="font-size:0.82rem;">計 {{ (int)$summaryCounts->total }}件</span>
+        <span class="ms-auto d-flex flex-wrap gap-3" style="font-size:0.82rem;">
+            <span>
+                <span class="badge" style="background:#e6f4ea; color:#137333;">有効</span>
+                <span class="fw-bold ms-1">{{ (int)$summaryCounts->valid_count }}</span>件
+            </span>
+            <span>
+                <span class="badge" style="background:#fce8e6; color:#c62828;">無効</span>
+                <span class="fw-bold ms-1">{{ (int)$summaryCounts->invalid_count }}</span>件
+            </span>
+            <span>
+                <span class="badge bg-danger">課金対象</span>
+                <span class="fw-bold ms-1 {{ (int)$summaryCounts->billable_count > 0 ? 'text-danger' : '' }}">{{ (int)$summaryCounts->billable_count }}</span>件
+            </span>
+        </span>
     </div>
     <div class="table-responsive">
         <table class="table table-hover mb-0">
