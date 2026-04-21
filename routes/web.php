@@ -58,7 +58,6 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::get('/jobs', [\App\Http\Controllers\Admin\JobController::class, 'index'])->name('jobs.index');
     Route::patch('/jobs/{job}/toggle-hidden', [\App\Http\Controllers\Admin\JobController::class, 'toggleHidden'])->name('jobs.toggle_hidden');
     Route::patch('/jobs/{job}/memo', [\App\Http\Controllers\Admin\JobController::class, 'updateMemo'])->name('jobs.memo');
-    Route::post('/jobs/{job}/duplicate', [\App\Http\Controllers\Admin\JobController::class, 'duplicate'])->name('jobs.duplicate');
 
     // 応募一覧
     Route::get('/applications', [\App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');

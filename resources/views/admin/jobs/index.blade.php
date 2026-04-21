@@ -194,17 +194,7 @@
                                    class="btn btn-xs btn-outline-primary" target="_blank">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                {{-- 複製 --}}
-                                <form method="POST"
-                                      action="{{ route('admin.jobs.duplicate', $job) }}">
-                                    @csrf
-                                    <button type="submit" class="btn btn-xs btn-outline-secondary"
-                                            onclick="return confirm('この求人を複製しますか？')"
-                                            title="複製">
-                                        <i class="bi bi-copy"></i>
-                                    </button>
-                                </form>
-                                {{-- メモ --}}
+{{-- メモ --}}
                                 <button type="button" class="btn btn-xs btn-outline-warning"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#memo-{{ $job->id }}"

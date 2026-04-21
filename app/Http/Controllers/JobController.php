@@ -280,7 +280,7 @@ class JobController extends Controller
     {
         $job = Job::where('token', $token)->firstOrFail();
         $job->update([
-            'status'    => Job::STATUS_CLOSED,
+            'status'    => Job::STATUS_PAUSED,
             'paused_at' => now(),
         ]);
 
