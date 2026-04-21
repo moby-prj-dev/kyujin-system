@@ -4,15 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Job;
-use App\Models\JobArea;
-use App\Models\JobAppeal;
-use App\Models\JobCondition;
-use App\Models\JobEmploymentType;
-use App\Models\JobJobType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class JobController extends Controller
 {
@@ -85,43 +79,6 @@ class JobController extends Controller
         ]);
 
         return back()->with('success', 'メモを保存しました。');
-    }
-
-    public function duplicate(Job $job)
-    {
-        $newJob = $job->replicate([
-            'token',
-            'status',
-            'email_verification_token',
-            'email_verified_at',
-            'expires_at',
-            'paused_at',
-            'continued_at',
-            'continue_notified_at',
-            'trial_warning_sent_at',
-            'expired_notified_at',
-            'is_admin_hidden',
-            'admin_memo',
-            'admin_memo_updated_at',
-            'seo_title',
-            'subtitle',
-            'lp_tags',
-            'meta_description',
-            'description_generated',
-        ]);
-
-        $newJob->token  = Str::random(32);
-        $newJob->status = Job::STATUS_DRAFT;
-        $newJob->title  = ($job->title ? $job->title . '（コピー）' : '（コピー）');
-        $newJob->save();
-
-        foreach ($job->jobAreas as $r)           { JobArea::create(['job_id' => $newJob->id, 'area_id' => $r->area_id]); }
-        foreach ($job->jobJobTypes as $r)        { JobJobType::create(['job_id' => $newJob->id, 'job_type_id' => $r->job_type_id]); }
-        foreach ($job->jobEmploymentTypes as $r) { JobEmploymentType::create(['job_id' => $newJob->id, 'employment_type_id' => $r->employment_type_id]); }
-        foreach ($job->jobConditions as $r)      { JobCondition::create(['job_id' => $newJob->id, 'condition_id' => $r->condition_id]); }
-        foreach ($job->jobAppeals as $r)         { JobAppeal::create(['job_id' => $newJob->id, 'appeal_id' => $r->appeal_id]); }
-
-        return back()->with('success', "求人を複製しました（ID: {$newJob->id}）。管理画面の求人一覧から確認できます。");
     }
 
     private function getCompanies(): \Illuminate\Support\Collection
