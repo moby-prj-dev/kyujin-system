@@ -12,13 +12,15 @@ class Job extends Model
 {
     use SoftDeletes;
     protected $table = 'job_listings';
-    protected $fillable = ['company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','photo_path','status','token','contact_email','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at', 'expired_notified_at'];
+    protected $fillable = ['company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','photo_path','status','token','contact_email','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at'];
 
     protected $casts = [
-        'expires_at'         => 'datetime',
-        'paused_at'          => 'datetime',
-        'email_verified_at'  => 'datetime',
-        'lp_tags'            => 'array',
+        'expires_at'            => 'datetime',
+        'paused_at'             => 'datetime',
+        'email_verified_at'     => 'datetime',
+        'continued_at'          => 'datetime',
+        'continue_notified_at'  => 'datetime',
+        'lp_tags'               => 'array',
     ];
 
     const STATUS_PENDING = 'pending';
