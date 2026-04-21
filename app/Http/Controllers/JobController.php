@@ -186,19 +186,25 @@ class JobController extends Controller
         $hasUnpaid   = $billingSummaries->whereIn('status', [\App\Models\BillingSummary::STATUS_UNPAID])->isNotEmpty();
         $hasOverdue  = $billingSummaries->whereIn('status', [\App\Models\BillingSummary::STATUS_OVERDUE])->isNotEmpty();
 
-        // 会社全体の有効応募数・課金対象数
+        // 会社全体の有効応募数・課金対象数（課金判定・無料枠計算に使用）
         $companyValidCount    = \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $job->contact_email))
             ->where('is_valid', true)->count();
         $companyBillableCount = \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $job->contact_email))
             ->where('is_billable', true)->count();
         $freeQuotaRemaining   = max(0, 3 - $companyValidCount);
 
+        // この求人単体の応募内訳（表示用）
+        $jobValidCount    = $job->applications()->where('is_valid', true)->count();
+        $jobInvalidCount  = $job->applications()->where('is_valid', false)->count();
+        $jobBillableCount = $job->applications()->where('is_billable', true)->count();
+
         return view('jobs.manage', compact(
             'job', 'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
             'selectedAreas', 'selectedJobTypes', 'selectedEmploymentTypes',
             'selectedConditions', 'selectedAppeals', 'applications',
             'billingSummaries', 'trialEnded', 'hasUnpaid', 'hasOverdue',
-            'companyValidCount', 'companyBillableCount', 'freeQuotaRemaining'
+            'companyValidCount', 'companyBillableCount', 'freeQuotaRemaining',
+            'jobValidCount', 'jobInvalidCount', 'jobBillableCount'
         ));
     }
 

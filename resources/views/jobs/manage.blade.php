@@ -124,20 +124,43 @@
             @endif
         </div>
         <div>
-            <span class="text-muted small">応募件数</span><br>
-            <span class="fw-bold fs-5">{{ $applications->total() }} 件</span>
-            <br>
-            @if($trialEnded)
-                <span class="small {{ $companyBillableCount > 0 ? 'text-danger fw-bold' : 'text-muted' }}">
-                    課金対象：{{ $companyBillableCount }}件
+            <span class="text-muted small d-flex align-items-center gap-1">
+                応募件数
+                <span tabindex="0" data-bs-toggle="tooltip"
+                      title="有効応募数をもとに無料掲載・課金判定を行っています"
+                      style="cursor:default; color:#adb5bd; font-size:0.8rem;">
+                    <i class="bi bi-question-circle"></i>
                 </span>
-            @else
-                @if($freeQuotaRemaining <= 1)
-                    <span class="small text-warning fw-bold">無料枠残り：{{ $freeQuotaRemaining }}件</span>
-                @else
-                    <span class="small text-success">無料枠内（残り{{ $freeQuotaRemaining }}件）</span>
-                @endif
-            @endif
+            </span>
+            <div class="mt-1" style="line-height:1.9;">
+                <div>
+                    <span class="fw-bold fs-5">{{ $applications->total() }}</span>
+                    <span class="text-muted" style="font-size:0.82rem;">件（総数）</span>
+                </div>
+                <div style="font-size:0.85rem;">
+                    <span class="fw-bold text-success">
+                        <i class="bi bi-check-circle-fill me-1" style="font-size:0.75rem;"></i>有効：{{ $jobValidCount }}件
+                    </span>
+                    @if($jobInvalidCount > 0)
+                    　<span class="text-muted">
+                        無効：{{ $jobInvalidCount }}件
+                    </span>
+                    @endif
+                </div>
+                <div style="font-size:0.82rem;">
+                    @if($trialEnded)
+                        <span class="{{ $jobBillableCount > 0 ? 'text-danger fw-bold' : 'text-muted' }}">
+                            課金対象：{{ $jobBillableCount }}件
+                        </span>
+                    @else
+                        @if($freeQuotaRemaining <= 1)
+                            <span class="text-warning fw-bold">無料枠残り：{{ $freeQuotaRemaining }}件</span>
+                        @else
+                            <span class="text-success">無料枠内（残り{{ $freeQuotaRemaining }}件）</span>
+                        @endif
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -150,7 +173,13 @@
             style="background:#f8fafc; border:none; border-radius:0;">
         <span class="fw-bold" style="font-size:1rem;">
             <i class="bi bi-people me-2"></i>応募者一覧
-            <span class="text-muted fw-normal ms-1" style="font-size:0.88rem;">（{{ $applications->total() }}件）</span>
+            <span class="text-muted fw-normal ms-1" style="font-size:0.88rem;">
+                （有効 {{ $jobValidCount }}件
+                @if($jobInvalidCount > 0)
+                    / 無効 {{ $jobInvalidCount }}件
+                @endif
+                / 計 {{ $applications->total() }}件）
+            </span>
         </span>
         <i class="bi bi-chevron-down" style="transition:transform .2s;" id="applicantChevron"></i>
     </button>
@@ -660,6 +689,8 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 </div>
 
 <script>
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+
 document.getElementById('continueBtn')?.addEventListener('click', function() {
     if (confirm('掲載を継続しますか？\n\n無料掲載期間終了後は、有効応募1件につき3,000円（税別）が発生します。\n応募がない場合は料金は発生しません。\n\nOKを押すと掲載継続として反映されます。')) {
         this.disabled = true;

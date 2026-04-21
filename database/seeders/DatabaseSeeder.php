@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             MasterEmploymentTypeSeeder::class,
             MasterConditionSeeder::class,
             MasterAppealSeeder::class,
+            CareEntryDemoSeeder::class,
         ]);
     }
 }
