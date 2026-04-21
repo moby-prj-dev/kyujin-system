@@ -87,18 +87,18 @@
                         <th style="width:50px;">ID</th>
                         <th>会社名</th>
                         <th>求人タイトル</th>
-                        <th class="text-center">公開ステータス</th>
-                        <th class="text-center">トライアル</th>
-                        <th class="text-center">継続</th>
-                        <th class="text-center">応募数</th>
-                        <th class="text-center">掲載終了予定</th>
-                        <th class="text-center">操作</th>
+                        <th class="text-center" style="width:90px;">公開状態</th>
+                        <th class="text-center" style="width:90px;">非公開</th>
+                        <th class="text-center" style="width:80px;">トライアル</th>
+                        <th class="text-center" style="width:70px;">継続</th>
+                        <th class="text-center" style="width:60px;">応募数</th>
+                        <th class="text-center" style="width:90px;">掲載終了予定</th>
+                        <th class="text-center" style="width:200px;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($jobs as $job)
                     @php
-                        // 公開ステータスバッジ
                         $statusMap = [
                             'active'  => ['公開中',   'bg-success'],
                             'pending' => ['審査待ち', 'bg-warning text-dark'],
@@ -109,7 +109,6 @@
                         ];
                         [$statusLabel, $statusClass] = $statusMap[$job->status] ?? ['不明', 'bg-secondary'];
 
-                        // トライアル状態バッジ
                         $validSub  = (int) ($job->valid_count_sub ?? 0);
                         $expiresAt = $job->expires_at;
                         if (!$expiresAt) {
@@ -122,18 +121,30 @@
                             $trialLabel = '無料掲載中'; $trialClass = 'bg-success';
                         }
                     @endphp
-                    <tr>
+                    <tr class="{{ $job->is_admin_hidden ? 'table-secondary opacity-75' : '' }}">
                         <td class="text-muted" style="font-size:0.8rem;">{{ $job->id }}</td>
-                        <td class="fw-bold" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                        <td class="fw-bold" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                             title="{{ $job->company_name }}">
                             {{ $job->company_name }}
                         </td>
-                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                             title="{{ $job->title }}">
                             {{ $job->title ?: '（タイトル未設定）' }}
+                            @if($job->admin_memo)
+                            <i class="bi bi-sticky-fill text-warning ms-1" title="{{ $job->admin_memo }}"
+                               style="cursor:pointer;" data-bs-toggle="collapse"
+                               data-bs-target="#memo-{{ $job->id }}"></i>
+                            @endif
                         </td>
                         <td class="text-center">
                             <span class="badge {{ $statusClass }}">{{ $statusLabel }}</span>
+                        </td>
+                        <td class="text-center">
+                            @if($job->is_admin_hidden)
+                                <span class="badge bg-danger">非公開</span>
+                            @else
+                                <span class="text-muted small">—</span>
+                            @endif
                         </td>
                         <td class="text-center">
                             <span class="badge {{ $trialClass }}" style="font-size:0.75rem;">{{ $trialLabel }}</span>
@@ -145,8 +156,11 @@
                                 <span class="text-muted small">—</span>
                             @endif
                         </td>
-                        <td class="text-center fw-bold {{ (int)$job->applications_count > 0 ? 'text-primary' : 'text-muted' }}">
-                            {{ $job->applications_count }}
+                        <td class="text-center">
+                            <a href="{{ route('admin.applications.index', ['job_id' => $job->id]) }}"
+                               class="fw-bold text-decoration-none {{ (int)$job->applications_count > 0 ? 'text-primary' : 'text-muted' }}">
+                                {{ $job->applications_count }}
+                            </a>
                         </td>
                         <td class="text-center text-nowrap" style="font-size:0.82rem;">
                             @if($expiresAt)
@@ -157,16 +171,73 @@
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
-                        <td class="text-center text-nowrap">
-                            <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
-                               class="btn btn-xs btn-outline-primary" target="_blank">
-                                <i class="bi bi-pencil me-1"></i>編集
-                            </a>
+                        <td class="text-center">
+                            <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                {{-- 公開/非公開切替 --}}
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.toggle_hidden', $job) }}">
+                                    @csrf @method('PATCH')
+                                    @if($job->is_admin_hidden)
+                                        <button type="submit" class="btn btn-xs btn-success"
+                                                onclick="return confirm('この求人を再公開しますか？')">
+                                            <i class="bi bi-eye me-1"></i>再公開
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-xs btn-warning text-dark"
+                                                onclick="return confirm('この求人を非公開にしますか？')">
+                                            <i class="bi bi-eye-slash me-1"></i>非公開
+                                        </button>
+                                    @endif
+                                </form>
+                                {{-- 編集 --}}
+                                <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
+                                   class="btn btn-xs btn-outline-primary" target="_blank">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                {{-- 複製 --}}
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.duplicate', $job) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-xs btn-outline-secondary"
+                                            onclick="return confirm('この求人を複製しますか？')"
+                                            title="複製">
+                                        <i class="bi bi-copy"></i>
+                                    </button>
+                                </form>
+                                {{-- メモ --}}
+                                <button type="button" class="btn btn-xs btn-outline-warning"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#memo-{{ $job->id }}"
+                                        title="メモ">
+                                    <i class="bi bi-sticky{{ $job->admin_memo ? '-fill' : '' }}"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{-- メモ展開行 --}}
+                    <tr class="collapse {{ $job->admin_memo ? 'show' : '' }}" id="memo-{{ $job->id }}">
+                        <td colspan="10" class="py-2 px-4 bg-light">
+                            <form method="POST"
+                                  action="{{ route('admin.jobs.memo', $job) }}"
+                                  class="d-flex align-items-start gap-2">
+                                @csrf @method('PATCH')
+                                <textarea name="admin_memo" class="form-control form-control-sm"
+                                          rows="2" maxlength="2000"
+                                          placeholder="管理者メモ（企業・掲載状況などの内部メモ）">{{ $job->admin_memo }}</textarea>
+                                <div class="d-flex flex-column gap-1">
+                                    <button type="submit" class="btn btn-sm btn-primary text-nowrap">保存</button>
+                                    @if($job->admin_memo_updated_at)
+                                    <span class="text-muted" style="font-size:0.72rem;white-space:nowrap;">
+                                        {{ \Carbon\Carbon::parse($job->admin_memo_updated_at)->format('m/d H:i') }}
+                                    </span>
+                                    @endif
+                                </div>
+                            </form>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-4">
+                        <td colspan="10" class="text-center text-muted py-4">
                             <i class="bi bi-inbox me-1"></i>条件に一致する求人はありません
                         </td>
                     </tr>

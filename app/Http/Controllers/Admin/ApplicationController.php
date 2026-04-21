@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\Job;
 use App\Services\ApplicationValidationService;
 use Illuminate\Http\Request;
 
@@ -11,12 +12,18 @@ class ApplicationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Application::with(['job:id,company_name,contact_email,token'])
+        $query = Application::with(['job:id,company_name,contact_email,token,title'])
             ->orderByDesc('applied_at');
 
+        if ($request->filled('job_id')) {
+            $query->where('job_id', $request->job_id);
+        }
+
         if ($request->filled('email')) {
-            $query->where('contact_email', 'like', '%' . $request->email . '%')
-                  ->orWhereHas('job', fn($q) => $q->where('contact_email', 'like', '%' . $request->email . '%'));
+            $query->where(fn($q) =>
+                $q->where('email', 'like', '%' . $request->email . '%')
+                  ->orWhereHas('job', fn($q2) => $q2->where('contact_email', 'like', '%' . $request->email . '%'))
+            );
         }
 
         if ($request->filled('validity')) {
@@ -29,7 +36,11 @@ class ApplicationController extends Controller
 
         $applications = $query->paginate(50)->withQueryString();
 
-        return view('admin.applications.index', compact('applications'));
+        $filterJob = $request->filled('job_id')
+            ? Job::find($request->job_id)
+            : null;
+
+        return view('admin.applications.index', compact('applications', 'filterJob'));
     }
 
     public function update(Request $request, Application $application, ApplicationValidationService $service)
@@ -46,7 +57,6 @@ class ApplicationController extends Controller
             $application->is_valid       = true;
             $application->invalid_reason = null;
             $application->counted_at     = $application->counted_at ?? now();
-            // 手動有効化は課金対象にしない（is_billable は受付時点で確定）
             $application->is_billable    = false;
         } elseif ($action === 'invalidate') {
             $application->is_valid       = false;

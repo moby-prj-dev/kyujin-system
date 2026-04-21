@@ -26,6 +26,10 @@ class LpController extends Controller
             abort(404);
         }
 
+        if ($job->is_admin_hidden) {
+            abort(404);
+        }
+
         try {
             LpView::create([
                 'job_id'     => $job->id,

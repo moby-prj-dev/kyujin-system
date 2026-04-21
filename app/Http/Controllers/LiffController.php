@@ -17,6 +17,9 @@ class LiffController extends Controller
         if ($job->expires_at && $job->expires_at->isPast()) {
             abort(404);
         }
+        if ($job->is_admin_hidden) {
+            abort(404);
+        }
         return $job;
     }
 
