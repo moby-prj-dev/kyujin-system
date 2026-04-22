@@ -9,49 +9,82 @@ class MasterJobTypeSeeder extends Seeder
 {
     public function run(): void
     {
+        // 提供リストと重複・類似する旧エントリを削除
+        DB::table('master_job_types')->whereIn('slug', [
+            'care_day_service',
+            'care_special_nursing',
+            'care_group_home',
+            'care_paid_home',
+            'care_home_visit',
+            'care_home_based',
+            'care_night_only',
+            'care_initial_training',
+            'helper_visit',
+            'helper_daily_living',
+            'helper_physical_care',
+            'helper_home',
+            'nursing_assistant',
+            'nurse_facility',
+            'assistant_nurse_facility',
+            'rehab_trainer',
+            'rehab_assistant',
+            'childcare_assistant',
+            'after_school_care',
+            'afterschool_day_service',
+            'disability_support',
+            'care_manager_home',
+            'care_manager_facility',
+        ])->delete();
+
         $types = [
-            // 介護系
-            ['category' => '介護系', 'name' => '介護スタッフ（デイサービス）',        'slug' => 'care_day_service'],
-            ['category' => '介護系', 'name' => '介護スタッフ（特別養護老人ホーム）',  'slug' => 'care_special_nursing'],
-            ['category' => '介護系', 'name' => '介護スタッフ（グループホーム）',      'slug' => 'care_group_home'],
-            ['category' => '介護系', 'name' => '介護スタッフ（有料老人ホーム）',      'slug' => 'care_paid_home'],
-            ['category' => '介護系', 'name' => '介護スタッフ（訪問介護）',            'slug' => 'care_home_visit'],
-            ['category' => '介護系', 'name' => '介護スタッフ（居宅介護）',            'slug' => 'care_home_based'],
-            ['category' => '介護系', 'name' => '夜勤専従介護スタッフ',               'slug' => 'care_night_only'],
-            ['category' => '介護系', 'name' => '介護職員初任者研修保有者',        'slug' => 'care_initial_training'],
-            ['category' => '介護系', 'name' => '介護福祉士',                     'slug' => 'care_welfare_worker'],
-            // ヘルパー系
-            ['category' => 'ヘルパー系', 'name' => '訪問ヘルパー',     'slug' => 'helper_visit'],
-            ['category' => 'ヘルパー系', 'name' => '生活援助ヘルパー', 'slug' => 'helper_daily_living'],
-            ['category' => 'ヘルパー系', 'name' => '身体介護ヘルパー', 'slug' => 'helper_physical_care'],
-            ['category' => 'ヘルパー系', 'name' => 'ホームヘルパー',   'slug' => 'helper_home'],
-            // 看護・医療系
-            ['category' => '看護・医療系', 'name' => '看護助手',         'slug' => 'nursing_assistant'],
-            ['category' => '看護・医療系', 'name' => '看護師（施設）',   'slug' => 'nurse_facility'],
-            ['category' => '看護・医療系', 'name' => '准看護師（施設）', 'slug' => 'assistant_nurse_facility'],
-            // リハビリ系
-            ['category' => 'リハビリ系', 'name' => '機能訓練指導員',     'slug' => 'rehab_trainer'],
-            ['category' => 'リハビリ系', 'name' => 'リハビリ補助スタッフ', 'slug' => 'rehab_assistant'],
-            // 保育・福祉系
-            ['category' => '保育・福祉系', 'name' => '保育補助スタッフ',              'slug' => 'childcare_assistant'],
-            ['category' => '保育・福祉系', 'name' => '学童保育スタッフ',              'slug' => 'after_school_care'],
-            ['category' => '保育・福祉系', 'name' => '放課後等デイサービススタッフ',  'slug' => 'afterschool_day_service'],
-            ['category' => '保育・福祉系', 'name' => '障害者支援スタッフ',            'slug' => 'disability_support'],
-            ['category' => '保育・福祉系', 'name' => '生活支援員',                   'slug' => 'life_support_worker'],
-            // 相談・事務系
-            ['category' => '相談・事務系', 'name' => 'ケアマネージャー（居宅）', 'slug' => 'care_manager_home'],
-            ['category' => '相談・事務系', 'name' => 'ケアマネージャー（施設）', 'slug' => 'care_manager_facility'],
-            ['category' => '相談・事務系', 'name' => '生活相談員',               'slug' => 'life_consultant'],
-            ['category' => '相談・事務系', 'name' => '介護事務',                 'slug' => 'care_admin'],
-            ['category' => '相談・事務系', 'name' => '医療事務',                 'slug' => 'medical_admin'],
+            // 介護・高齢者福祉
+            ['category' => '介護・高齢者福祉', 'name' => '介護職員（施設）',                  'slug' => 'care_staff_facility'],
+            ['category' => '介護・高齢者福祉', 'name' => '介護福祉士',                        'slug' => 'care_welfare_worker'],
+            ['category' => '介護・高齢者福祉', 'name' => 'ホームヘルパー（訪問介護員）',      'slug' => 'home_helper'],
+            ['category' => '介護・高齢者福祉', 'name' => 'ケアマネジャー（介護支援専門員）',  'slug' => 'care_manager'],
+            ['category' => '介護・高齢者福祉', 'name' => 'サービス提供責任者',                'slug' => 'service_provision_manager'],
+            ['category' => '介護・高齢者福祉', 'name' => '生活相談員',                        'slug' => 'life_consultant'],
+            // 障害者福祉
+            ['category' => '障害者福祉', 'name' => '生活支援員',                   'slug' => 'life_support_worker'],
+            ['category' => '障害者福祉', 'name' => '就労支援員',                   'slug' => 'employment_support_worker'],
+            ['category' => '障害者福祉', 'name' => 'サービス管理責任者（サビ管）', 'slug' => 'service_manager'],
+            ['category' => '障害者福祉', 'name' => '行動援護従業者',               'slug' => 'behavioral_guidance_worker'],
+            ['category' => '障害者福祉', 'name' => '同行援護従業者',               'slug' => 'accompanying_guidance_worker'],
+            ['category' => '障害者福祉', 'name' => '強度行動障害支援者',           'slug' => 'intensive_behavioral_support'],
+            // 児童福祉
+            ['category' => '児童福祉', 'name' => '保育士',                          'slug' => 'childcare_worker'],
+            ['category' => '児童福祉', 'name' => '児童指導員',                      'slug' => 'child_guidance_worker'],
+            ['category' => '児童福祉', 'name' => '児童発達支援管理責任者（児発管）', 'slug' => 'child_dev_manager'],
+            ['category' => '児童福祉', 'name' => '放課後児童支援員',                'slug' => 'after_school_child_worker'],
+            ['category' => '児童福祉', 'name' => '家庭支援専門相談員',              'slug' => 'family_support_consultant'],
+            // 相談支援・ソーシャルワーク
+            ['category' => '相談支援・ソーシャルワーク', 'name' => '社会福祉士',                   'slug' => 'social_welfare_worker'],
+            ['category' => '相談支援・ソーシャルワーク', 'name' => '精神保健福祉士（PSW）',         'slug' => 'psychiatric_social_worker'],
+            ['category' => '相談支援・ソーシャルワーク', 'name' => '相談支援専門員',               'slug' => 'consultation_support_specialist'],
+            ['category' => '相談支援・ソーシャルワーク', 'name' => '医療ソーシャルワーカー（MSW）', 'slug' => 'medical_social_worker'],
+            ['category' => '相談支援・ソーシャルワーク', 'name' => '生活困窮者支援員',             'slug' => 'poverty_support_worker'],
+            // 医療・リハビリ職
+            ['category' => '医療・リハビリ職', 'name' => '看護師（福祉施設勤務）', 'slug' => 'nurse_welfare_facility'],
+            ['category' => '医療・リハビリ職', 'name' => '理学療法士（PT）',       'slug' => 'physical_therapist'],
+            ['category' => '医療・リハビリ職', 'name' => '作業療法士（OT）',       'slug' => 'occupational_therapist'],
+            ['category' => '医療・リハビリ職', 'name' => '言語聴覚士（ST）',       'slug' => 'speech_therapist'],
+            ['category' => '医療・リハビリ職', 'name' => '管理栄養士（施設）',     'slug' => 'registered_dietitian'],
+            // 事務・管理
+            ['category' => '事務・管理', 'name' => '介護事務', 'slug' => 'care_admin'],
+            ['category' => '事務・管理', 'name' => '医療事務', 'slug' => 'medical_admin'],
         ];
 
-        foreach ($types as $i => $type) {
-            DB::table('master_job_types')->insertOrIgnore(array_merge($type, [
-                'sort_order' => $i + 1,
-                'is_active'  => true,
-                'created_at' => now(),
-            ]));
-        }
+        $rows = array_map(fn($type, $i) => [
+            ...$type,
+            'sort_order' => $i + 1,
+            'is_active'  => true,
+            'created_at' => now(),
+        ], $types, array_keys($types));
+
+        DB::table('master_job_types')->upsert(
+            $rows,
+            ['slug'],
+            ['category', 'name', 'sort_order']
+        );
     }
 }

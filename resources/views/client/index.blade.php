@@ -20,25 +20,25 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>介護・福祉の求人掲載｜Care Entry（ケアエントリー）</title>
-    <meta name="description" content="Care Entryは介護・福祉専門の求人サービスです。応募につながる導線設計を重視。掲載費0円スタート、成果型の課金体系で始めやすい求人掲載を提供します。">
+    <title>沖縄の介護・福祉 求人掲載｜Care Entry（ケアエントリー）</title>
+    <meta name="description" content="沖縄の介護・福祉事業者向け求人掲載サービス。応募につながる導線設計を重視。掲載費0円スタート、成果型課金で始めやすい。">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --brand-primary:      #1a73e8;
-            --brand-primary-dark: #0d47a1;
-            --brand-blue-light:   #e8f0fe;
-            --brand-blue-mid:     #c5d8f8;
-            --text:               #2d2d2d;
-            --text-muted:         #6c757d;
-            --border:             #dee2e6;
+            --color-primary:      #1a73e8;
+            --color-primary-dark: #0d47a1;
+            --color-blue-light:   #e8f0fe;
+            --color-blue-mid:     #c5d8f8;
+            --color-text:         #2d2d2d;
+            --color-muted:        #6c757d;
+            --color-border:       #dee2e6;
         }
 
         * { box-sizing: border-box; }
         body {
             font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
-            color: var(--text);
+            color: var(--color-text);
             margin: 0;
             background: #fff;
         }
@@ -46,92 +46,94 @@
         /* =====================
            ナビ
         ===================== */
-        .client-nav {
+        .nav {
             background: #fff;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--color-border);
             padding: 12px 0;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 1px 4px rgba(0,0,0,.06);
         }
-        .client-nav .nav-logo img { height: 44px; }
-        .client-nav .nav-link-seeker {
+        .nav__logo img { height: 44px; }
+        .nav__link-seeker {
             font-size: 0.82rem;
-            color: var(--text-muted);
+            color: var(--color-muted);
             text-decoration: none;
-            border: 1px solid var(--border);
+            border: 1px solid var(--color-border);
             border-radius: 20px;
             padding: 6px 14px;
             white-space: nowrap;
             transition: .15s;
         }
-        .client-nav .nav-link-seeker:hover {
+        .nav__link-seeker:hover {
             background: #f8f9fa;
-            color: var(--text);
+            color: var(--color-text);
         }
 
         /* =====================
            ファーストビュー
         ===================== */
-        .client-hero {
+        .hero {
             background: linear-gradient(140deg, #e8f0fe 0%, #f3f5ff 60%, #fafbff 100%);
             padding: 64px 0 52px;
         }
-        .client-hero-badge {
+        .hero__badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             background: #fff;
-            color: var(--brand-primary);
+            color: var(--color-primary);
             font-size: 0.82rem;
             font-weight: 700;
-            border: 1.5px solid var(--brand-blue-mid);
+            border: 1.5px solid var(--color-blue-mid);
             border-radius: 20px;
             padding: 5px 14px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
-        .client-hero-title {
+        .hero__title {
             font-size: clamp(1.5rem, 4vw, 2.1rem);
             font-weight: 900;
             line-height: 1.5;
             color: #0d1a2e;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
-        .client-hero-sub {
+        .hero__sub {
             font-size: 0.97rem;
             color: #3a4a5a;
             line-height: 1.85;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
-        .client-feature-list {
+        .hero__features {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 32px;
+            gap: 8px;
+            margin-bottom: 28px;
         }
-        .client-feature-chip {
+        .hero__feature-item {
             display: inline-flex;
             align-items: center;
             gap: 5px;
             background: #fff;
-            border: 1.5px solid var(--brand-blue-mid);
+            border: 1.5px solid var(--color-blue-mid);
             border-radius: 20px;
-            font-size: 0.83rem;
+            font-size: 0.82rem;
             font-weight: 700;
-            color: var(--brand-primary);
-            padding: 5px 14px;
+            color: var(--color-primary);
+            padding: 5px 13px;
         }
-        .client-cta-group {
+        .hero__cta-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
         }
-        .btn-client-primary {
+        .hero__cta-primary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--brand-primary);
+            background: var(--color-primary);
             color: #fff;
             border: none;
             border-radius: 30px;
@@ -141,154 +143,150 @@
             text-decoration: none;
             transition: .2s;
         }
-        .btn-client-primary:hover {
-            background: var(--brand-primary-dark);
+        .hero__cta-primary:hover {
+            background: var(--color-primary-dark);
             color: #fff;
             transform: translateY(-1px);
         }
-        .btn-client-outline {
+        .hero__cta-secondary {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: #fff;
-            color: var(--brand-primary);
-            border: 2px solid var(--brand-primary);
-            border-radius: 30px;
-            font-size: 1rem;
+            gap: 6px;
+            color: var(--color-muted);
+            font-size: 0.9rem;
             font-weight: 700;
-            padding: 12px 28px;
             text-decoration: none;
-            transition: .2s;
+            padding: 4px 0;
+            border-bottom: 1.5px solid transparent;
+            transition: .15s;
         }
-        .btn-client-outline:hover {
-            background: var(--brand-blue-light);
-            color: var(--brand-primary);
+        .hero__cta-secondary:hover {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
         }
-        .client-hero-note {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 12px;
+        .hero__note {
+            font-size: 0.74rem;
+            color: var(--color-muted);
         }
 
-        /* ヒーロー ビジュアル側カード */
-        .client-hero-visual {
+        /* ヒーロー ビジュアルカード */
+        .hero__visual {
             background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 4px 24px rgba(26,115,232,.1);
-            border: 1.5px solid var(--brand-blue-mid);
-            padding: 28px;
-            margin-top: 8px;
+            border-radius: 18px;
+            box-shadow: 0 4px 22px rgba(26,115,232,.1);
+            border: 1.5px solid var(--color-blue-mid);
+            padding: 24px;
         }
-        .client-visual-row {
+        .hero__visual-row {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
-            padding: 14px 0;
+            gap: 13px;
+            padding: 13px 0;
             border-bottom: 1px solid #f0f4fc;
         }
-        .client-visual-row:first-child { padding-top: 0; }
-        .client-visual-row:last-child  { border-bottom: none; padding-bottom: 0; }
-        .client-visual-icon {
-            width: 44px;
-            height: 44px;
+        .hero__visual-row:first-child { padding-top: 0; }
+        .hero__visual-row:last-child  { border-bottom: none; padding-bottom: 0; }
+        .hero__visual-icon {
+            width: 42px;
+            height: 42px;
             border-radius: 10px;
-            background: var(--brand-blue-light);
-            color: var(--brand-primary);
+            background: var(--color-blue-light);
+            color: var(--color-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             flex-shrink: 0;
         }
-        .client-visual-label {
-            font-size: 0.9rem;
+        .hero__visual-label {
+            font-size: 0.88rem;
             font-weight: 700;
             color: #1a1a1a;
         }
-        .client-visual-desc {
-            font-size: 0.78rem;
-            color: var(--text-muted);
+        .hero__visual-sub {
+            font-size: 0.77rem;
+            color: var(--color-muted);
             margin-top: 3px;
         }
 
         /* =====================
            補足ストリップ
         ===================== */
-        .client-supplement-strip {
-            background: var(--brand-blue-light);
-            border-top: 1px solid var(--brand-blue-mid);
-            border-bottom: 1px solid var(--brand-blue-mid);
-            padding: 14px 0;
+        .strip {
+            background: var(--color-blue-light);
+            border-top: 1px solid var(--color-blue-mid);
+            border-bottom: 1px solid var(--color-blue-mid);
+            padding: 13px 0;
         }
-        .supplement-items {
+        .strip__items {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 6px 24px;
+            gap: 5px 22px;
         }
-        .supplement-item {
-            font-size: 0.84rem;
+        .strip__item {
+            font-size: 0.83rem;
             font-weight: 700;
-            color: var(--brand-primary);
+            color: var(--color-primary);
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
         /* =====================
-           サービス特長
+           特長セクション
         ===================== */
-        .client-merits-section {
+        .merits {
             background: #fff;
             padding: 64px 0;
         }
-        .section-eyebrow {
-            font-size: 0.8rem;
+        .merits__eyebrow {
+            font-size: 0.78rem;
             font-weight: 700;
-            color: var(--brand-primary);
+            color: var(--color-primary);
             letter-spacing: .08em;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
-        .section-heading {
+        .merits__heading {
             font-size: clamp(1.2rem, 3vw, 1.7rem);
             font-weight: 900;
             line-height: 1.4;
             color: #0d1a2e;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
         .merit-card {
             background: #fff;
-            border: 1.5px solid var(--brand-blue-mid);
+            border: 1.5px solid var(--color-blue-mid);
             border-radius: 14px;
-            padding: 28px 24px;
+            padding: 26px 22px;
             height: 100%;
             transition: .2s;
         }
         .merit-card:hover {
-            box-shadow: 0 4px 20px rgba(26,115,232,.1);
+            box-shadow: 0 4px 18px rgba(26,115,232,.1);
             transform: translateY(-2px);
         }
-        .merit-card-icon {
-            width: 52px;
-            height: 52px;
+        .merit-card__icon {
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
-            background: var(--brand-blue-light);
-            color: var(--brand-primary);
+            background: var(--color-blue-light);
+            color: var(--color-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            margin-bottom: 14px;
+            font-size: 1.3rem;
+            margin-bottom: 13px;
         }
-        .merit-card h5 {
-            font-size: 0.97rem;
+        .merit-card__title {
+            font-size: 0.95rem;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 7px;
             color: #0d1a2e;
         }
-        .merit-card p {
-            font-size: 0.87rem;
+        .merit-card__body {
+            font-size: 0.86rem;
             color: #555;
             line-height: 1.75;
             margin: 0;
@@ -297,132 +295,150 @@
         /* =====================
            掲載の流れ
         ===================== */
-        .client-steps-section {
+        .steps {
             background: #f8faff;
             padding: 64px 0;
-            border-top: 1px solid var(--brand-blue-mid);
+            border-top: 1px solid var(--color-blue-mid);
         }
-        .step-item {
+        .steps__eyebrow {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .steps__heading {
+            font-size: clamp(1.2rem, 3vw, 1.7rem);
+            font-weight: 900;
+            line-height: 1.4;
+            color: #0d1a2e;
+            margin-bottom: 32px;
+        }
+        .step {
             display: flex;
-            gap: 16px;
-            padding: 20px 0;
+            gap: 15px;
+            padding: 18px 0;
             border-bottom: 1px solid #e8eeff;
         }
-        .step-item:last-child { border-bottom: none; }
-        .step-num {
-            width: 44px;
-            height: 44px;
+        .step:last-child { border-bottom: none; }
+        .step__num {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: var(--brand-primary);
+            background: var(--color-primary);
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 900;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
         }
-        .step-content h5 {
-            font-size: 0.97rem;
+        .step__title {
+            font-size: 0.95rem;
             font-weight: 800;
             margin-bottom: 4px;
             color: #0d1a2e;
         }
-        .step-content p {
-            font-size: 0.87rem;
+        .step__body {
+            font-size: 0.86rem;
             color: #555;
             line-height: 1.7;
             margin: 0;
         }
 
         /* =====================
-           最終 CTA
+           最終CTA帯
         ===================== */
-        .client-final-cta {
-            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+        .cta-band {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
             color: #fff;
             padding: 64px 0;
             text-align: center;
         }
-        .client-final-cta h2 {
-            font-size: clamp(1.2rem, 3vw, 1.65rem);
+        .cta-band__title {
+            font-size: clamp(1.15rem, 3vw, 1.6rem);
             font-weight: 900;
             margin-bottom: 10px;
         }
-        .client-final-cta .cta-sub {
+        .cta-band__body {
             opacity: .88;
-            font-size: 0.95rem;
-            margin-bottom: 32px;
+            font-size: 0.94rem;
+            margin-bottom: 30px;
         }
-        .btn-cta-white {
+        .cta-band__actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+        }
+        .cta-band__btn-primary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             background: #fff;
-            color: var(--brand-primary);
+            color: var(--color-primary);
             border-radius: 30px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 800;
-            padding: 16px 40px;
+            padding: 15px 38px;
             text-decoration: none;
             transition: .2s;
         }
-        .btn-cta-white:hover {
-            background: var(--brand-blue-light);
-            color: var(--brand-primary);
+        .cta-band__btn-primary:hover {
+            background: var(--color-blue-light);
+            color: var(--color-primary);
             transform: translateY(-2px);
         }
-        .btn-cta-outline-white {
+        .cta-band__btn-secondary {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             background: transparent;
             color: #fff;
-            border: 2px solid rgba(255,255,255,.7);
+            border: 2px solid rgba(255,255,255,.65);
             border-radius: 30px;
-            font-size: 0.97rem;
+            font-size: 0.94rem;
             font-weight: 700;
-            padding: 14px 32px;
+            padding: 13px 28px;
             text-decoration: none;
             transition: .2s;
         }
-        .btn-cta-outline-white:hover {
-            background: rgba(255,255,255,.12);
-            color: #fff;
-        }
+        .cta-band__btn-secondary:hover { background: rgba(255,255,255,.12); color: #fff; }
 
         /* =====================
            フッター
         ===================== */
-        .client-footer {
+        .footer {
             background: #1a1a2e;
             color: #aaa;
-            padding: 36px 0;
-            font-size: 0.84rem;
+            padding: 34px 0;
+            font-size: 0.83rem;
             text-align: center;
         }
-        .client-footer a { color: #aaa; text-decoration: none; }
-        .client-footer a:hover { color: #fff; }
-        .client-footer .footer-links {
+        .footer a { color: #aaa; text-decoration: none; }
+        .footer a:hover { color: #fff; }
+        .footer__links {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 6px 20px;
-            margin-bottom: 16px;
+            gap: 5px 18px;
+            margin-bottom: 14px;
         }
 
         /* =====================
            レスポンシブ
         ===================== */
         @media (max-width: 767px) {
-            .client-hero { padding: 44px 0 36px; }
-            .client-hero-visual { margin-top: 32px; }
-            .client-merits-section { padding: 48px 0; }
-            .client-steps-section { padding: 48px 0; }
-            .client-final-cta { padding: 48px 0; }
+            .hero { padding: 44px 0 36px; }
+            .hero__visual { margin-top: 30px; }
+            .merits { padding: 48px 0; }
+            .steps { padding: 48px 0; }
+            .cta-band { padding: 48px 0; }
         }
         @media (min-width: 992px) {
-            .client-hero { padding: 80px 0 64px; }
+            .hero { padding: 80px 0 64px; }
         }
     </style>
 </head>
@@ -433,86 +449,86 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @endif
 
 {{-- ナビ --}}
-<nav class="client-nav">
+<nav class="nav">
     <div class="container d-flex justify-content-between align-items-center">
-        <a href="{{ route('home') }}" class="nav-logo">
+        <a href="{{ route('home') }}" class="nav__logo">
             <img src="/images/logo.svg" alt="Care Entry ケアエントリー">
         </a>
-        <a href="{{ route('home') }}" class="nav-link-seeker">
+        <a href="{{ route('home') }}" class="nav__link-seeker">
             <i class="bi bi-search me-1"></i>お仕事を探している方はこちら
         </a>
     </div>
 </nav>
 
 {{-- ① ファーストビュー --}}
-<section class="client-hero">
+<section class="hero">
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
-                <div class="client-hero-badge">
-                    <i class="bi bi-building"></i>介護・福祉専門の求人掲載サービス
+                <div class="hero__badge">
+                    <i class="bi bi-building"></i>沖縄の介護・福祉専門 求人掲載サービス
                 </div>
-                <h1 class="client-hero-title">
-                    求人を出しても<br>
-                    応募が来ない——<br>
-                    そのお悩みに。
+                <h1 class="hero__title">
+                    沖縄で介護人材の<br>
+                    採用にお困りの<br>
+                    企業様へ
                 </h1>
-                <p class="client-hero-sub">
+                <p class="hero__sub">
                     ケアエントリーは、応募につながる導線設計を重視した<br>
                     介護・福祉専門の求人サービスです。<br>
                     掲載して終わりではなく、求職者が動きやすい仕組みを目指しています。
                 </p>
-                <div class="client-feature-list">
-                    <span class="client-feature-chip">
+                <div class="hero__features">
+                    <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>掲載費0円スタート
                     </span>
-                    <span class="client-feature-chip">
+                    <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>応募につながる導線設計
                     </span>
-                    <span class="client-feature-chip">
-                        <i class="bi bi-check-circle-fill"></i>介護・福祉に特化
+                    <span class="hero__feature-item">
+                        <i class="bi bi-check-circle-fill"></i>介護・福祉領域に特化
                     </span>
                 </div>
-                <div class="client-cta-group">
-                    <a href="{{ route('jobs.create') }}" class="btn-client-primary">
+                <div class="hero__cta-group">
+                    <a href="{{ route('jobs.create') }}" class="hero__cta-primary">
                         <i class="bi bi-plus-circle-fill"></i>無料で掲載を始める
                     </a>
-                    <a href="#steps" class="btn-client-outline">
-                        <i class="bi bi-list-ol"></i>掲載の流れを見る
+                    <a href="#steps" class="hero__cta-secondary">
+                        <i class="bi bi-list-ol"></i>掲載について相談する
                     </a>
                 </div>
-                <p class="client-hero-note">
+                <p class="hero__note">
                     <i class="bi bi-shield-check me-1"></i>初期費用・月額費用は一切かかりません
                 </p>
             </div>
             <div class="col-lg-6">
-                <div class="client-hero-visual">
-                    <div class="client-visual-row">
-                        <div class="client-visual-icon"><i class="bi bi-currency-yen"></i></div>
+                <div class="hero__visual">
+                    <div class="hero__visual-row">
+                        <div class="hero__visual-icon"><i class="bi bi-currency-yen"></i></div>
                         <div>
-                            <div class="client-visual-label">掲載費0円で始められる</div>
-                            <div class="client-visual-desc">初期費用・月額費用なし。応募が届いたときだけ課金。</div>
+                            <div class="hero__visual-label">掲載費0円で始められる</div>
+                            <div class="hero__visual-sub">初期費用・月額費用なし。応募が届いたときだけ課金。</div>
                         </div>
                     </div>
-                    <div class="client-visual-row">
-                        <div class="client-visual-icon"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
+                    <div class="hero__visual-row">
+                        <div class="hero__visual-icon"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
                         <div>
-                            <div class="client-visual-label">応募につながる導線設計</div>
-                            <div class="client-visual-desc">LINE応募対応で求職者のハードルを下げる仕組み。</div>
+                            <div class="hero__visual-label">応募につながる導線設計</div>
+                            <div class="hero__visual-sub">LINE応募対応で求職者のハードルを下げる仕組み。</div>
                         </div>
                     </div>
-                    <div class="client-visual-row">
-                        <div class="client-visual-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <div class="hero__visual-row">
+                        <div class="hero__visual-icon"><i class="bi bi-lightning-charge-fill"></i></div>
                         <div>
-                            <div class="client-visual-label">最短当日から掲載開始</div>
-                            <div class="client-visual-desc">フォーム入力後、メール認証するだけですぐ公開。</div>
+                            <div class="hero__visual-label">最短当日から掲載開始</div>
+                            <div class="hero__visual-sub">フォーム入力後、メール認証するだけですぐ公開。</div>
                         </div>
                     </div>
-                    <div class="client-visual-row">
-                        <div class="client-visual-icon"><i class="bi bi-person-badge-fill"></i></div>
+                    <div class="hero__visual-row">
+                        <div class="hero__visual-icon"><i class="bi bi-person-badge-fill"></i></div>
                         <div>
-                            <div class="client-visual-label">ログイン不要でかんたん管理</div>
-                            <div class="client-visual-desc">メールリンクから求人の編集・確認ができます。</div>
+                            <div class="hero__visual-label">ログイン不要でかんたん管理</div>
+                            <div class="hero__visual-sub">メールリンクから求人の編集・応募確認ができます。</div>
                         </div>
                     </div>
                 </div>
@@ -522,49 +538,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 {{-- 補足ストリップ --}}
-<div class="client-supplement-strip">
+<div class="strip">
     <div class="container">
-        <div class="supplement-items">
-            <span class="supplement-item">
-                <i class="bi bi-check-circle-fill"></i>介護・福祉業界向け求人掲載
-            </span>
-            <span class="supplement-item">
-                <i class="bi bi-check-circle-fill"></i>応募につながる設計を重視
-            </span>
-            <span class="supplement-item">
-                <i class="bi bi-check-circle-fill"></i>掲載導線をシンプルに
-            </span>
+        <div class="strip__items">
+            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>沖縄の介護・福祉業界向け</span>
+            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>応募につながる設計を重視</span>
+            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>掲載導線をシンプルに</span>
         </div>
     </div>
 </div>
 
 {{-- ② サービス特長 --}}
-<section class="client-merits-section">
+<section class="merits">
     <div class="container">
         <div class="text-center">
-            <div class="section-eyebrow">WHY CARE ENTRY</div>
-            <h2 class="section-heading">選ばれる理由</h2>
+            <p class="merits__eyebrow">WHY CARE ENTRY</p>
+            <h2 class="merits__heading">選ばれる理由</h2>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="merit-card">
-                    <div class="merit-card-icon"><i class="bi bi-currency-yen"></i></div>
-                    <h5>初期費用・月額費用0円</h5>
-                    <p>掲載にかかる固定費用は一切ありません。応募が届いたときだけ費用が発生する、シンプルな成果型の課金体系です。</p>
+                    <div class="merit-card__icon"><i class="bi bi-currency-yen"></i></div>
+                    <p class="merit-card__title">初期費用・月額費用0円</p>
+                    <p class="merit-card__body">掲載にかかる固定費用は一切ありません。応募が届いたときだけ費用が発生する、シンプルな成果型の課金体系です。</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="merit-card">
-                    <div class="merit-card-icon"><i class="bi bi-chat-dots-fill"></i></div>
-                    <h5>LINE応募で応募率アップ</h5>
-                    <p>求職者が使い慣れたLINEから応募できる仕組みで、応募へのハードルを下げます。フォーム応募にも対応しています。</p>
+                    <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
+                    <p class="merit-card__title">LINE応募で応募率アップ</p>
+                    <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで、応募へのハードルを下げます。フォーム応募にも対応しています。</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="merit-card">
-                    <div class="merit-card-icon"><i class="bi bi-stars"></i></div>
-                    <h5>AIが求人文を自動生成</h5>
-                    <p>チェックを選ぶだけでAIが魅力的な求人タイトルと本文を自動作成。専門的な文章力がなくても、伝わる求人が作れます。</p>
+                    <div class="merit-card__icon"><i class="bi bi-stars"></i></div>
+                    <p class="merit-card__title">AIが求人文を自動生成</p>
+                    <p class="merit-card__body">チェックを選ぶだけでAIが魅力的な求人タイトルと本文を自動作成。専門的な文章力がなくても、伝わる求人が作れます。</p>
                 </div>
             </div>
         </div>
@@ -572,44 +582,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 {{-- ③ 掲載の流れ --}}
-<section class="client-steps-section" id="steps">
+<section class="steps" id="steps">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-7">
                 <div class="text-center">
-                    <div class="section-eyebrow">HOW IT WORKS</div>
-                    <h2 class="section-heading">掲載の流れ</h2>
+                    <p class="steps__eyebrow">HOW IT WORKS</p>
+                    <h2 class="steps__heading">掲載の流れ</h2>
                 </div>
-                <div class="step-item">
-                    <div class="step-num">1</div>
-                    <div class="step-content">
-                        <h5>フォームに求人情報を入力</h5>
-                        <p>会社名・勤務地・雇用形態・給与などの基本情報を入力します。難しい設定は不要です。</p>
+                <div class="step">
+                    <div class="step__num">1</div>
+                    <div>
+                        <p class="step__title">フォームに求人情報を入力</p>
+                        <p class="step__body">会社名・勤務地・雇用形態・給与などを入力します。難しい設定は不要です。</p>
                     </div>
                 </div>
-                <div class="step-item">
-                    <div class="step-num">2</div>
-                    <div class="step-content">
-                        <h5>AIが求人タイトル・本文を自動生成</h5>
-                        <p>入力内容をもとにAIが求人文を自動で作成します。そのまま使っても、手直しして使っても構いません。</p>
+                <div class="step">
+                    <div class="step__num">2</div>
+                    <div>
+                        <p class="step__title">AIが求人タイトル・本文を自動生成</p>
+                        <p class="step__body">入力内容をもとにAIが求人文を自動作成。そのまま使っても、手直しして使っても構いません。</p>
                     </div>
                 </div>
-                <div class="step-item">
-                    <div class="step-num">3</div>
-                    <div class="step-content">
-                        <h5>メール認証して掲載開始</h5>
-                        <p>登録メールアドレスに届くリンクを確認するだけで掲載がスタート。当日中に公開されます。</p>
+                <div class="step">
+                    <div class="step__num">3</div>
+                    <div>
+                        <p class="step__title">メール認証して掲載開始</p>
+                        <p class="step__body">登録メールに届くリンクを確認するだけで掲載がスタート。当日中に公開されます。</p>
                     </div>
                 </div>
-                <div class="step-item">
-                    <div class="step-num">4</div>
-                    <div class="step-content">
-                        <h5>応募が届いたら通知</h5>
-                        <p>求職者から応募が届くとメールで通知。応募者情報を確認して採用活動を進められます。</p>
+                <div class="step">
+                    <div class="step__num">4</div>
+                    <div>
+                        <p class="step__title">応募が届いたら通知</p>
+                        <p class="step__body">応募が届くとメールで通知。応募者情報を確認して採用活動を進められます。</p>
                     </div>
                 </div>
                 <div class="text-center mt-4">
-                    <a href="{{ route('jobs.create') }}" class="btn-client-primary">
+                    <a href="{{ route('jobs.create') }}" class="hero__cta-primary">
                         <i class="bi bi-plus-circle-fill"></i>今すぐ無料で掲載を始める
                     </a>
                 </div>
@@ -619,32 +629,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 {{-- ④ 最終CTA --}}
-<section class="client-final-cta">
+<section class="cta-band">
     <div class="container">
-        <h2>まずは無料で、掲載を試してみませんか</h2>
-        <p class="cta-sub">難しい設定なし。フォームに入力するだけで、最短当日から掲載できます。</p>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a href="{{ route('jobs.create') }}" class="btn-cta-white">
+        <h2 class="cta-band__title">まずは無料で、掲載を試してみませんか</h2>
+        <p class="cta-band__body">難しい設定なし。フォームに入力するだけで、最短当日から掲載できます。</p>
+        <div class="cta-band__actions">
+            <a href="{{ route('jobs.create') }}" class="cta-band__btn-primary">
                 <i class="bi bi-plus-circle-fill"></i>無料で掲載を始める
             </a>
-            <a href="{{ route('jobs.create') }}" class="btn-cta-outline-white">
+            <a href="{{ route('jobs.create') }}" class="cta-band__btn-secondary">
                 <i class="bi bi-envelope"></i>掲載について相談する
             </a>
         </div>
-        <p class="mt-4 mb-0" style="font-size:0.78rem;opacity:.7;">
+        <p class="mt-4 mb-0" style="font-size:0.76rem;opacity:.7;">
             <i class="bi bi-shield-check me-1"></i>初期費用・月額費用は一切かかりません
         </p>
     </div>
 </section>
 
 {{-- フッター --}}
-<footer class="client-footer">
+<footer class="footer">
     <div class="container">
         <div class="mb-3">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">介護・福祉専門の求人掲載サービス</span>
+            <span class="ms-2">沖縄の介護・福祉専門 求人掲載サービス</span>
         </div>
-        <div class="footer-links">
+        <div class="footer__links">
             <a href="{{ route('home') }}">お仕事を探している方</a>
             <a href="{{ route('company') }}">運営者情報</a>
             <a href="{{ route('privacy-policy') }}">プライバシーポリシー</a>

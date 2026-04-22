@@ -9,8 +9,17 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $areas    = MasterArea::active()->orderBy('sort_order')->get();
-        $jobTypes = MasterJobType::active()->orderBy('sort_order')->get();
-        return view('welcome', compact('areas', 'jobTypes'));
+        $areasByRegion = MasterArea::active()
+            ->where('prefecture', '沖縄県')
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('region');
+
+        $jobTypesByCategory = MasterJobType::active()
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('category');
+
+        return view('welcome', compact('areasByRegion', 'jobTypesByCategory'));
     }
 }
