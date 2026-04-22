@@ -16,6 +16,12 @@ Route::get('/jobs/verify/{verificationToken}', [\App\Http\Controllers\JobVerific
 Route::get('/jobs/duplicate', [\App\Http\Controllers\JobController::class, 'duplicate'])->name('jobs.duplicate');
 Route::get('/jobs/resend', [\App\Http\Controllers\JobResendController::class, 'show'])->name('jobs.resend.show');
 Route::post('/jobs/resend', [\App\Http\Controllers\JobResendController::class, 'resend'])->middleware('throttle:5,60')->name('jobs.resend');
+// -----------------------------------------------
+// SEOページ（求職者向け求人一覧）
+// -----------------------------------------------
+Route::get('/jobs/okinawa', [\App\Http\Controllers\SeoJobController::class, 'index'])->name('seo.jobs.okinawa');
+Route::get('/jobs/okinawa/{slug}', [\App\Http\Controllers\SeoJobController::class, 'area'])->name('seo.jobs.area');
+
 Route::get('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'manage'])->name('jobs.manage');
 Route::put('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'update'])->name('jobs.update');
 Route::post('/jobs/{token}/continue', [\App\Http\Controllers\JobController::class, 'continue'])->name('jobs.continue');
