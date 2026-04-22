@@ -20,8 +20,8 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沖縄の介護・福祉のお仕事探し｜Care Entry（ケアエントリー）</title>
-    <meta name="description" content="沖縄の介護・福祉職の求人探しをわかりやすくサポート。エリアや職種から探して、自分に合う職場を見つけましょう。LINE応募対応でかんたん応募。">
+    <title>沖縄の介護・福祉求人｜Care Entry（ケアエントリー）</title>
+    <meta name="description" content="沖縄の介護・福祉求人に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -332,7 +332,83 @@
         }
 
         /* =====================
-           LINE相談 CTA帯
+           2ndビュー リスト
+        ===================== */
+        .points__cta-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        .points__cta-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--color-primary);
+            color: #fff;
+            border-radius: 30px;
+            font-size: 0.97rem;
+            font-weight: 800;
+            padding: 12px 28px;
+            text-decoration: none;
+            transition: .2s;
+        }
+        .points__cta-primary:hover { background: var(--color-primary-dark); color: #fff; transform: translateY(-1px); }
+        .points__cta-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--color-line);
+            color: #fff;
+            border-radius: 30px;
+            font-size: 0.97rem;
+            font-weight: 800;
+            padding: 12px 24px;
+            text-decoration: none;
+            transition: .2s;
+        }
+        .points__cta-line:hover { background: #05a847; color: #fff; transform: translateY(-1px); }
+        .points__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .points__item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--color-green-border);
+        }
+        .points__item:last-child { border-bottom: none; }
+        .points__item-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--color-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+            border: 1.5px solid var(--color-green-border);
+        }
+        .points__item-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #1a2a1a;
+            margin-bottom: 3px;
+        }
+        .points__item-body {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* =====================
+           LINE応募 CTA帯
         ===================== */
         .cta-band {
             background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
@@ -449,11 +525,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <i class="bi bi-geo-alt-fill"></i>沖縄の介護・福祉求人
                 </div>
                 <h1 class="hero__title">
-                    今の職場、<br>このままで大丈夫ですか？
+                    沖縄での介護の仕事探しを、<br>もっとシンプルに。
                 </h1>
                 <p class="hero__sub">
-                    ケアエントリーは、沖縄の介護・福祉職の求人探しをわかりやすくサポートします。<br>
-                    エリアや職種から、自分に合う職場を見つけましょう。
+                    ケアエントリーは、沖縄の介護・福祉求人に特化した求人サービスです。<br>
+                    地域・職種から、自分に合う職場を探せます。
                 </p>
                 <div class="hero__features">
                     <span class="hero__feature-item">
@@ -463,7 +539,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <i class="bi bi-check-circle-fill"></i>30秒でかんたん応募
                     </span>
                     <span class="hero__feature-item">
-                        <i class="bi bi-check-circle-fill"></i>LINEで気軽に相談できる
+                        <i class="bi bi-check-circle-fill"></i>LINEからそのまま応募できる
                     </span>
                 </div>
                 <div class="hero__cta-group">
@@ -472,7 +548,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </a>
                     <a href="https://lin.ee/" class="hero__cta-secondary">
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                        LINEで相談する
+                        LINEで応募する
                     </a>
                 </div>
                 <p class="hero__note">
@@ -571,48 +647,68 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-{{-- ③ サービスの特長 --}}
+{{-- ③ 2ndビュー：サービス紹介 --}}
 <section class="points">
     <div class="container">
-        <div class="text-center">
-            <p class="points__eyebrow">WHY CARE ENTRY</p>
-            <h2 class="points__heading">沖縄の介護・福祉転職を<br>もっと身近に</h2>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="point-card">
-                    <div class="point-card__icon"><i class="bi bi-person-fill-check"></i></div>
-                    <p class="point-card__title">会員登録なしで応募できる</p>
-                    <p class="point-card__body">アカウント作成は不要です。名前と電話番号（またはLINE）を入力するだけで応募が完了します。</p>
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5">
+                <p class="points__eyebrow">WHY CARE ENTRY</p>
+                <h2 class="points__heading">沖縄での介護の仕事探しを、<br>もっとシンプルにするために</h2>
+                <div class="points__cta-group">
+                    <a href="#search" class="points__cta-primary">
+                        <i class="bi bi-search"></i>求人を探す
+                    </a>
+                    <a href="https://lin.ee/" class="points__cta-line">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
+                        LINEで応募する
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="point-card">
-                    <div class="point-card__icon"><i class="bi bi-chat-heart-fill"></i></div>
-                    <p class="point-card__title">LINEで気軽に相談・応募</p>
-                    <p class="point-card__body">使い慣れたLINEで応募・相談ができます。担当者に直接連絡できるので、不安なことをすぐ確認できます。</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="point-card">
-                    <div class="point-card__icon"><i class="bi bi-geo-alt-fill"></i></div>
-                    <p class="point-card__title">沖縄エリアの求人に特化</p>
-                    <p class="point-card__body">那覇・南部・中部・北部・離島と、沖縄全域の介護・福祉求人を掲載。地域から絞り込んで探せます。</p>
-                </div>
+            <div class="col-lg-7">
+                <ul class="points__list">
+                    <li class="points__item">
+                        <span class="points__item-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                        <div>
+                            <p class="points__item-title">沖縄の介護・福祉求人に特化しています</p>
+                            <p class="points__item-body">那覇・南部・中部・北部・離島と、沖縄全域の求人を掲載。エリアから絞り込んで探せます。</p>
+                        </div>
+                    </li>
+                    <li class="points__item">
+                        <span class="points__item-icon"><i class="bi bi-briefcase-fill"></i></span>
+                        <div>
+                            <p class="points__item-title">地域や職種から、自分に合う仕事を探せます</p>
+                            <p class="points__item-body">介護職・福祉職・相談員・リハビリ職など、多様な職種から条件に合う求人を探せます。</p>
+                        </div>
+                    </li>
+                    <li class="points__item">
+                        <span class="points__item-icon"><i class="bi bi-person-fill-check"></i></span>
+                        <div>
+                            <p class="points__item-title">会員登録なしで、かんたんに応募できます</p>
+                            <p class="points__item-body">アカウント作成不要。名前と電話番号を入力するだけで応募完了します。</p>
+                        </div>
+                    </li>
+                    <li class="points__item">
+                        <span class="points__item-icon" style="color:#06C755"><i class="bi bi-chat-dots-fill"></i></span>
+                        <div>
+                            <p class="points__item-title">LINEからそのまま応募することも可能です</p>
+                            <p class="points__item-body">使い慣れたLINEで気軽に応募できます。担当者に直接連絡して、疑問をすぐ解消できます。</p>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </section>
 
-{{-- ④ LINE相談 CTA --}}
+{{-- ④ LINE応募 CTA --}}
 <section class="cta-band">
     <div class="container">
-        <h2 class="cta-band__title">まずは気軽に、LINEで相談してみませんか</h2>
-        <p class="cta-band__body">転職を迷っている段階でも大丈夫。どんな小さな疑問でもお気軽にどうぞ。</p>
+        <h2 class="cta-band__title">気になる求人に、LINEでそのまま応募できます</h2>
+        <p class="cta-band__body">会員登録不要。LINEを使って、今すぐかんたんに応募できます。</p>
         <div class="cta-band__actions">
             <a href="https://lin.ee/" class="cta-band__btn-line">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                LINEで相談する（無料）
+                LINEで応募する
             </a>
             <a href="#search" class="cta-band__btn-search">
                 <i class="bi bi-search"></i>求人を探す

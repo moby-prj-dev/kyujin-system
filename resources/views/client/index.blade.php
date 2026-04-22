@@ -21,7 +21,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>沖縄の介護・福祉 求人掲載｜Care Entry（ケアエントリー）</title>
-    <meta name="description" content="沖縄の介護・福祉事業者向け求人掲載サービス。応募につながる導線設計を重視。掲載費0円スタート、成果型課金で始めやすい。">
+    <meta name="description" content="沖縄の介護・福祉事業者向け求人掲載サービス。求職者が動きやすい仕組みにこだわっています。掲載費0円スタート、成果型課金で始めやすい。">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -469,21 +469,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <i class="bi bi-building"></i>沖縄の介護・福祉専門 求人掲載サービス
                 </div>
                 <h1 class="hero__title">
-                    沖縄で介護人材の<br>
+                    沖縄で介護・福祉人材の<br>
                     採用にお困りの<br>
                     企業様へ
                 </h1>
                 <p class="hero__sub">
-                    ケアエントリーは、応募につながる導線設計を重視した<br>
-                    介護・福祉専門の求人サービスです。<br>
-                    掲載して終わりではなく、求職者が動きやすい仕組みを目指しています。
+                    ケアエントリーは、介護・福祉に特化した沖縄の求人サービスです。<br>
+                    掲載して終わりではなく、求職者が応募しやすい仕組みにこだわっています。
                 </p>
                 <div class="hero__features">
                     <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>掲載費0円スタート
                     </span>
                     <span class="hero__feature-item">
-                        <i class="bi bi-check-circle-fill"></i>応募につながる導線設計
+                        <i class="bi bi-check-circle-fill"></i>LINEでかんたん応募対応
                     </span>
                     <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>介護・福祉領域に特化
@@ -494,7 +493,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <i class="bi bi-plus-circle-fill"></i>無料で掲載を始める
                     </a>
                     <a href="#steps" class="hero__cta-secondary">
-                        <i class="bi bi-list-ol"></i>掲載について相談する
+                        <i class="bi bi-list-ol"></i>掲載について問い合わせる
                     </a>
                 </div>
                 <p class="hero__note">
@@ -513,7 +512,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="hero__visual-row">
                         <div class="hero__visual-icon"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
                         <div>
-                            <div class="hero__visual-label">応募につながる導線設計</div>
+                            <div class="hero__visual-label">求職者が応募しやすい仕組み</div>
                             <div class="hero__visual-sub">LINE応募対応で求職者のハードルを下げる仕組み。</div>
                         </div>
                     </div>
@@ -542,8 +541,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="strip__items">
             <span class="strip__item"><i class="bi bi-check-circle-fill"></i>沖縄の介護・福祉業界向け</span>
-            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>応募につながる設計を重視</span>
-            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>掲載導線をシンプルに</span>
+            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>LINEでかんたん応募対応</span>
+            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>掲載から応募まで、シンプルに</span>
         </div>
     </div>
 </div>
@@ -638,7 +637,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <i class="bi bi-plus-circle-fill"></i>無料で掲載を始める
             </a>
             <a href="{{ route('jobs.create') }}" class="cta-band__btn-secondary">
-                <i class="bi bi-envelope"></i>掲載について相談する
+                <i class="bi bi-envelope"></i>掲載について問い合わせる
             </a>
         </div>
         <p class="mt-4 mb-0" style="font-size:0.76rem;opacity:.7;">
