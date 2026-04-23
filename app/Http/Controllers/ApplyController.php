@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use App\Models\FormApplicationDetail;
+use App\Models\FormDesiredAppeal;
 use App\Models\FormDesiredCondition;
+use App\Models\FormDesiredEmploymentType;
 use App\Models\FormDesiredJobType;
 use App\Models\Job;
+use App\Models\MasterArea;
+use App\Models\MasterCondition;
+use App\Models\MasterEmploymentType;
+use App\Models\MasterJobType;
 use App\Services\ApplicationValidationService;
+use App\Services\LineMatchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,8 +25,11 @@ class ApplyController extends Controller
     private function findActiveJob(string $token): Job
     {
         $job = Job::with([
-            'jobConditions.condition',
+            'jobAreas.area',
             'jobJobTypes.jobType',
+            'jobEmploymentTypes.employmentType',
+            'jobConditions.condition',
+            'jobAppeals.appeal',
         ])->where('token', $token)->where('status', 'active')->firstOrFail();
 
         if ($job->expires_at && $job->expires_at->isPast()) {
@@ -28,76 +38,133 @@ class ApplyController extends Controller
         return $job;
     }
 
-    public function show(string $token)
+    private function parseConditions(Request $request): array
     {
-        $job = $this->findActiveJob($token);
-        return view('lp.apply', compact('job'));
+        return [
+            'area_ids'            => array_values(array_filter(array_map('intval', (array) $request->input('area_ids', [])))),
+            'job_type_ids'        => array_values(array_filter(array_map('intval', (array) $request->input('job_type_ids', [])))),
+            'employment_type_ids' => array_values(array_filter(array_map('intval', (array) $request->input('employment_type_ids', [])))),
+            'condition_ids'       => array_values(array_filter(array_map('intval', (array) $request->input('condition_ids', [])))),
+            'appeal_ids'          => array_values(array_filter(array_map('intval', (array) $request->input('appeal_ids', [])))),
+        ];
     }
 
-    public function store(Request $request, string $token, ApplicationValidationService $validationService)
+    private function hasConditions(array $conditions): bool
     {
-        $job = $this->findActiveJob($token);
+        return !empty($conditions['area_ids'])
+            || !empty($conditions['job_type_ids'])
+            || !empty($conditions['employment_type_ids'])
+            || !empty($conditions['condition_ids']);
+    }
 
-        $jobConditionIds = $job->jobConditions->pluck('condition_id')->toArray();
-        $jobTypeIds      = $job->jobJobTypes->pluck('job_type_id')->toArray();
+    // STEP1: 初期表示
+    public function show(Request $request, string $token)
+    {
+        $job        = $this->findActiveJob($token);
+        $conditions = $this->parseConditions($request);
+
+        if ($this->hasConditions($conditions)) {
+            // 検索条件あり → 確認画面
+            return view('lp.apply', [
+                'job'        => $job,
+                'step'       => 'confirm',
+                'conditions' => $conditions,
+                'conditionLabels' => $this->buildConditionLabels($conditions),
+            ]);
+        }
+
+        // 検索条件なし → ミニフォーム（募集要項確認 + 条件選択）
+        return view('lp.apply', [
+            'job'             => $job,
+            'step'            => 'select',
+            'areas'           => MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get(),
+            'jobTypes'        => MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category'),
+            'employmentTypes' => MasterEmploymentType::active()->orderBy('sort_order')->get(),
+        ]);
+    }
+
+    // STEP2: 判定
+    public function judge(Request $request, string $token, LineMatchService $matchService)
+    {
+        $job        = $this->findActiveJob($token);
+        $conditions = $this->parseConditions($request);
+
+        $mismatches = $matchService->getMismatches($job, $conditions);
+
+        if (empty($mismatches)) {
+            return view('lp.apply', [
+                'job'        => $job,
+                'step'       => 'form',
+                'conditions' => $conditions,
+            ]);
+        }
+
+        return view('lp.apply', [
+            'job'          => $job,
+            'step'         => 'mismatch',
+            'mismatches'   => $mismatches,
+            'conditions'   => $conditions,
+            'alternatives' => $this->findAlternativeJobs($job, $conditions),
+        ]);
+    }
+
+    // STEP3: 応募保存
+    public function store(Request $request, string $token, ApplicationValidationService $validationService, LineMatchService $matchService)
+    {
+        $job        = $this->findActiveJob($token);
+        $conditions = $this->parseConditions($request);
+
+        // サーバーサイドでも判定（改ざん防止）
+        if (!$matchService->isMatch($job, $conditions) && $this->hasConditions($conditions)) {
+            return redirect()->route('lp.apply', ['token' => $token])
+                ->withErrors(['match' => '条件が一致しないため応募できませんでした。']);
+        }
 
         $request->validate([
-            'applicant_name'       => ['required', 'string', 'max:100'],
-            'phone'                => ['required', 'regex:/^[0-9]{10,11}$/'],
-            'email'                => ['required', 'email', 'max:255'],
-            'appeal_message'       => ['nullable', 'string', 'max:1000'],
-            'desired_conditions'   => ['required', 'array', 'min:1'],
-            'desired_conditions.*' => ['integer', 'in:' . implode(',', $jobConditionIds ?: [0])],
-            'desired_job_types'    => ['required', 'array', 'min:1'],
-            'desired_job_types.*'  => ['integer', 'in:' . implode(',', $jobTypeIds ?: [0])],
+            'applicant_name' => ['required', 'string', 'max:100'],
+            'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
         ], [
-            'applicant_name.required'     => 'お名前を入力してください。',
-            'phone.required'              => '電話番号を入力してください。',
-            'phone.regex'                 => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
-            'email.email'                 => '正しいメールアドレス形式で入力してください。',
-            'desired_job_types.required'  => '希望職種を1つ以上選択してください。',
-            'desired_job_types.min'       => '希望職種を1つ以上選択してください。',
-            'desired_conditions.required' => '希望勤務条件を1つ以上選択してください。',
-            'desired_conditions.min'      => '希望勤務条件を1つ以上選択してください。',
+            'applicant_name.required' => 'お名前を入力してください。',
+            'phone.required'          => '電話番号を入力してください。',
+            'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
         ]);
 
-        DB::transaction(function () use ($request, $job, $validationService) {
+        DB::transaction(function () use ($request, $job, $conditions, $validationService) {
             $application = Application::create([
                 'job_id'           => $job->id,
                 'application_type' => Application::TYPE_FORM,
                 'applicant_name'   => $request->applicant_name,
                 'phone'            => $request->phone,
-                'email'            => $request->email,
+                'email'            => null,
                 'status'           => Application::STATUS_RECEIVED,
                 'applied_at'       => now(),
             ]);
 
-            // 有効応募判定
             $validationService->validate($application);
             $application->save();
 
             FormApplicationDetail::create([
                 'application_id' => $application->id,
-                'appeal_message' => $request->appeal_message ?? '',
+                'desired_area_id' => $conditions['area_ids'][0] ?? null,
+                'appeal_message' => null,
                 'ip_address'     => $request->ip(),
                 'user_agent'     => substr($request->userAgent() ?? '', 0, 500),
             ]);
 
-            foreach ($request->input('desired_conditions', []) as $conditionId) {
-                FormDesiredCondition::create([
-                    'application_id' => $application->id,
-                    'condition_id'   => $conditionId,
-                ]);
+            foreach ($conditions['job_type_ids'] as $id) {
+                FormDesiredJobType::create(['application_id' => $application->id, 'job_type_id' => $id]);
+            }
+            foreach ($conditions['employment_type_ids'] as $id) {
+                FormDesiredEmploymentType::create(['application_id' => $application->id, 'employment_type_id' => $id]);
+            }
+            foreach ($conditions['condition_ids'] as $id) {
+                FormDesiredCondition::create(['application_id' => $application->id, 'condition_id' => $id]);
+            }
+            foreach ($conditions['appeal_ids'] as $id) {
+                FormDesiredAppeal::create(['application_id' => $application->id, 'appeal_id' => $id]);
             }
 
-            foreach ($request->input('desired_job_types', []) as $jobTypeId) {
-                FormDesiredJobType::create([
-                    'application_id' => $application->id,
-                    'job_type_id'    => $jobTypeId,
-                ]);
-            }
-
-            $this->notifyEmployer($job, $application, $request);
+            $this->notifyEmployer($job, $application, $conditions);
         });
 
         return redirect()->route('lp.apply.thanks', ['token' => $token]);
@@ -109,21 +176,94 @@ class ApplyController extends Controller
         return view('lp.thanks', compact('job'));
     }
 
-    private function notifyEmployer(Job $job, Application $application, Request $request): void
+    // 代替求人（同エリア→同職種→その他の順で3件）
+    private function findAlternativeJobs(Job $job, array $conditions): \Illuminate\Database\Eloquent\Collection
     {
-        if (empty($job->contact_email)) {
-            return;
+        $base = Job::active()
+            ->whereNotNull('email_verified_at')
+            ->where('is_admin_hidden', false)
+            ->where('id', '!=', $job->id)
+            ->with(['jobAreas.area', 'jobJobTypes.jobType']);
+
+        $results = collect();
+
+        // 同エリア＋同職種
+        if (!empty($conditions['area_ids']) && !empty($conditions['job_type_ids'])) {
+            $results = (clone $base)
+                ->whereHas('jobAreas', fn($q) => $q->whereIn('area_id', $conditions['area_ids']))
+                ->whereHas('jobJobTypes', fn($q) => $q->whereIn('job_type_id', $conditions['job_type_ids']))
+                ->limit(3)->get();
         }
 
-        $conditions = $job->jobConditions
-            ->whereIn('condition_id', $request->input('desired_conditions', []))
-            ->map(fn($jc) => '・' . $jc->condition->name)
-            ->implode("\n");
+        // 同エリアのみ
+        if ($results->count() < 3 && !empty($conditions['area_ids'])) {
+            $ids = $results->pluck('id')->push($job->id)->toArray();
+            $more = (clone $base)
+                ->whereNotIn('id', $ids)
+                ->whereHas('jobAreas', fn($q) => $q->whereIn('area_id', $conditions['area_ids']))
+                ->limit(3 - $results->count())->get();
+            $results = $results->merge($more);
+        }
 
-        $jobTypes = $job->jobJobTypes
-            ->whereIn('job_type_id', $request->input('desired_job_types', []))
-            ->map(fn($jt) => '・' . $jt->jobType->name)
-            ->implode("\n");
+        // 不足分を同職種で補完
+        if ($results->count() < 3 && !empty($conditions['job_type_ids'])) {
+            $ids = $results->pluck('id')->push($job->id)->toArray();
+            $more = (clone $base)
+                ->whereNotIn('id', $ids)
+                ->whereHas('jobJobTypes', fn($q) => $q->whereIn('job_type_id', $conditions['job_type_ids']))
+                ->limit(3 - $results->count())->get();
+            $results = $results->merge($more);
+        }
+
+        // それでも不足なら新着で補完
+        if ($results->count() < 3) {
+            $ids  = $results->pluck('id')->push($job->id)->toArray();
+            $more = (clone $base)->whereNotIn('id', $ids)->latest()->limit(3 - $results->count())->get();
+            $results = $results->merge($more);
+        }
+
+        return $results->take(3);
+    }
+
+    private function buildConditionLabels(array $conditions): array
+    {
+        $labels = [];
+
+        if (!empty($conditions['area_ids'])) {
+            $labels['areas'] = MasterArea::whereIn('id', $conditions['area_ids'])->pluck('name')->toArray();
+        }
+        if (!empty($conditions['job_type_ids'])) {
+            $labels['jobTypes'] = MasterJobType::whereIn('id', $conditions['job_type_ids'])->pluck('name')->toArray();
+        }
+        if (!empty($conditions['employment_type_ids'])) {
+            $labels['employmentTypes'] = MasterEmploymentType::whereIn('id', $conditions['employment_type_ids'])->pluck('name')->toArray();
+        }
+        if (!empty($conditions['condition_ids'])) {
+            $labels['conditions'] = MasterCondition::whereIn('id', $conditions['condition_ids'])->pluck('name')->toArray();
+        }
+
+        return $labels;
+    }
+
+    private function notifyEmployer(Job $job, Application $application, array $conditions): void
+    {
+        if (empty($job->contact_email)) return;
+
+        $areaName    = !empty($conditions['area_ids'])
+            ? MasterArea::whereIn('id', $conditions['area_ids'])->pluck('name')->implode('・')
+            : '未選択';
+        $jobTypes    = !empty($conditions['job_type_ids'])
+            ? MasterJobType::whereIn('id', $conditions['job_type_ids'])->pluck('name')->map(fn($n) => "・{$n}")->implode("\n")
+            : null;
+        $empTypes    = !empty($conditions['employment_type_ids'])
+            ? MasterEmploymentType::whereIn('id', $conditions['employment_type_ids'])->pluck('name')->map(fn($n) => "・{$n}")->implode("\n")
+            : null;
+        $conds       = !empty($conditions['condition_ids'])
+            ? MasterCondition::whereIn('id', $conditions['condition_ids'])->pluck('name')->map(fn($n) => "・{$n}")->implode("\n")
+            : null;
+        $appeals     = !empty($conditions['appeal_ids'])
+            ? \App\Models\MasterAppeal::whereIn('id', $conditions['appeal_ids'])->pluck('name')->implode('、')
+            : null;
 
         $validityNote = $application->is_valid
             ? '【有効応募】'
@@ -132,23 +272,28 @@ class ApplyController extends Controller
         try {
             Mail::raw(
                 implode("\n", array_filter([
-                    "【求人応募通知】新しい応募が届きました {$validityNote}",
+                    "【求人応募通知】新しいWeb応募が届きました {$validityNote}",
                     "",
                     "■ 応募者情報",
                     "氏名：{$application->applicant_name}",
                     "電話：{$application->phone}",
-                    "メール：" . ($application->email ?: '未記入'),
-                    $jobTypes   ? "\n■ 希望職種\n{$jobTypes}"      : null,
-                    $conditions ? "\n■ 希望勤務条件\n{$conditions}" : null,
-                    $application->formDetail?->appeal_message
-                        ? "\n■ メッセージ\n{$application->formDetail->appeal_message}" : null,
+                    "",
+                    "■ 応募求人",
+                    $job->seo_title ?: $job->title,
+                    "",
+                    "■ 応募者の希望条件",
+                    "希望エリア：{$areaName}",
+                    $jobTypes    ? "希望職種：\n{$jobTypes}"       : null,
+                    $empTypes    ? "希望雇用形態：\n{$empTypes}"    : null,
+                    $conds       ? "希望勤務条件：\n{$conds}"       : null,
+                    $appeals     ? "重視ポイント：{$appeals}"       : null,
                     "",
                     "■ 求人管理ページ",
                     url('/jobs/' . $job->token),
                 ])),
                 fn($message) => $message
                     ->to($job->contact_email)
-                    ->subject('【求人応募通知】新しい応募が届きました')
+                    ->subject('【求人応募通知】新しいWeb応募が届きました')
             );
         } catch (\Exception $e) {
             Log::warning('応募通知メール送信失敗: ' . $e->getMessage());

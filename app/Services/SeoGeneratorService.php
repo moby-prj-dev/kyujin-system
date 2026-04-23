@@ -37,7 +37,7 @@ class SeoGeneratorService
         $tags = $this->generateTags($jobTypeItems, $conditionItems, $appealItems, $mainAppeal);
 
         // メタディスクリプション
-        $metaDesc = "{$areaStr}エリアで{$mainJobType}（{$empStr}）を募集中。{$mainAppeal['label']}。LINE応募OK。";
+        $metaDesc = $this->generateMetaDesc($areaStr, $mainJobType, $empStr, $conditionItems, $appealItems, $jobTypeItems, $mainAppeal);
 
         // LP本文：free_textがあればそのまま使用、なければ生成
         $description = $job->free_text
@@ -136,7 +136,7 @@ PROMPT;
 
         try {
             $apiKey = config('services.gemini.api_key');
-            $model  = config('services.gemini.model', 'gemini-2.0-flash');
+            $model  = config('services.gemini.model', 'gemini-2.5-flash');
             $url    = "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}";
 
             $client   = new Client(['timeout' => 15]);
@@ -235,6 +235,84 @@ PROMPT;
     }
 
     // ----------------------------------------
+    // メタディスクリプション生成
+    // ----------------------------------------
+
+    private function generateMetaDesc(string $area, string $jobType, string $employment, array $conditions, array $appeals, array $jobTypes, array $mainAppeal): string
+    {
+        $apiKey = config('services.gemini.api_key');
+
+        if ($apiKey && $apiKey !== 'your_api_key_here') {
+            $generated = $this->generateMetaDescWithGemini($area, $jobType, $employment, $conditions, $appeals, $jobTypes, $mainAppeal);
+            if ($generated) {
+                return $generated;
+            }
+        }
+
+        return $this->generateMetaDescFromTemplate($area, $jobType, $employment, $mainAppeal);
+    }
+
+    private function generateMetaDescWithGemini(string $area, string $jobType, string $employment, array $conditions, array $appeals, array $jobTypes, array $mainAppeal): string
+    {
+        $highItems = array_filter(
+            array_merge(
+                array_map(fn($c) => ['name' => $c->name, 'score' => $c->score ?? 0], $conditions),
+                array_map(fn($a) => ['name' => $a->name, 'score' => $a->score ?? 0], $appeals),
+            ),
+            fn($i) => $i['score'] >= 4 && $i['name'] !== $mainAppeal['label']
+        );
+        $highStr = implode('、', array_column(array_values($highItems), 'name'));
+        $mainLabel = $mainAppeal['label'];
+
+        $prompt = <<<PROMPT
+あなたは求人広告のSEOライターです。以下の情報をもとに、検索結果に表示されるメタディスクリプションを1つ生成してください。
+
+【出力ルール】
+- 120〜150文字程度
+- エリア・職種・主訴求を自然に盛り込む
+- 高スコア項目があれば1〜2個追加する
+- 「LINE応募OK」または「LINEで応募できます」を含める
+- テキストのみ出力（説明・番号不要）
+
+【求人情報】
+エリア：{$area}
+職種：{$jobType}
+雇用形態：{$employment}
+主訴求：{$mainLabel}
+強調したい項目：{$highStr}
+PROMPT;
+
+        try {
+            $apiKey = config('services.gemini.api_key');
+            $model  = config('services.gemini.model', 'gemini-2.5-flash');
+            $url    = "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}";
+
+            $client   = new Client(['timeout' => 15]);
+            $response = $client->post($url, [
+                'headers' => ['content-type' => 'application/json'],
+                'json'    => [
+                    'contents' => [['parts' => [['text' => $prompt]]]],
+                    'generationConfig' => [
+                        'maxOutputTokens' => 200,
+                        'temperature'     => 0.7,
+                    ],
+                ],
+            ]);
+
+            $body = json_decode($response->getBody()->getContents(), true);
+            return trim($body['candidates'][0]['content']['parts'][0]['text'] ?? '');
+        } catch (\Exception $e) {
+            Log::warning('Gemini APIメタディスク生成失敗: ' . $e->getMessage());
+            return '';
+        }
+    }
+
+    private function generateMetaDescFromTemplate(string $area, string $jobType, string $employment, array $mainAppeal): string
+    {
+        return "{$area}エリアで{$jobType}（{$employment}）を募集中。{$mainAppeal['label']}。LINE応募OK。";
+    }
+
+    // ----------------------------------------
     // LP本文生成
     // ----------------------------------------
 
@@ -291,7 +369,7 @@ PROMPT;
 
         try {
             $apiKey = config('services.gemini.api_key');
-            $model  = config('services.gemini.model', 'gemini-2.5-flash-lite');
+            $model  = config('services.gemini.model', 'gemini-2.5-flash');
             $url    = "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}";
 
             $client   = new Client(['timeout' => 20]);

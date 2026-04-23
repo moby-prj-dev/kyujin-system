@@ -22,12 +22,29 @@ Route::post('/jobs/resend', [\App\Http\Controllers\JobResendController::class, '
 Route::get('/jobs/okinawa', [\App\Http\Controllers\SeoJobController::class, 'index'])->name('seo.jobs.okinawa');
 Route::get('/jobs/okinawa/{slug}', [\App\Http\Controllers\SeoJobController::class, 'area'])->name('seo.jobs.area');
 
+// -----------------------------------------------
+// ハローワークナビページ
+// -----------------------------------------------
+Route::get('/hellowork', [\App\Http\Controllers\HelloworkController::class, 'index'])->name('hellowork.index');
+Route::get('/hellowork/{slug}', [\App\Http\Controllers\HelloworkController::class, 'area'])->name('hellowork.area');
+
+// -----------------------------------------------
+// コンテンツSEO記事
+// -----------------------------------------------
+Route::get('/articles', [\App\Http\Controllers\ContentArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{slug}', [\App\Http\Controllers\ContentArticleController::class, 'show'])->name('articles.show');
+
 Route::get('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'manage'])->name('jobs.manage');
 Route::put('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'update'])->name('jobs.update');
 Route::post('/jobs/{token}/continue', [\App\Http\Controllers\JobController::class, 'continue'])->name('jobs.continue');
 Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class, 'close'])->name('jobs.close');
 Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class, 'reopen'])->name('jobs.reopen');
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');
+
+// -----------------------------------------------
+// LINE 応募エントリー（検索条件付きでLINEに遷移）
+// -----------------------------------------------
+Route::get('/line-entry/{token}', [\App\Http\Controllers\LineEntryController::class, 'entry'])->name('line.entry');
 
 // -----------------------------------------------
 // LINE LIFF（求職者向け）
@@ -46,6 +63,7 @@ Route::post('/webhook/line', [\App\Http\Controllers\LineWebhookController::class
 // -----------------------------------------------
 Route::get('/lp/{token}', [\App\Http\Controllers\LpController::class, 'show'])->name('lp.show');
 Route::get('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'show'])->name('lp.apply');
+Route::post('/lp/{token}/apply/judge', [\App\Http\Controllers\ApplyController::class, 'judge'])->middleware('throttle:20,60')->name('lp.apply.judge');
 Route::post('/lp/{token}/apply', [\App\Http\Controllers\ApplyController::class, 'store'])->middleware('throttle:10,60')->name('lp.apply.store');
 Route::get('/lp/{token}/apply/thanks', [\App\Http\Controllers\ApplyController::class, 'thanks'])->name('lp.apply.thanks');
 
@@ -67,6 +85,11 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     // 応募一覧
     Route::get('/applications', [\App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
     Route::patch('/applications/{application}', [\App\Http\Controllers\Admin\ApplicationController::class, 'update'])->name('applications.update');
+
+    // 記事管理
+    Route::get('/articles', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('articles.index');
+    Route::post('/articles/generate', [\App\Http\Controllers\Admin\ArticleController::class, 'generate'])->name('articles.generate');
+    Route::delete('/articles/{article}', [\App\Http\Controllers\Admin\ArticleController::class, 'destroy'])->name('articles.destroy');
 
     // 請求管理
     Route::get('/billings', [\App\Http\Controllers\Admin\BillingController::class, 'index'])->name('billings.index');
