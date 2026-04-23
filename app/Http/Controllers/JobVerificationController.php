@@ -28,7 +28,7 @@ class JobVerificationController extends Controller
 
             $job->update([
                 'status'     => Job::STATUS_ACTIVE,
-                'expires_at' => now()->addMonths(3),
+                'expires_at' => $job->is_monitor ? null : now()->addMonths(3),
             ]);
 
             AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [

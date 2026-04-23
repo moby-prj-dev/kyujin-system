@@ -201,6 +201,22 @@
                                         </button>
                                     @endif
                                 </form>
+                                {{-- モニター切替 --}}
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.toggle_monitor', $job) }}">
+                                    @csrf @method('PATCH')
+                                    @if($job->is_monitor)
+                                        <button type="submit" class="btn btn-xs btn-outline-secondary"
+                                                onclick="return confirm('モニターを解除しますか？（掲載期限3ヶ月に設定されます）')">
+                                            <i class="bi bi-star-fill text-warning me-1"></i>解除
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-xs btn-outline-warning"
+                                                onclick="return confirm('無料モニターに設定しますか？（掲載期限・請求なし）')">
+                                            <i class="bi bi-star me-1"></i>モニター
+                                        </button>
+                                    @endif
+                                </form>
                                 {{-- 編集 --}}
                                 <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
                                    class="btn btn-xs btn-outline-primary" target="_blank">

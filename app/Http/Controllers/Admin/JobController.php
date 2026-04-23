@@ -71,6 +71,17 @@ class JobController extends Controller
         return back()->with('success', $msg);
     }
 
+    public function toggleMonitor(Job $job)
+    {
+        $job->update([
+            'is_monitor' => !$job->is_monitor,
+            'expires_at' => $job->is_monitor ? now()->addMonths(3) : null,
+        ]);
+
+        $msg = $job->is_monitor ? '無料モニターに設定しました。（掲載期限・請求なし）' : 'モニター解除しました。（掲載期限3ヶ月に設定）';
+        return back()->with('success', $msg);
+    }
+
     public function updateMemo(Request $request, Job $job)
     {
         $request->validate(['admin_memo' => ['nullable', 'string', 'max:2000']]);

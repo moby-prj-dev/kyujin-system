@@ -20,6 +20,7 @@ class SendTrialWarnings extends Command
             ->selectRaw('contact_email, MIN(email_verified_at) as first_activated_at, MIN(expires_at) as trial_ends_at')
             ->whereNotNull('email_verified_at')
             ->whereNull('deleted_at')
+            ->where('is_monitor', false)
             ->groupBy('contact_email')
             ->havingRaw('trial_ends_at BETWEEN ? AND ?', [now(), now()->addDays(7)])
             ->get();
