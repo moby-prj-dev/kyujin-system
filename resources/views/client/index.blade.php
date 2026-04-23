@@ -536,6 +536,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
+{{-- 無料モニター募集バナー --}}
+<section style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:28px 0;">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <p style="font-size:0.72rem;font-weight:800;color:#f57f17;letter-spacing:.08em;margin-bottom:4px;">
+                    <i class="bi bi-star-fill me-1"></i>期間限定・無料モニター募集中
+                </p>
+                <p style="font-size:1.05rem;font-weight:900;color:#1a1a2e;margin-bottom:6px;">
+                    無料でご利用いただける「モニター企業」を募集しています
+                </p>
+                <p style="font-size:0.86rem;color:#555;margin:0;">
+                    掲載費・成果課金を一切いただかず、サービスをお試しいただける企業様を限定募集しています。<br>
+                    ご利用のご感想やフィードバックをいただける企業様が対象です。
+                </p>
+            </div>
+            <a href="{{ route('jobs.create') }}"
+               style="display:inline-flex;align-items:center;gap:8px;background:#f9a825;color:#fff;font-weight:800;font-size:0.95rem;padding:14px 28px;border-radius:30px;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+                <i class="bi bi-plus-circle-fill"></i>モニターとして掲載する
+            </a>
+        </div>
+    </div>
+</section>
+
 {{-- 補足ストリップ --}}
 <div class="strip">
     <div class="container">
