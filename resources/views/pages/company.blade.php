@@ -75,7 +75,11 @@
                     <th class="bg-light" style="vertical-align:middle;">事業内容</th>
                     <td>本サービスは、介護・福祉分野を中心とした求人情報を掲載し、求職者に提供するサービスです。求職者は求人内容および条件を確認した上で応募することができます。</td>
                 </tr>
-<tr>
+                <tr>
+                    <th class="bg-light" style="vertical-align:middle;">届出</th>
+                    <td>本サービスは、特定募集情報等提供事業として届出済みです。</td>
+                </tr>
+                <tr>
                     <th class="bg-light" style="vertical-align:middle;">注意事項</th>
                     <td>掲載されている求人情報は、各企業から提供された内容に基づいています。その正確性・内容については、各企業の責任により提供されています。</td>
                 </tr>
