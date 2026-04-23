@@ -448,8 +448,19 @@
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @endif
 
+{{-- モニター告知帯 --}}
+@if(now()->lte($monitorCutoff))
+<div style="position:sticky;top:0;z-index:200;background:linear-gradient(90deg,#fff8e1,#fff3cd);border-bottom:3px solid #f9a825;padding:10px 0;text-align:center;">
+    <span style="font-size:0.85rem;font-weight:800;color:#f57f17;">
+        <i class="bi bi-star-fill me-1"></i>無料モニター募集中
+        &nbsp;〜&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで
+        &nbsp;｜&nbsp;3か月間または有効応募3件まで成果報酬0円
+    </span>
+</div>
+@endif
+
 {{-- ナビ --}}
-<nav class="nav">
+<nav class="nav" style="{{ now()->lte($monitorCutoff) ? 'top:44px;' : '' }}">
     <div class="container d-flex justify-content-between align-items-center">
         <a href="{{ route('home') }}" class="nav__logo">
             <img src="/images/logo.svg" alt="Care Entry ケアエントリー">
@@ -459,16 +470,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
     </div>
 </nav>
-
-@if(now()->lte($monitorCutoff))
-<div style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:12px 0;text-align:center;">
-    <span style="font-size:0.85rem;font-weight:800;color:#f57f17;">
-        <i class="bi bi-star-fill me-1"></i>無料モニター募集中
-        &nbsp;〜&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで
-        &nbsp;｜&nbsp;3か月間または有効応募3件まで成果報酬0円
-    </span>
-</div>
-@endif
 
 {{-- ① ファーストビュー --}}
 <section class="hero">

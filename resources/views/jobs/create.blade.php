@@ -17,7 +17,7 @@
 </div>
 
 @if(now()->lte($monitorCutoff))
-<div style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:12px 0;text-align:center;">
+<div style="position:sticky;top:78px;z-index:90;background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:12px 0;text-align:center;">
     <span style="font-size:0.85rem;font-weight:800;color:#f57f17;">
         <i class="bi bi-star-fill me-1"></i>無料モニター募集中
         &nbsp;〜&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで
