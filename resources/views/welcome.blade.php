@@ -21,7 +21,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>沖縄の介護・福祉求人｜Care Entry（ケアエントリー）</title>
-    <meta name="description" content="沖縄の介護・福祉求人に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
+    <meta name="description" content="沖縄の介護・福祉に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -758,7 +758,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     沖縄での介護・福祉の仕事探しを、<br>もっとシンプルに。
                 </h1>
                 <p class="hero__sub">
-                    ケアエントリーは、沖縄の介護・福祉求人に特化した求人サービスです。<br>
+                    ケアエントリーは、沖縄の介護・福祉に特化した求人サービスです。<br>
                     地域・職種から、自分に合う職場を探せます。
                 </p>
                 <div class="hero__features">
