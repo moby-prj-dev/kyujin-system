@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Care Entry — 実装機能一覧</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+    font-size: 12px;
+    color: #1a1a2e;
+    background: #fff;
+    padding: 40px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* 表紙ヘッダー */
+  .cover {
+    border-bottom: 3px solid #1a73e8;
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  .cover__service {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a73e8;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cover__title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #0d1a2e;
+    margin-bottom: 8px;
+  }
+  .cover__meta {
+    font-size: 11px;
+    color: #888;
+  }
+
+  /* セクション */
+  .section {
+    margin-bottom: 28px;
+    page-break-inside: avoid;
+  }
+  .section__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1a73e8;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .section__header--green  { background: #2e7d32; }
+  .section__header--red    { background: #b71c1c; }
+  .section__header--purple { background: #4a148c; }
+  .section__header--teal   { background: #00695c; }
+  .section__header--orange { background: #e65100; }
+  .section__num {
+    font-size: 11px;
+    font-weight: 900;
+    background: rgba(255,255,255,.25);
+    border-radius: 4px;
+    padding: 1px 7px;
+  }
+  .section__title {
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  /* サブセクション */
+  .sub {
+    margin-bottom: 14px;
+  }
+  .sub__title {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #1a73e8;
+    border-left: 3px solid #1a73e8;
+    padding-left: 8px;
+    margin-bottom: 6px;
+  }
+  .sub__title--green  { color: #2e7d32; border-color: #2e7d32; }
+  .sub__title--red    { color: #b71c1c; border-color: #b71c1c; }
+  .sub__title--purple { color: #4a148c; border-color: #4a148c; }
+  .sub__title--teal   { color: #00695c; border-color: #00695c; }
+  .sub__title--orange { color: #e65100; border-color: #e65100; }
+
+  ul {
+    list-style: none;
+    padding-left: 12px;
+  }
+  ul li {
+    position: relative;
+    padding-left: 14px;
+    margin-bottom: 3px;
+    line-height: 1.65;
+    color: #333;
+  }
+  ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #aaa;
+  }
+  ul li strong {
+    color: #0d1a2e;
+  }
+
+  /* バッジ */
+  .badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .badge--blue   { background: #e8f0fe; color: #1a73e8; }
+  .badge--green  { background: #e8f5e9; color: #2e7d32; }
+  .badge--orange { background: #fff3e0; color: #e65100; }
+  .badge--purple { background: #f3e5f5; color: #6a1b9a; }
+  .badge--red    { background: #fce4ec; color: #b71c1c; }
+
+  /* テーブル */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  th {
+    background: #f0f4ff;
+    color: #1a1a2e;
+    font-weight: 800;
+    padding: 6px 10px;
+    text-align: left;
+    border: 1px solid #d0d9f0;
+  }
+  td {
+    padding: 5px 10px;
+    border: 1px solid #e8eaf0;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  tr:nth-child(even) td { background: #f8faff; }
+
+  /* コード */
+  code {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 10.5px;
+    color: #333;
+  }
+
+  /* 2カラムグリッド */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .card {
+    border: 1px solid #e0e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .card__title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #1a73e8;
+    margin-bottom: 5px;
+  }
+
+  /* ページ区切り */
+  .page-break { page-break-before: always; }
+
+  /* フッター */
+  .footer {
+    margin-top: 40px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 12px;
+    font-size: 10px;
+    color: #aaa;
+    text-align: center;
+  }
+
+  @media print {
+    body { padding: 20px; font-size: 11px; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 表紙ヘッダー -->
+<div class="cover">
+  <p class="cover__service">Care Entry — 沖縄の介護・福祉専門求人サービス</p>
+  <h1 class="cover__title">実装機能一覧ドキュメント</h1>
+  <p class="cover__meta">作成日：2026年4月23日 &nbsp;|&nbsp; バージョン：現行開発版</p>
+</div>
+
+<!-- 1. 求職者向け機能 -->
+<div class="section">
+  <div class="section__header section__header--green">
+    <span class="section__num">1</span>
+    <span class="section__title">求職者向け機能</span>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--green">求人検索・閲覧</p>
+    <ul>
+      <li><strong>沖縄全体・エリア別の求人一覧</strong>（<code>/jobs/okinawa</code>、<code>/jobs/okinawa/{slug}</code>）</li>
+      <li>エリア / 職種 / 雇用形態 / 勤務条件 / 重視ポイントによる複合絞り込み</li>
+      <li><strong>求人LPページ</strong>（<code>/lp/{token}</code>）— トークンベースの個別求人ページ、ログイン不要</li>
+      <li>AIが自動生成したタイトル・サブタイトル・タグ・本文・メタディスクリプションを表示</li>
+      <li>SEOメタデータ自動設定（OGP含む）</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--green">フォーム応募</p>
+    <ul>
+      <li><strong>ステップ式応募フロー</strong>（ステップ1：募集要項確認・条件選択 → ステップ2：応募者情報入力）</li>
+      <li>応募前に求人条件と希望条件のマッチング判定を実施</li>
+      <li>自動無効判定（重複応募・スパム・テスト投稿の検出）</li>
+      <li>応募完了サンクスページ表示</li>
+      <li>レート制限：60秒内10回まで</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--green">LINE応募・連携</p>
+    <ul>
+      <li><strong>LINE LIFF応募</strong>（<code>/liff/{token}</code>）— LINEアプリ内での応募フロー、LINE IDと表示名を自動取得</li>
+      <li><strong>LINE Webhook対応</strong>（<code>/webhook/line</code>）— LINEからの会話型応募フロー</li>
+      <li>チャットセッション管理（CONFIRMING → COLLECTING_NAME → COLLECTING_PHONE の段階的情報収集）</li>
+      <li>条件不一致時の他求人自動提案</li>
+      <li>Webhook署名検証によるセキュリティ確保</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--green">お役立ち記事</p>
+    <ul>
+      <li>SEO記事一覧・詳細ページ（<code>/articles</code>、<code>/articles/{slug}</code>）</li>
+      <li>カテゴリ：業界情報 / 職種別 / エリア情報 / 資格・研修 / 未経験・転職</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 2. 掲載主向け機能 -->
+<div class="section">
+  <div class="section__header">
+    <span class="section__num">2</span>
+    <span class="section__title">掲載主（事業者）向け機能</span>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title">求人作成フロー</p>
+    <ul>
+      <li>企業情報（社名・メール・電話）の入力</li>
+      <li>求人詳細入力：タイトル / 給与（月給・時給・日給・年収・その他）/ エリア / 職種 / 雇用形態 / 勤務条件 / 訴求ポイント / 写真 / 自由記述</li>
+      <li>AIによる求人タイトル・本文の自動生成</li>
+      <li>請求規約への同意記録</li>
+      <li><strong>メール認証フロー</strong>：確認メール送信 → トークン認証 → 求人公開（ログイン不要）</li>
+      <li>確認メール再送機能</li>
+      <li>同一メール・電話での重複掲載チェック（複製警告画面あり）</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title">求人管理画面（<code>/jobs/{token}</code>）</p>
+    <ul>
+      <li>求人情報の編集（全項目）</li>
+      <li>掲載ステータス表示（公開中 / 一時停止 / 期限切れ / 終了）</li>
+      <li>公開中求人URLのワンクリックコピー</li>
+      <li>無料掲載期間・残り日数の表示</li>
+      <li>応募件数（総数 / 有効 / 無効 / 無料枠残数）の表示</li>
+      <li>応募者一覧（氏名・連絡先・応募種別・有効性・課金対象）</li>
+      <li>掲載継続・一時停止・再開・完全削除の操作</li>
+      <li>請求情報の確認（月次請求額・ステータス・応募明細）</li>
+      <li><strong>モニター期間中バナー</strong>：期間内は上部に無料期間終了日を表示</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title">求人複製</p>
+    <ul>
+      <li>既存求人の複製（<code>/jobs/duplicate</code>）— 同一メール・電話での複数求人への誘導</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 3. 管理者向け機能 -->
+<div class="section page-break">
+  <div class="section__header section__header--red">
+    <span class="section__num">3</span>
+    <span class="section__title">管理者向け機能</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <p class="card__title">求人管理（<code>/admin/jobs</code>）</p>
+      <ul>
+        <li>全求人一覧・検索（企業名/タイトル全文、ステータス、試用状態でフィルタ）</li>
+        <li>企業別統計：公開日・トライアル終了日・応募数・課金件数</li>
+        <li>求人の非公開化／再公開</li>
+        <li>モニター設定のON/OFF（3か月無料期間の付与・解除）</li>
+        <li>永久無料設定のON/OFF</li>
+        <li>管理者メモの記録</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="card__title">応募管理（<code>/admin/applications</code>）</p>
+      <ul>
+        <li>全応募の一覧表示</li>
+        <li>応募ステータス管理（受付中・確認済み・終了）</li>
+        <li>有効／無効判定の確認</li>
+        <li>課金対象フラグの確認</li>
+        <li>応募詳細（LINE / フォーム種別・希望条件）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="card__title">記事管理（<code>/admin/articles</code>）</p>
+      <ul>
+        <li>SEO記事の一覧・編集・削除</li>
+        <li>AIによる記事自動生成（キーワード・カテゴリ指定）</li>
+        <li>11種類の記事テンプレート定義（エリア別・職種別・資格等）</li>
+        <li>公開日時・タグ・メタデータの手動編集</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="card__title">請求管理（<code>/admin/billings</code>）</p>
+      <ul>
+        <li>月次請求サマリー一覧（企業別・月別集計）</li>
+        <li>ステータス管理（未請求・送付済・入金済・保留・未払い・期限超過）</li>
+        <li>請求メール手動送信</li>
+        <li>月次請求一括生成・メール送信</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--red">システム設定（<code>/admin/settings</code>）</p>
+    <ul>
+      <li>モニター開始日・期間（月数）をキー・バリュー方式で動的管理</li>
+      <li>管理者操作ログの自動記録（AuditLog）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 4. システム・バックエンド機能 -->
+<div class="section">
+  <div class="section__header section__header--purple">
+    <span class="section__num">4</span>
+    <span class="section__title">システム・バックエンド機能</span>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--purple">AI・自動生成</p>
+    <ul>
+      <li><strong>求人SEOコンテンツ自動生成</strong>（SeoGeneratorService）— エリア・職種・条件からタイトル・サブタイトル・タグ・本文を生成、スコアベースで主訴求を決定</li>
+      <li><strong>記事自動生成</strong>（ArticleGeneratorService）— Artisanコマンドで11種のテンプレートから記事を一括生成</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--purple">メール通知</p>
+    <table>
+      <thead>
+        <tr><th>メール種別</th><th>送信タイミング</th><th>宛先</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>JobVerificationMail</td><td>求人作成時のメール認証</td><td>掲載主</td></tr>
+        <tr><td>AdminJobNotificationMail</td><td>求人公開時</td><td>管理者</td></tr>
+        <tr><td>JobManageLinkMail</td><td>管理リンク再送時</td><td>掲載主</td></tr>
+        <tr><td>応募通知（LINE/フォーム）</td><td>応募発生時</td><td>掲載主</td></tr>
+        <tr><td>TrialEndingWarningMail</td><td>無料期間終了3日前</td><td>掲載主</td></tr>
+        <tr><td>JobExpiredMail</td><td>求人有効期限切れ時</td><td>掲載主</td></tr>
+        <tr><td>JobContinuedMail</td><td>求人継続操作時</td><td>掲載主</td></tr>
+        <tr><td>BillingSummaryMail</td><td>月次請求送信時</td><td>掲載主</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--purple">課金・試用管理</p>
+    <ul>
+      <li><strong>無料枠</strong>：有効応募3件まで無料（会社単位で集計）</li>
+      <li><strong>モニター期間</strong>：3か月間または有効応募3件まで無料（設定から動的管理）</li>
+      <li><strong>課金単価</strong>：有効応募1件 = ¥3,000（税別）</li>
+      <li>未払い・期限超過企業の新規掲載ブロック</li>
+      <li>BillingService による月次集計・自動請求生成</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--purple">応募検証（ApplicationValidationService）</p>
+    <ul>
+      <li>必須項目チェック（氏名・電話またはメール）</li>
+      <li>テスト投稿検出（test / テスト / あああ 等）</li>
+      <li>スパム検出（spam / bot / noreply 等）</li>
+      <li>重複応募ブロック（同一求人・同一メール/電話）</li>
+      <li>電話番号・メールアドレスの正規化（全角→半角、ハイフン除去）</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--purple">定期実行コマンド（Artisan）</p>
+    <ul>
+      <li><code>billing:generate-monthly</code> — 前月の有効応募を集計して月次請求生成・メール送信</li>
+      <li><code>billing:send-trial-warnings</code> — 無料期間終了3日前の警告メール送信（重複送信防止付き）</li>
+      <li><code>jobs:send-expired-notifications</code> — 期限切れ求人の通知送信</li>
+      <li><code>articles:generate-content</code> — 定義済みテンプレートからSEO記事を一括生成</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <p class="sub__title sub__title--purple">セキュリティ</p>
+    <ul>
+      <li>レート制限：求人作成（5回/60秒）・応募確認（20回/60秒）・応募送信（10回/60秒）</li>
+      <li>LINE Webhook 署名検証（X-Line-Signature）</li>
+      <li>管理者操作の AuditLog 記録（アクション・モデル・変更内容・IPアドレス）</li>
+      <li>トークンベース認証（32文字ランダム、ログイン不要で求人管理）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 5. データモデル -->
+<div class="section page-break">
+  <div class="section__header section__header--teal">
+    <span class="section__num">5</span>
+    <span class="section__title">主要データモデル</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th style="width:22%">モデル</th><th>概要</th><th style="width:35%">主要フィールド</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Job</strong><br><span style="font-size:10px;color:#888;">job_listings</span></td>
+        <td>求人情報。トークンベースで管理。ソフトデリート対応。</td>
+        <td>token, status, company_name, contact_email, salary_*, expires_at, is_monitor, monitor_ends_at, is_permanently_free</td>
+      </tr>
+      <tr>
+        <td><strong>Application</strong></td>
+        <td>応募情報。有効性・課金対象を自動判定。</td>
+        <td>applicant_name, phone, email, application_type, is_valid, invalid_reason, is_billable</td>
+      </tr>
+      <tr>
+        <td><strong>BillingSummary</strong></td>
+        <td>月次請求集計。企業メール×請求月で集計。</td>
+        <td>contact_email, billing_month, valid_count, total_amount, status</td>
+      </tr>
+      <tr>
+        <td><strong>LineChatSession</strong></td>
+        <td>LINE会話セッション管理。</td>
+        <td>line_user_id, step, updated_at</td>
+      </tr>
+      <tr>
+        <td><strong>LineEntryToken</strong></td>
+        <td>LINE応募用一時トークン（30分有効）。</td>
+        <td>token(64文字), expires_at, search_conditions_json</td>
+      </tr>
+      <tr>
+        <td><strong>ContentArticle</strong></td>
+        <td>SEO記事コンテンツ。</td>
+        <td>slug, category, title, h1, meta_description, body, published_at</td>
+      </tr>
+      <tr>
+        <td><strong>Setting</strong></td>
+        <td>キー・バリュー設定（モニター期間等）。</td>
+        <td>key, value（monitor_start_date / monitor_months）</td>
+      </tr>
+      <tr>
+        <td><strong>AuditLog</strong></td>
+        <td>管理者操作ログ。</td>
+        <td>action, model, model_id, changes(JSON), ip_address</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+  <p style="font-size:11px;font-weight:800;color:#00695c;margin-bottom:6px;">マスターデータ（全テーブル active / sort_order / score 管理）</p>
+  <div class="grid-2">
+    <ul>
+      <li><strong>MasterArea</strong> — エリア（都道府県・地域・地区・スラッグ）</li>
+      <li><strong>MasterJobType</strong> — 職種（カテゴリ・スラッグ・is_main_candidate）</li>
+      <li><strong>MasterEmploymentType</strong> — 雇用形態</li>
+    </ul>
+    <ul>
+      <li><strong>MasterCondition</strong> — 勤務条件（is_main_candidate）</li>
+      <li><strong>MasterAppeal</strong> — 訴求・重視ポイント（is_main_candidate）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 6. 画面構成 -->
+<div class="section">
+  <div class="section__header section__header--orange">
+    <span class="section__num">6</span>
+    <span class="section__title">画面構成（ビュー）</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>区分</th><th>画面名</th><th>URL / パス</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="2">ランディング</td>
+        <td>求職者向けトップ</td><td><code>/</code></td>
+      </tr>
+      <tr>
+        <td>掲載主向けトップ</td><td><code>/client</code></td>
+      </tr>
+      <tr>
+        <td rowspan="5">求人管理</td>
+        <td>求人作成</td><td><code>/jobs/create</code></td>
+      </tr>
+      <tr>
+        <td>求人管理・編集</td><td><code>/jobs/{token}</code></td>
+      </tr>
+      <tr>
+        <td>求人複製</td><td><code>/jobs/duplicate</code></td>
+      </tr>
+      <tr>
+        <td>確認メール再送</td><td><code>/jobs/resend</code></td>
+      </tr>
+      <tr>
+        <td>メール確認済み</td><td><code>/jobs/verify_sent</code></td>
+      </tr>
+      <tr>
+        <td rowspan="4">応募・LP</td>
+        <td>求人LP</td><td><code>/lp/{token}</code></td>
+      </tr>
+      <tr>
+        <td>フォーム応募</td><td><code>/lp/{token}/apply</code></td>
+      </tr>
+      <tr>
+        <td>応募完了</td><td><code>/lp/{token}/thanks</code></td>
+      </tr>
+      <tr>
+        <td>LINE LIFF応募</td><td><code>/liff/{token}</code></td>
+      </tr>
+      <tr>
+        <td rowspan="2">記事</td>
+        <td>記事一覧</td><td><code>/articles</code></td>
+      </tr>
+      <tr>
+        <td>記事詳細</td><td><code>/articles/{slug}</code></td>
+      </tr>
+      <tr>
+        <td rowspan="6">管理画面</td>
+        <td>求人一覧</td><td><code>/admin/jobs</code></td>
+      </tr>
+      <tr>
+        <td>応募一覧</td><td><code>/admin/applications</code></td>
+      </tr>
+      <tr>
+        <td>記事管理</td><td><code>/admin/articles</code></td>
+      </tr>
+      <tr>
+        <td>請求管理</td><td><code>/admin/billings</code></td>
+      </tr>
+      <tr>
+        <td>設定</td><td><code>/admin/settings</code></td>
+      </tr>
+      <tr>
+        <td>ログイン</td><td><code>/admin/login</code></td>
+      </tr>
+      <tr>
+        <td rowspan="4">固定ページ</td>
+        <td>運営者情報</td><td><code>/company</code></td>
+      </tr>
+      <tr>
+        <td>プライバシーポリシー</td><td><code>/privacy-policy</code></td>
+      </tr>
+      <tr>
+        <td>利用規約</td><td><code>/terms</code></td>
+      </tr>
+      <tr>
+        <td>特定商取引法に基づく表記</td><td><code>/legal</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  Care Entry &nbsp;|&nbsp; 沖縄の介護・福祉専門求人サービス &nbsp;|&nbsp; 本ドキュメントは実装コードをもとに自動集計したものです
+</div>
+
+</body>
+</html>

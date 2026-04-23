@@ -177,7 +177,7 @@ class ApplyController extends Controller
     }
 
     // 代替求人（同エリア→同職種→その他の順で3件）
-    private function findAlternativeJobs(Job $job, array $conditions): \Illuminate\Database\Eloquent\Collection
+    private function findAlternativeJobs(Job $job, array $conditions): \Illuminate\Support\Collection
     {
         $base = Job::active()
             ->whereNotNull('email_verified_at')
