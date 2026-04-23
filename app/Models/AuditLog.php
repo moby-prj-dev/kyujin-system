@@ -17,6 +17,10 @@ class AuditLog extends Model
     const ENTITY_TOKEN       = 'token';
 
     const ACTION_JOB_CREATED                = 'job_created';
+    const ACTION_JOB_CLOSED                 = 'job_closed';
+    const ACTION_JOB_REOPENED               = 'job_reopened';
+    const ACTION_JOB_CONTINUED              = 'job_continued';
+    const ACTION_JOB_DELETED                = 'job_deleted';
     const ACTION_AGREEMENT_SAVED            = 'agreement_saved';
     const ACTION_LP_GENERATED              = 'lp_generated';
     const ACTION_LINE_APPLICATION_STARTED   = 'line_application_started';
