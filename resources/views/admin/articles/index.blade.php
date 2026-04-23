@@ -143,11 +143,17 @@
                             </a>
                             <div class="text-muted" style="font-size:.72rem;">{{ $article->slug }}</div>
                         </div>
-                        <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" class="flex-shrink-0"
-                              onsubmit="return confirm('「{{ addslashes($article->title) }}」を削除しますか？')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-xs btn-outline-danger">削除</button>
-                        </form>
+                        <div class="d-flex gap-1 flex-shrink-0">
+                            <a href="{{ route('admin.articles.edit', $article) }}"
+                               class="btn btn-xs btn-outline-primary">
+                                <i class="bi bi-pencil"></i> 編集
+                            </a>
+                            <form method="POST" action="{{ route('admin.articles.destroy', $article) }}"
+                                  onsubmit="return confirm('「{{ addslashes($article->title) }}」を削除しますか？')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-xs btn-outline-danger">削除</button>
+                            </form>
+                        </div>
                     </div>
                     @endforeach
                 </div>

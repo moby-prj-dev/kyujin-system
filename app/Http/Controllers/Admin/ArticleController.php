@@ -58,6 +58,35 @@ class ArticleController extends Controller
         }
     }
 
+    public function edit(ContentArticle $article)
+    {
+        $areas    = MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get();
+        $jobTypes = MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category');
+        return view('admin.articles.edit', compact('article', 'areas', 'jobTypes'));
+    }
+
+    public function update(Request $request, ContentArticle $article)
+    {
+        $request->validate([
+            'title'            => ['required', 'string', 'max:100'],
+            'h1'               => ['nullable', 'string', 'max:100'],
+            'meta_description' => ['nullable', 'string', 'max:200'],
+            'body'             => ['required', 'string'],
+            'image_url'        => ['nullable', 'url', 'max:500'],
+            'area_id'          => ['nullable', 'integer', 'exists:master_areas,id'],
+            'job_type_id'      => ['nullable', 'integer', 'exists:master_job_types,id'],
+            'published_at'     => ['nullable', 'date'],
+        ]);
+
+        $article->update($request->only([
+            'title', 'h1', 'meta_description', 'body',
+            'image_url', 'area_id', 'job_type_id', 'published_at',
+        ]));
+
+        return redirect()->route('admin.articles.index')
+            ->with('success', "「{$article->title}」を更新しました。");
+    }
+
     public function destroy(ContentArticle $article)
     {
         $title = $article->title;

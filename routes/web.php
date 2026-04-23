@@ -76,6 +76,7 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::get('/jobs', [\App\Http\Controllers\Admin\JobController::class, 'index'])->name('jobs.index');
     Route::patch('/jobs/{job}/toggle-hidden', [\App\Http\Controllers\Admin\JobController::class, 'toggleHidden'])->name('jobs.toggle_hidden');
     Route::patch('/jobs/{job}/toggle-monitor', [\App\Http\Controllers\Admin\JobController::class, 'toggleMonitor'])->name('jobs.toggle_monitor');
+    Route::patch('/jobs/{job}/toggle-permanently-free', [\App\Http\Controllers\Admin\JobController::class, 'togglePermanentlyFree'])->name('jobs.toggle_permanently_free');
     Route::patch('/jobs/{job}/memo', [\App\Http\Controllers\Admin\JobController::class, 'updateMemo'])->name('jobs.memo');
 
     // 応募一覧
@@ -85,6 +86,8 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     // 記事管理
     Route::get('/articles', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('articles.index');
     Route::post('/articles/generate', [\App\Http\Controllers\Admin\ArticleController::class, 'generate'])->name('articles.generate');
+    Route::get('/articles/{article}/edit', [\App\Http\Controllers\Admin\ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [\App\Http\Controllers\Admin\ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{article}', [\App\Http\Controllers\Admin\ArticleController::class, 'destroy'])->name('articles.destroy');
 
     // 設定

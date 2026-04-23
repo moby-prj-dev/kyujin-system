@@ -121,6 +121,13 @@ class ApplicationValidationService
         $companyEmail = $application->job->contact_email ?? null;
         if (! $companyEmail) return false;
 
+        // 永久無料フラグ（会社単位）
+        $isPermanentlyFree = Job::where('contact_email', $companyEmail)
+            ->whereNotNull('email_verified_at')
+            ->where('is_permanently_free', true)
+            ->exists();
+        if ($isPermanentlyFree) return false;
+
         // monitor_ends_at が設定されていれば、解除後も期限まで判定
         $monitorEnd = Job::where('contact_email', $companyEmail)
             ->whereNotNull('email_verified_at')
