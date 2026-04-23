@@ -768,17 +768,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>30秒でかんたん応募
                     </span>
-                    <span class="hero__feature-item">
-                        <i class="bi bi-check-circle-fill"></i>LINEからそのまま応募できる
-                    </span>
                 </div>
                 <div class="hero__cta-group">
                     <a href="#search" class="hero__cta-primary">
                         <i class="bi bi-search"></i>求人を探す
-                    </a>
-                    <a href="https://lin.ee/" class="hero__cta-secondary">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                        LINEで応募する
                     </a>
                 </div>
                 <p class="hero__note">
@@ -878,8 +871,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <i class="bi bi-chevron-down search__acc-chevron"></i>
                     </button>
                     <div class="collapse search__acc-body{{ $requiredCount ? ' show' : '' }}" id="accRequired">
-                        <p class="search__acc-subnote">LINE応募時に求人との一致確認に使われます</p>
-
                         {{-- 必須タブ --}}
                         <div class="search__tabs-wrap">
                             <div class="search__tabs-row">
@@ -1039,10 +1030,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <a href="#search" class="points__cta-primary">
                         <i class="bi bi-search"></i>求人を探す
                     </a>
-                    <a href="https://lin.ee/" class="points__cta-line">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                        LINEで応募する
-                    </a>
                 </div>
             </div>
             <div class="col-lg-7">
@@ -1066,13 +1053,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div>
                             <p class="points__item-title">会員登録なしで、かんたんに応募できます</p>
                             <p class="points__item-body">アカウント作成不要。名前と電話番号を入力するだけで応募完了します。</p>
-                        </div>
-                    </li>
-                    <li class="points__item">
-                        <span class="points__item-icon" style="color:#06C755"><i class="bi bi-chat-dots-fill"></i></span>
-                        <div>
-                            <p class="points__item-title">LINEからそのまま応募することも可能です</p>
-                            <p class="points__item-body">使い慣れたLINEで気軽に応募できます。担当者に直接連絡して、疑問をすぐ解消できます。</p>
                         </div>
                     </li>
                 </ul>
@@ -1121,22 +1101,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 @endif
 
-{{-- ④ LINE応募 CTA --}}
-<section class="cta-band">
-    <div class="container">
-        <h2 class="cta-band__title">気になる求人に、LINEでそのまま応募できます</h2>
-        <p class="cta-band__body">会員登録不要。LINEを使って、今すぐかんたんに応募できます。</p>
-        <div class="cta-band__actions">
-            <a href="https://lin.ee/" class="cta-band__btn-line">
-                <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                LINEで応募する
-            </a>
-            <a href="#search" class="cta-band__btn-search">
-                <i class="bi bi-search"></i>求人を探す
-            </a>
-        </div>
-    </div>
-</section>
 
 {{-- フッター --}}
 <footer class="footer">
