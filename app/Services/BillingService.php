@@ -26,6 +26,7 @@ class BillingService
             ->whereMonth('applications.counted_at', $mon)
             ->where('applications.is_valid', true)
             ->whereNull('j.deleted_at')
+            ->where('j.is_monitor', false)
             ->select([
                 'j.contact_email',
                 DB::raw('MAX(j.company_name) as company_name'),
