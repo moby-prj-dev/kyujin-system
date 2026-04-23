@@ -535,6 +535,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
+{{-- 料金 --}}
+<section style="background:#f8faff;border-top:1px solid #e3eaf8;border-bottom:1px solid #e3eaf8;padding:36px 0;">
+    <div class="container">
+        <p style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--color-primary);letter-spacing:.08em;margin-bottom:20px;">PRICING</p>
+        <div class="row justify-content-center g-3">
+            <div class="col-6 col-md-3">
+                <div style="background:#fff;border:1.5px solid #e3eaf8;border-radius:12px;padding:20px 16px;text-align:center;">
+                    <p style="font-size:0.75rem;color:#888;margin-bottom:6px;">掲載費</p>
+                    <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥0</p>
+                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;">初期費用なし</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div style="background:#fff;border:1.5px solid #e3eaf8;border-radius:12px;padding:20px 16px;text-align:center;">
+                    <p style="font-size:0.75rem;color:#888;margin-bottom:6px;">月額費用</p>
+                    <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥0</p>
+                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;">固定費なし</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div style="background:#fff;border:1.5px solid var(--color-primary);border-radius:12px;padding:20px 16px;text-align:center;">
+                    <p style="font-size:0.75rem;color:var(--color-primary);font-weight:700;margin-bottom:6px;">成果報酬（応募1件）</p>
+                    <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥3,000</p>
+                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;">有効応募のみ課金・税別</p>
+                </div>
+            </div>
+        </div>
+        <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:16px;margin-bottom:0;">
+            ※ 現在は無料モニター期間中につき、成果報酬も<strong>無料</strong>でご利用いただけます
+        </p>
+    </div>
+</section>
+
 {{-- 無料モニター募集バナー --}}
 <section style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:28px 0;">
     <div class="container">
