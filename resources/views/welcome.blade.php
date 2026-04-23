@@ -1026,7 +1026,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="col-lg-5">
                 <p class="points__eyebrow">WHY CARE ENTRY</p>
                 <h2 class="points__heading">沖縄での介護・福祉の仕事探しを、<br>もっとシンプルにするために</h2>
-                <div class="points__cta-group">
+<div class="points__cta-group">
                     <a href="#search" class="points__cta-primary">
                         <i class="bi bi-search"></i>求人を探す
                     </a>
