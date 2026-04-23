@@ -26,9 +26,12 @@ class JobVerificationController extends Controller
             $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
             $seoGenerator->generate($job);
 
+            $isMonitor = $job->is_monitor || now()->lte(now()->parse(env('MONITOR_PERIOD_UNTIL', '2026-10-23')));
+
             $job->update([
                 'status'     => Job::STATUS_ACTIVE,
-                'expires_at' => $job->is_monitor ? null : now()->addMonths(3),
+                'is_monitor' => $isMonitor,
+                'expires_at' => $isMonitor ? null : now()->addMonths(3),
             ]);
 
             AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [

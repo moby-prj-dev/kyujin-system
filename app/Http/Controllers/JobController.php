@@ -366,16 +366,23 @@ class JobController extends Controller
     {
         if (empty($email)) return false;
 
-        $firstJob = Job::where('contact_email', $email)
+        // モニター期間中は全員無料
+        if (now()->lte(\Carbon\Carbon::parse(env('MONITOR_PERIOD_UNTIL', '2026-07-23')))) {
+            return false;
+        }
+
+        // モニター企業は常に無料
+        $hasMonitorJob = Job::where('contact_email', $email)
             ->whereNotNull('email_verified_at')
-            ->orderBy('email_verified_at')
-            ->first();
+            ->where('is_monitor', true)
+            ->exists();
 
-        if (! $firstJob) return false;
+        if ($hasMonitorJob) return false;
 
-        return ($firstJob->expires_at && now()->greaterThan($firstJob->expires_at))
-            || \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $email))
-                ->where('is_valid', true)->count() >= 3;
+        // 通常掲載企業はモニター期間終了後、初日から課金
+        return Job::where('contact_email', $email)
+            ->whereNotNull('email_verified_at')
+            ->exists();
     }
 
     public function destroy(string $token)

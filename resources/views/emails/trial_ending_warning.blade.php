@@ -13,37 +13,31 @@ body{font-family:'Hiragino Kaku Gothic ProN',sans-serif;background:#f5f7fa;margi
 <body>
 <div class="wrap">
     <div class="header">
-        <h1>⚠️ 無料トライアル期間終了のお知らせ</h1>
+        <h1>⚠️ 求人掲載期限のお知らせ</h1>
     </div>
     <div class="body">
         <p>{{ $companyName }} ご担当者様</p>
 
         <div class="alert-box">
-            <strong>Care Entry の無料トライアル期間が、7日以内に終了します。</strong><br>
-            <span style="font-size:0.9rem;">終了日：{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</span>
+            <strong>現在掲載中の求人の掲載期限が、7日以内に終了します。</strong><br>
+            <span style="font-size:0.9rem;">掲載期限：{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</span>
         </div>
 
-        <p>Care Entry（ケア・エントリー）をご利用いただきありがとうございます。</p>
+        <p>Care Entry（ケアエントリー）をご利用いただきありがとうございます。</p>
 
         <p>
-            現在ご利用中の無料トライアル期間が <strong>{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</strong> に終了します。<br>
-            トライアル終了後も引き続き求人掲載を続ける場合、以降に発生した有効応募は<strong>成果報酬（1件あたり3,000円）</strong>の対象となります。
+            現在掲載中の求人の掲載期限が <strong>{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</strong> に終了します。<br>
+            引き続き掲載を続けるには、管理ページより更新手続きをお願いします。
         </p>
 
         <p>
-            継続のお手続きは不要です。トライアル終了後も自動的に求人掲載は継続されます。<br>
-            掲載を停止される場合は、管理ページより操作をお願いします。
+            掲載を停止される場合は、そのまま期限をお迎えください。
         </p>
 
         <a href="{{ url('/') }}" class="btn">Care Entry 管理ページ</a>
-
-        <p style="margin-top:24px;font-size:0.88rem;color:#666;">
-            ご不明な点がございましたら、下記までお問い合わせください。<br>
-            Care Entry 運営事務局：<a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a>
-        </p>
     </div>
     <div class="footer">
-        &copy; {{ date('Y') }} Care Entry. All rights reserved.
+        Care Entry（ケアエントリー）｜沖縄の介護・福祉専門求人サービス
     </div>
 </div>
 </body>
