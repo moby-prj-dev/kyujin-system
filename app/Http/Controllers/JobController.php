@@ -199,13 +199,16 @@ class JobController extends Controller
         $jobInvalidCount  = $job->applications()->where('is_valid', false)->count();
         $jobBillableCount = $job->applications()->where('is_billable', true)->count();
 
+        $monitorCutoff = \App\Models\Setting::monitorCutoffDate();
+
         return view('jobs.manage', compact(
             'job', 'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
             'selectedAreas', 'selectedJobTypes', 'selectedEmploymentTypes',
             'selectedConditions', 'selectedAppeals', 'applications',
             'billingSummaries', 'trialEnded', 'hasUnpaid', 'hasOverdue',
             'companyValidCount', 'companyBillableCount', 'freeQuotaRemaining',
-            'jobValidCount', 'jobInvalidCount', 'jobBillableCount'
+            'jobValidCount', 'jobInvalidCount', 'jobBillableCount',
+            'monitorCutoff'
         ));
     }
 

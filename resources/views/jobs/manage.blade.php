@@ -14,6 +14,18 @@
 <div class="row justify-content-center">
 <div class="col-lg-9">
 
+{{-- モニター期間中バナー --}}
+@if(now()->lte($monitorCutoff))
+<div class="d-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-2"
+     style="background:#fff8e1;border:1.5px solid #f9a825;font-size:0.85rem;">
+    <i class="bi bi-star-fill flex-shrink-0" style="color:#f9a825;"></i>
+    <span>
+        <strong style="color:#f57f17;">無料モニター期間中</strong>
+        &nbsp;—&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで掲載費・成果報酬が無料です
+    </span>
+</div>
+@endif
+
 @if(session('updated'))
 <div class="alert alert-success">求人情報を更新しました。</div>
 @endif

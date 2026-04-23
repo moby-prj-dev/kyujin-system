@@ -589,31 +589,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-{{-- 無料モニター募集バナー --}}
-<section style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:28px 0;">
-    <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-                <p style="font-size:0.72rem;font-weight:800;color:#f57f17;letter-spacing:.08em;margin-bottom:4px;">
-                    <i class="bi bi-star-fill me-1"></i>期間限定・無料モニター募集中
-                    &nbsp;〜&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで
-                </p>
-                <p style="font-size:1.05rem;font-weight:900;color:#1a1a2e;margin-bottom:6px;">
-                    無料でご利用いただける「モニター企業」を募集しています
-                </p>
-                <p style="font-size:0.86rem;color:#555;margin:0;">
-                    掲載開始から<strong>3か月間または有効応募3件</strong>まで、掲載費・成果課金を一切いただかずサービスをお試しいただけます。<br>
-                    ご利用のご感想やフィードバックをいただける企業様が対象です。
-                </p>
-            </div>
-            <a href="{{ route('jobs.create') }}"
-               style="display:inline-flex;align-items:center;gap:8px;background:#f9a825;color:#fff;font-weight:800;font-size:0.95rem;padding:14px 28px;border-radius:30px;text-decoration:none;white-space:nowrap;flex-shrink:0;">
-                <i class="bi bi-plus-circle-fill"></i>モニターとして掲載する
-            </a>
-        </div>
-    </div>
-</section>
-
 {{-- 補足ストリップ --}}
 <div class="strip">
     <div class="container">
@@ -632,33 +607,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p class="merits__eyebrow">WHY CARE ENTRY</p>
             <h2 class="merits__heading">選ばれる理由</h2>
         </div>
-        <div class="row g-4">
-            <div class="col-md-3">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-currency-yen"></i></div>
                     <p class="merit-card__title">初期費用・月額費用0円</p>
                     <p class="merit-card__body">掲載にかかる固定費用は一切ありません。応募が届いたときだけ費用が発生する、シンプルな成果型の課金体系です。</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="merit-card">
-                    <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
-                    <p class="merit-card__title">LINE応募で応募率アップ</p>
-                    <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで、応募へのハードルを下げます。フォーム応募にも対応しています。</p>
+                    <div class="merit-card__icon"><i class="bi bi-toggle-on"></i></div>
+                    <p class="merit-card__title">継続・停止は掲載主が決める</p>
+                    <p class="merit-card__body">管理ページからいつでも掲載の継続・停止を操作できます。気づいたら課金が続いていた、ということはありません。</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
+                <div class="merit-card">
+                    <div class="merit-card__icon"><i class="bi bi-funnel-fill"></i></div>
+                    <p class="merit-card__title">条件マッチングで無駄な応募を減らす</p>
+                    <p class="merit-card__body">応募の際、掲載主様の募集条件と求職者の方の希望条件を自動で照合。条件が合った応募のみメールでお届けします。</p>
+                </div>
+            </div>
+            <div class="col-md-4">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-stars"></i></div>
                     <p class="merit-card__title">AIが求人文を自動生成</p>
                     <p class="merit-card__body">チェックを選ぶだけでAIが魅力的な求人タイトルと本文を自動作成。専門的な文章力がなくても、伝わる求人が作れます。</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="merit-card">
-                    <div class="merit-card__icon"><i class="bi bi-toggle-on"></i></div>
-                    <p class="merit-card__title">継続・停止は掲載主が決める</p>
-                    <p class="merit-card__body">管理ページからいつでも掲載の継続・停止を操作できます。気づいたら課金が続いていた、ということはありません。</p>
+                    <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
+                    <p class="merit-card__title">LINE応募で応募率アップ</p>
+                    <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで、応募へのハードルを下げます。フォーム応募にも対応しています。</p>
                 </div>
             </div>
         </div>
@@ -708,6 +690,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+{{-- 無料モニター募集バナー --}}
+<section style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:28px 0;">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <p style="font-size:0.72rem;font-weight:800;color:#f57f17;letter-spacing:.08em;margin-bottom:4px;">
+                    <i class="bi bi-star-fill me-1"></i>期間限定・無料モニター募集中
+                    &nbsp;〜&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで
+                </p>
+                <p style="font-size:1.05rem;font-weight:900;color:#1a1a2e;margin-bottom:6px;">
+                    無料でご利用いただける「モニター企業」を募集しています
+                </p>
+                <p style="font-size:0.86rem;color:#555;margin:0;">
+                    掲載開始から<strong>3か月間または有効応募3件</strong>まで、掲載費・成果課金を一切いただかずサービスをお試しいただけます。<br>
+                    ご利用のご感想やフィードバックをいただける企業様が対象です。
+                </p>
+            </div>
+            <a href="{{ route('jobs.create') }}"
+               style="display:inline-flex;align-items:center;gap:8px;background:#f9a825;color:#fff;font-weight:800;font-size:0.95rem;padding:14px 28px;border-radius:30px;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+                <i class="bi bi-plus-circle-fill"></i>モニターとして掲載する
+            </a>
         </div>
     </div>
 </section>
