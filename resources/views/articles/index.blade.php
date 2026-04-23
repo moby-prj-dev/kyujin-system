@@ -114,24 +114,26 @@
 
         @php
         $categoryMeta = [
-            'industry'      => ['label' => '業界情報',   'icon' => 'bi-bar-chart-fill'],
-            'job_type'      => ['label' => '職種別情報', 'icon' => 'bi-briefcase-fill'],
-            'area'          => ['label' => 'エリア情報', 'icon' => 'bi-geo-alt-fill'],
-            'qualification' => ['label' => '資格・研修', 'icon' => 'bi-award-fill'],
-            'beginner'      => ['label' => '未経験・転職', 'icon' => 'bi-person-plus-fill'],
+            'industry'      => ['label' => '業界情報',    'icon' => 'bi-bar-chart-fill'],
+            'job_type'      => ['label' => '職種別情報',  'icon' => 'bi-briefcase-fill'],
+            'area'          => ['label' => 'エリア情報',  'icon' => 'bi-geo-alt-fill'],
+            'qualification' => ['label' => '資格・研修',  'icon' => 'bi-award-fill'],
+            'beginner'      => ['label' => '未経験・転職','icon' => 'bi-person-plus-fill'],
         ];
         @endphp
 
-        @forelse($articles as $category => $items)
-            @php $meta = $categoryMeta[$category] ?? ['label' => $category, 'icon' => 'bi-file-text']; @endphp
-            <p class="section-title">
-                <i class="{{ $meta['icon'] }} me-1" style="color:var(--color-primary)"></i>{{ $meta['label'] }}
-            </p>
-            <div class="row g-3 mb-5">
-                @foreach($items as $article)
+        @if($articles->isEmpty())
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-file-text" style="font-size:2rem;opacity:.3;display:block;margin-bottom:12px;"></i>
+                <p>記事を準備中です</p>
+            </div>
+        @else
+            <div class="row g-3 mb-4">
+                @foreach($articles as $article)
+                    @php $meta = $categoryMeta[$article->category] ?? ['label' => $article->category, 'icon' => 'bi-file-text']; @endphp
                     <div class="col-md-6">
                         <a href="{{ route('articles.show', $article->slug) }}" class="article-card">
-                            <span class="category-label category-label--{{ $category }}">
+                            <span class="category-label category-label--{{ $article->category }}">
                                 <i class="{{ $meta['icon'] }}"></i>{{ $meta['label'] }}
                             </span>
                             <p class="article-card__title">{{ $article->h1 }}</p>
@@ -142,12 +144,11 @@
                     </div>
                 @endforeach
             </div>
-        @empty
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-file-text" style="font-size:2rem;opacity:.3;display:block;margin-bottom:12px;"></i>
-                <p>記事を準備中です</p>
+
+            <div class="d-flex justify-content-center">
+                {{ $articles->links() }}
             </div>
-        @endforelse
+        @endif
 
     </div>
 </div>
