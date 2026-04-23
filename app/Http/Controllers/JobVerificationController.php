@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\AdminJobNotificationMail;
 use App\Models\AuditLog;
 use App\Models\Job;
+use App\Models\Setting;
 use App\Services\SeoGeneratorService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -26,12 +27,14 @@ class JobVerificationController extends Controller
             $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
             $seoGenerator->generate($job);
 
-            $isMonitor = $job->is_monitor || now()->lte(now()->parse(env('MONITOR_PERIOD_UNTIL', '2026-10-23')));
+            $isMonitor     = $job->is_monitor || now()->lte(Setting::monitorCutoffDate());
+            $monitorEndsAt = $isMonitor ? now()->addMonths(Setting::monitorMonths()) : null;
 
             $job->update([
-                'status'     => Job::STATUS_ACTIVE,
-                'is_monitor' => $isMonitor,
-                'expires_at' => $isMonitor ? null : now()->addMonths(3),
+                'status'          => Job::STATUS_ACTIVE,
+                'is_monitor'      => $isMonitor,
+                'monitor_ends_at' => $monitorEndsAt,
+                'expires_at'      => now()->addMonths(3),
             ]);
 
             AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [

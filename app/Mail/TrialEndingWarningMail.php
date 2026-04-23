@@ -20,7 +20,7 @@ class TrialEndingWarningMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: '【ケアエントリー】無料トライアル期間終了のお知らせ');
+        return new Envelope(subject: '【ケアエントリー】モニター無料期間終了のお知らせ');
     }
 
     public function content(): Content
