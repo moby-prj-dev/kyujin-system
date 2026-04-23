@@ -330,11 +330,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 {{-- 固定CTAバー --}}
 <div class="cta-bar">
     <div class="cta-inner">
-        <a href="/liff/{{ $job->token }}" class="btn-line-apply">
+        @php $qs = request()->getQueryString() ? '?' . request()->getQueryString() : ''; @endphp
+        <a href="/liff/{{ $job->token }}{{ $qs }}" class="btn-line-apply">
             <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
             LINEで応募する
         </a>
-        <a href="/lp/{{ $job->token }}/apply" class="btn-form-apply">
+        <a href="{{ route('lp.apply', $job->token) }}{{ $qs }}" class="btn-form-apply">
             <i class="bi bi-pencil-square"></i>フォームで応募する
         </a>
         <p class="cta-note"><i class="bi bi-lock-fill me-1"></i>個人情報は安全に管理されます</p>

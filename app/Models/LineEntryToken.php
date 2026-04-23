@@ -9,8 +9,8 @@ use Illuminate\Support\Str;
 class LineEntryToken extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['job_id', 'token', 'line_user_id', 'expires_at', 'used_at'];
-    protected $casts = ['expires_at' => 'datetime', 'used_at' => 'datetime'];
+    protected $fillable = ['job_id', 'token', 'line_user_id', 'expires_at', 'used_at', 'search_conditions_json'];
+    protected $casts = ['expires_at' => 'datetime', 'used_at' => 'datetime', 'search_conditions_json' => 'array'];
 
     protected static function boot(): void
     {

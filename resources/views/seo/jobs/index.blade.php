@@ -383,13 +383,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="area-nav__inner">
             <a href="{{ route('seo.jobs.okinawa') }}"
-               class="area-nav__link {{ is_null($currentArea) ? 'area-nav__link--active' : '' }}">
+               class="area-nav__link {{ $currentArea === null ? 'area-nav__link--active' : '' }}">
                 沖縄県すべて
             </a>
             @foreach($areas as $region => $regionAreas)
                 @foreach($regionAreas as $area)
                     <a href="{{ route('seo.jobs.area', $area->slug) }}"
-                       class="area-nav__link {{ $currentArea?->slug === $area->slug ? 'area-nav__link--active' : '' }}">
+                       class="area-nav__link {{ ($currentArea && $currentArea->slug === $area->slug) ? 'area-nav__link--active' : '' }}">
                         {{ $area->name }}
                     </a>
                 @endforeach
@@ -408,6 +408,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <strong>{{ number_format($jobs->total()) }}件</strong> の求人が見つかりました
                 </p>
 
+                @php $entryBaseParams = $searchConditionIds ?? []; @endphp
                 @forelse($jobs as $job)
                     <div class="job-card">
                         <p class="job-card__company">{{ $job->company_name }}</p>
@@ -436,11 +437,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </p>
                         @endif
                         <div class="job-card__actions">
-                            <a href="{{ route('liff.show', $job->token) }}" class="btn-card-line">
+                            @php
+                                $entryUrl = route('line.entry', $job->token) . ($entryBaseParams ? '?' . http_build_query($entryBaseParams) : '');
+                            @endphp
+                            <a href="{{ $entryUrl }}" class="btn-card-line">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
                                 LINEで応募する
                             </a>
-                            <a href="{{ route('lp.show', $job->token) }}" class="btn-card-detail">
+                            <a href="{{ route('lp.show', $job->token) }}{{ $entryBaseParams ? '?' . http_build_query($entryBaseParams) : '' }}" class="btn-card-detail">
                                 <i class="bi bi-arrow-right-circle"></i>詳細を見る
                             </a>
                         </div>
@@ -487,7 +491,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div class="d-flex flex-wrap gap-1 mb-1">
                             @foreach($regionAreas as $area)
                                 <a href="{{ route('seo.jobs.area', $area->slug) }}"
-                                   class="badge text-decoration-none {{ $currentArea?->slug === $area->slug ? 'bg-primary' : 'bg-light text-dark border' }}"
+                                   class="badge text-decoration-none {{ ($currentArea && $currentArea->slug === $area->slug) ? 'bg-primary' : 'bg-light text-dark border' }}"
                                    style="font-size:0.78rem;padding:5px 10px;">
                                     {{ $area->name }}
                                 </a>
@@ -500,7 +504,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="seo-supplement">
                     <h3>
                         <i class="bi bi-info-circle-fill text-primary me-1"></i>
-                        {{ $currentArea ? $currentArea->name . 'の介護・福祉の仕事' : '沖縄の介護・福祉の仕事' }}
+                        {{ $currentArea ? "{$currentArea->name}の介護・福祉の仕事" : '沖縄の介護・福祉の仕事' }}
                     </h3>
                     @if($currentArea)
                         <p>{{ $currentArea->name }}は沖縄県{{ $currentArea->region }}エリアに位置し、介護・福祉施設の求人が多く掲載されています。地域に根ざした職場で働きたい方に向けた求人を探せます。</p>

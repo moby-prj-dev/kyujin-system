@@ -16,3 +16,6 @@ Schedule::command('billing:send-job-expired-notifications')->dailyAt('09:10');
 
 // 毎月1日8時：前月分の請求集計＆メール送信
 Schedule::command('billing:generate-monthly')->monthlyOn(1, '08:00');
+
+// 毎日深夜2時：SEOコンテンツ記事を生成
+Schedule::command('articles:generate')->dailyAt('02:00');

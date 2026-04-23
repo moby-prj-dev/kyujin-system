@@ -72,6 +72,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <i class="bi bi-receipt"></i>請求管理
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}"
+                       href="{{ route('admin.articles.index') }}">
+                        <i class="bi bi-file-earmark-text"></i>記事管理
+                    </a>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
