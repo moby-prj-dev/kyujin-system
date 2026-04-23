@@ -40,7 +40,7 @@ class HomeController extends Controller
 
         $articles = ContentArticle::published()
             ->orderByDesc('published_at')
-            ->limit(6)
+            ->limit(3)
             ->get();
 
         return view('welcome', compact(

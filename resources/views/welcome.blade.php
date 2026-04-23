@@ -293,7 +293,15 @@
         }
         .search__check-label input { display: none; }
         .search__check-label:has(input:checked) {
-            background: var(--color-primary); border-color: var(--color-primary); color: #fff;
+            background: var(--color-blue-light); border-color: var(--color-primary); color: var(--color-primary);
+            font-weight: 700;
+        }
+        .search__selected-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .search__selected-tag { font-size: 0.75rem; background: var(--color-blue-light); color: var(--color-primary); border: 1px solid var(--color-blue-mid); border-radius: 12px; padding: 2px 10px; font-weight: 700; }
+        .search__check-label:has(input:checked)::before {
+            content: '✓';
+            font-size: 0.75rem;
+            margin-right: 2px;
         }
         .search__section-header {
             display: flex;
@@ -325,22 +333,27 @@
         }
         .search__tab-btn:hover { background: #e8f0fb; color: var(--color-primary); }
         .search__tab-btn.active {
-            background: #fff; color: var(--color-primary);
+            background: var(--color-primary); color: #fff;
             border-color: var(--color-primary);
-            margin-bottom: -2px; border-bottom: 2px solid #fff;
+            margin-bottom: -2px; border-bottom: 2px solid var(--color-primary);
         }
         .search__tab-count {
             font-size: 0.7rem; font-weight: 700; color: #fff;
-            background: var(--color-primary); border-radius: 10px; padding: 0 7px;
+            background: transparent; border: 1.5px solid #fff; border-radius: 50%;
+            width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 0;
+        }
+        .search__tab-btn:not(.active) .search__tab-count {
+            color: var(--color-primary); border-color: var(--color-primary);
         }
         .search__tab-content { padding: 6px 0 4px; width: 100%; }
         .search__tab-content .tab-pane { width: 100%; }
-        .search__acc-item { border-bottom: 1px solid #e8f0f8; }
+        .search__acc-item { border-bottom: 1px solid #e8f0f8; overflow-anchor: none; }
         .search__acc-btn {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; align-items: center;
             width: 100%; background: none; border: none;
             padding: 12px 2px; cursor: pointer;
             font-size: 0.86rem; font-weight: 700; color: #1a1a1a; text-align: left;
+            gap: 6px;
         }
         .search__acc-btn:hover { color: var(--color-primary); }
         .search__acc-left { display: flex; align-items: center; gap: 8px; }
@@ -397,7 +410,7 @@
             padding: 0 6px; min-width: 18px; text-align: center;
             background: var(--color-primary); color: #fff;
         }
-        .search__acc-chevron { transition: transform .2s; color: var(--color-muted); font-size: 0.8rem; }
+        .search__acc-chevron { transition: transform .2s; color: var(--color-primary); font-size: 1.1rem; font-weight: 900; }
         .search__acc-btn[aria-expanded="true"] .search__acc-chevron { transform: rotate(180deg); }
         .search__acc-body { padding: 4px 0 12px; }
         .search__footer {
@@ -762,12 +775,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     地域・職種から、自分に合う職場を探せます。
                 </p>
                 <div class="hero__features">
-                    <span class="hero__feature-item">
-                        <i class="bi bi-check-circle-fill"></i>会員登録なしで応募OK
-                    </span>
-                    <span class="hero__feature-item">
-                        <i class="bi bi-check-circle-fill"></i>30秒でかんたん応募
-                    </span>
+                    <div style="display:flex;gap:8px;flex-wrap:nowrap;width:100%;">
+                        <span class="hero__feature-item" style="flex:1;min-width:0;font-size:0.78rem;">
+                            <i class="bi bi-check-circle-fill"></i>会員登録なしで応募OK
+                        </span>
+                        <span class="hero__feature-item" style="flex:1;min-width:0;font-size:0.78rem;background:#e8f5e9;border-color:#a5d6a7;color:#2e7d32;">
+                            <i class="bi bi-chat-dots-fill"></i>LINEアプリで気軽に応募
+                        </span>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:nowrap;width:100%;">
+                        <span class="hero__feature-item" style="flex:1;min-width:0;font-size:0.78rem;">
+                            <i class="bi bi-check-circle-fill"></i>30秒で応募完了
+                        </span>
+                        <span class="hero__feature-item" style="flex:1;min-width:0;font-size:0.78rem;">
+                            <i class="bi bi-bullseye"></i>条件すり合わせで採用率アップ
+                        </span>
+                    </div>
                 </div>
                 <div class="hero__cta-group">
                     <a href="#search" class="hero__cta-primary">
@@ -866,7 +889,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <span class="search__acc-left">
                             <i class="bi bi-check2-circle me-1"></i>必須項目
                             <span class="search__acc-note">職種・雇用形態・勤務条件</span>
-                            <span class="search__acc-badge{{ $requiredCount ? '' : ' d-none' }}" id="badge-required">{{ $requiredCount }}件選択中</span>
                         </span>
                         <i class="bi bi-chevron-down search__acc-chevron"></i>
                     </button>
@@ -898,6 +920,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         {{-- タブコンテンツ --}}
                         <div class="tab-content search__tab-content">
                             <div class="tab-pane fade{{ $activeTab === 'job-types' ? ' show active' : '' }}" id="panel-job-types">
+                                <div id="tags-job-types" class="search__selected-tags" style="margin-bottom:8px;"></div>
                                 @php
                                     $activeCat = collect($jobTypesByCategory)->keys()->first();
                                     foreach ($jobTypesByCategory as $cat => $types) {
@@ -940,6 +963,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 @endforeach
                             </div>
                             <div class="tab-pane fade{{ $activeTab === 'emp-types' ? ' show active' : '' }}" id="panel-emp-types">
+                                <div id="tags-emp-types" class="search__selected-tags" style="margin-bottom:8px;"></div>
                                 <div class="search__check-group">
                                     @foreach($employmentTypes as $et)
                                         <label class="search__check-label">
@@ -951,6 +975,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 </div>
                             </div>
                             <div class="tab-pane fade{{ $activeTab === 'conditions' ? ' show active' : '' }}" id="panel-conditions">
+                                <div id="tags-conditions" class="search__selected-tags" style="margin-bottom:8px;"></div>
                                 @foreach($conditionsByCategory as $category => $conditions)
                                     <p class="search__check-category">{{ $category }}</p>
                                     <div class="search__check-group">
@@ -967,7 +992,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                         <div class="search__acc-close-row">
                             <button type="button" class="search__acc-close"
-                                onclick="var el=this.closest('.search__acc-item');var col=el.querySelector('.collapse');bootstrap.Collapse.getOrCreateInstance(col).hide();window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-8,behavior:'smooth'})">
+                                onclick="var col=this.closest('.search__acc-item').querySelector('.collapse');bootstrap.Collapse.getOrCreateInstance(col).hide();">
                                 <i class="bi bi-chevron-up me-1"></i>閉じる
                             </button>
                         </div>
@@ -982,11 +1007,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <span class="search__acc-left">
                             <i class="bi bi-star me-1"></i>重視ポイント
                             <span class="search__acc-note">任意・掲載主への参考情報</span>
-                            <span class="search__acc-badge{{ $appealCount ? '' : ' d-none' }}" id="badge-appeals">{{ $appealCount }}件選択中</span>
                         </span>
                         <i class="bi bi-chevron-down search__acc-chevron"></i>
                     </button>
                     <div class="collapse search__acc-body{{ $appealCount ? ' show' : '' }}" id="accAppeals">
+                        <div id="appeals-tags" class="search__selected-tags" style="margin-bottom:8px;"></div>
                         @foreach($appealsByCategory as $category => $appeals)
                             <p class="search__check-category">{{ $category }}</p>
                             <div class="search__check-group">
@@ -1001,7 +1026,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         @endforeach
                         <div class="search__acc-close-row">
                             <button type="button" class="search__acc-close"
-                                onclick="var el=this.closest('.search__acc-item');var col=el.querySelector('.collapse');bootstrap.Collapse.getOrCreateInstance(col).hide();window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-8,behavior:'smooth'})">
+                                onclick="var col=this.closest('.search__acc-item').querySelector('.collapse');bootstrap.Collapse.getOrCreateInstance(col).hide();">
                                 <i class="bi bi-chevron-up me-1"></i>閉じる
                             </button>
                         </div>
@@ -1053,6 +1078,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div>
                             <p class="points__item-title">会員登録なしで、かんたんに応募できます</p>
                             <p class="points__item-body">アカウント作成不要。名前と電話番号を入力するだけで応募完了します。</p>
+                        </div>
+                    </li>
+                    <li class="points__item">
+                        <span class="points__item-icon" style="color:#06c755;"><i class="bi bi-chat-dots-fill"></i></span>
+                        <div>
+                            <p class="points__item-title">使い慣れたLINEから、そのまま応募できます</p>
+                            <p class="points__item-body">アプリのダウンロード不要。普段使っているLINEで、そのまま応募できます。フォームが苦手な方にも安心です。</p>
                         </div>
                     </li>
                 </ul>
@@ -1151,20 +1183,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ['accRequired', 'accAppeals'].forEach(id => {
         document.getElementById(id)?.addEventListener('hidden.bs.collapse', e => {
             if (e.target.id !== id) return;
-            const item = document.querySelector(`[data-bs-target="#${id}"]`)?.closest('.search__acc-item');
-            if (!item) return;
-            window.scrollTo({ top: item.getBoundingClientRect().top + window.scrollY - 8, behavior: 'smooth' });
+            document.activeElement?.blur();
         });
     });
 
-    // 必須項目を閉じたら重視ポイントを開く
-    document.getElementById('accRequired')?.addEventListener('hidden.bs.collapse', e => {
-        if (e.target.id !== 'accRequired') return;
-        const appeals = document.getElementById('accAppeals');
-        if (appeals && !appeals.classList.contains('show')) {
-            bootstrap.Collapse.getOrCreateInstance(appeals).show();
-        }
-    });
 
     // 必須項目ヘッダーをスクロール時に固定（position:fixed + placeholder）
     (function () {
@@ -1212,12 +1234,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // 必須項目：タブ件数バッジ＋アコーディオン合計バッジ
     const requiredBadge = document.getElementById('badge-required');
     const requiredCounts = { 'panel-job-types': 'cnt-job-types', 'panel-emp-types': 'cnt-emp-types', 'panel-conditions': 'cnt-conditions' };
-    const updateRequiredBadge = () => {
-        if (!requiredBadge) return;
-        const n = document.querySelectorAll('#accRequired input[type="checkbox"]:checked').length;
-        requiredBadge.textContent = n + '件選択中';
-        requiredBadge.classList.toggle('d-none', n === 0);
+    const updateRequiredBadge = () => {};
+    const updatePanelTags = (panelId, tagsId) => {
+        const tagsEl = document.getElementById(tagsId);
+        if (!tagsEl) return;
+        const checked = document.querySelectorAll(`#${panelId} input[type="checkbox"]:checked`);
+        tagsEl.innerHTML = Array.from(checked).map(cb => {
+            const label = cb.closest('label');
+            const text = label ? label.textContent.trim() : '';
+            return `<span class="search__selected-tag">${text}</span>`;
+        }).join('');
     };
+    const panelTagsMap = { 'panel-job-types': 'tags-job-types', 'panel-emp-types': 'tags-emp-types', 'panel-conditions': 'tags-conditions' };
     Object.entries(requiredCounts).forEach(([panelId, cntId]) => {
         const panelEl = document.getElementById(panelId);
         const cntEl   = document.getElementById(cntId);
@@ -1227,7 +1255,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const n = Array.from(cbs).filter(cb => cb.checked).length;
             cntEl.textContent = n;
             cntEl.classList.toggle('d-none', n === 0);
-            updateRequiredBadge();
+            updatePanelTags(panelId, panelTagsMap[panelId]);
         };
         cbs.forEach(cb => cb.addEventListener('change', update));
     });
@@ -1260,18 +1288,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
     })();
 
-    // 重視ポイント アコーディオンバッジ
+    // 重視ポイント タグ表示
     const appealsPanel = document.getElementById('accAppeals');
-    const appealsBadge = document.getElementById('badge-appeals');
-    if (appealsPanel && appealsBadge) {
+    const appealsTagsEl = document.getElementById('appeals-tags');
+    if (appealsPanel) {
         const cbs = appealsPanel.querySelectorAll('input[type="checkbox"]');
         const update = () => {
-            const n = Array.from(cbs).filter(cb => cb.checked).length;
-            appealsBadge.textContent = n + '件選択中';
-            appealsBadge.classList.toggle('d-none', n === 0);
+            const checked = Array.from(cbs).filter(cb => cb.checked);
+            if (appealsTagsEl) {
+                appealsTagsEl.innerHTML = checked.map(cb => {
+                    const label = cb.closest('label');
+                    const text = label ? label.textContent.trim() : '';
+                    return `<span class="search__selected-tag">${text}</span>`;
+                }).join('');
+            }
         };
         cbs.forEach(cb => cb.addEventListener('change', update));
     }
+
+    // チェックボックスの状態をlocalStorageに保存・復元
+    (function () {
+        const STORAGE_KEY = 'care_entry_search';
+        const form = document.querySelector('.search__form');
+        if (!form) return;
+
+        // 復元
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            const key = cb.name + '=' + cb.value;
+            if (saved[key]) {
+                cb.checked = true;
+                cb.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        const areaSelect = form.querySelector('select[name="area"]');
+        if (areaSelect && saved['area']) areaSelect.value = saved['area'];
+
+        // 保存
+        form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                const key = cb.name + '=' + cb.value;
+                if (cb.checked) current[key] = true;
+                else delete current[key];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+            });
+        });
+        if (areaSelect) {
+            areaSelect.addEventListener('change', () => {
+                const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                if (areaSelect.value) current['area'] = areaSelect.value;
+                else delete current['area'];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+            });
+        }
+    })();
 </script>
 </body>
 </html>
