@@ -10,8 +10,7 @@ class ContentArticleController extends Controller
     {
         $articles = ContentArticle::published()
             ->orderByDesc('published_at')
-            ->get()
-            ->groupBy('category');
+            ->paginate(12);
 
         return view('articles.index', compact('articles'));
     }
