@@ -563,7 +563,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
         </div>
         <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:16px;margin-bottom:4px;">
-            ※ 掲載開始から<strong>3ヶ月間、または有効応募3件まで</strong>は成果報酬も無料でご利用いただけます
+            ※ 現在はモニター期間中のため、掲載費・成果報酬すべて<strong>無料</strong>でご利用いただけます
         </p>
         <p style="text-align:center;font-size:0.75rem;color:#aaa;margin:0;">
             ※ 有効応募とは、重複・スパムを除いた応募を指します
