@@ -565,8 +565,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:16px;margin-bottom:4px;">
             ※ 現在はモニター期間中のため、掲載費・成果報酬すべて<strong>無料</strong>でご利用いただけます
         </p>
-        <p style="text-align:center;font-size:0.75rem;color:#aaa;margin:0;">
+        <p style="text-align:center;font-size:0.75rem;color:#aaa;margin-top:4px;margin-bottom:0;">
             ※ 有効応募とは、重複・スパムを除いた応募を指します
+        </p>
+        <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:8px;margin-bottom:0;">
+            <i class="bi bi-shield-check me-1"></i>掲載の継続・停止はいつでも管理ページから操作できます。自動で課金が続くことはありません。
         </p>
     </div>
 </section>
@@ -633,6 +636,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="merit-card__icon"><i class="bi bi-stars"></i></div>
                     <p class="merit-card__title">AIが求人文を自動生成</p>
                     <p class="merit-card__body">チェックを選ぶだけでAIが魅力的な求人タイトルと本文を自動作成。専門的な文章力がなくても、伝わる求人が作れます。</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="merit-card">
+                    <div class="merit-card__icon"><i class="bi bi-toggle-on"></i></div>
+                    <p class="merit-card__title">継続・停止は掲載主が決める</p>
+                    <p class="merit-card__body">管理ページからいつでも掲載の継続・停止を操作できます。気づいたら課金が続いていた、ということはありません。</p>
                 </div>
             </div>
         </div>
