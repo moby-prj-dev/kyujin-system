@@ -364,6 +364,13 @@ class JobController extends Controller
     {
         if (empty($email)) return false;
 
+        // 永久無料企業
+        $isPermanentlyFree = Job::where('contact_email', $email)
+            ->whereNotNull('email_verified_at')
+            ->where('is_permanently_free', true)
+            ->exists();
+        if ($isPermanentlyFree) return false;
+
         // monitor_ends_at が設定されていれば、解除後も期限で判定
         $monitorJob = Job::where('contact_email', $email)
             ->whereNotNull('email_verified_at')

@@ -21,6 +21,7 @@ class SendTrialWarnings extends Command
             ->whereNotNull('email_verified_at')
             ->whereNull('deleted_at')
             ->whereNotNull('monitor_ends_at')
+            ->where('is_permanently_free', false)
             ->groupBy('contact_email')
             ->havingRaw('trial_ends_at BETWEEN ? AND ?', [now(), now()->addDays(3)])
             ->get();

@@ -127,7 +127,9 @@
                         <td class="fw-bold" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                             title="{{ $job->company_name }}">
                             {{ $job->company_name }}
-                            @if($job->is_monitor)
+                            @if($job->is_permanently_free)
+                            <span class="badge bg-danger ms-1" style="font-size:0.68rem;"><i class="bi bi-infinity"></i> 永久無料</span>
+                            @elseif($job->is_monitor)
                             <span class="badge bg-warning text-dark ms-1" style="font-size:0.68rem;">モニター</span>
                             @endif
                         </td>
@@ -214,13 +216,29 @@
                                     @csrf @method('PATCH')
                                     @if($job->is_monitor)
                                         <button type="submit" class="btn btn-xs btn-outline-secondary"
-                                                onclick="return confirm('モニターを解除しますか？（掲載期限3ヶ月に設定されます）')">
+                                                onclick="return confirm('モニターを解除しますか？')">
                                             <i class="bi bi-star-fill text-warning me-1"></i>解除
                                         </button>
                                     @else
                                         <button type="submit" class="btn btn-xs btn-outline-warning"
-                                                onclick="return confirm('無料モニターに設定しますか？（掲載期限・請求なし）')">
+                                                onclick="return confirm('無料モニターに設定しますか？（3ヶ月間無料）')">
                                             <i class="bi bi-star me-1"></i>モニター
+                                        </button>
+                                    @endif
+                                </form>
+                                {{-- 永久無料切替 --}}
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.toggle_permanently_free', $job) }}">
+                                    @csrf @method('PATCH')
+                                    @if($job->is_permanently_free)
+                                        <button type="submit" class="btn btn-xs btn-danger"
+                                                onclick="return confirm('永久無料を解除しますか？')">
+                                            <i class="bi bi-infinity me-1"></i>解除
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-xs btn-outline-danger"
+                                                onclick="return confirm('永久無料に設定しますか？（この会社の全応募が無料になります）')">
+                                            <i class="bi bi-infinity me-1"></i>永久無料
                                         </button>
                                     @endif
                                 </form>
@@ -305,10 +323,11 @@
                     @forelse($companies as $c)
                     @php
                         $stMap = [
-                            'active'       => ['無料期間内',      'trial-active'],
-                            'ending_soon'  => ['終了まで7日以内', 'trial-ending-soon'],
-                            'ended'        => ['無料期間終了',    'trial-ended'],
-                            'billing'      => ['請求対象あり',    'trial-billing'],
+                            'permanently_free' => ['永久無料',         'bg-danger'],
+                            'active'           => ['無料期間内',       'trial-active'],
+                            'ending_soon'      => ['終了まで7日以内',  'trial-ending-soon'],
+                            'ended'            => ['無料期間終了',     'trial-ended'],
+                            'billing'          => ['請求対象あり',     'trial-billing'],
                         ];
                         [$stLabel, $stClass] = $stMap[$c->trial_status] ?? ['—', 'trial-active'];
                         $billingAmount = ($c->billable_count ?? 0) * 3000;

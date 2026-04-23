@@ -84,6 +84,14 @@ class JobController extends Controller
         return back()->with('success', $msg);
     }
 
+    public function togglePermanentlyFree(Job $job)
+    {
+        $newVal = !$job->is_permanently_free;
+        $job->update(['is_permanently_free' => $newVal]);
+        $msg = $newVal ? '永久無料に設定しました。' : '永久無料を解除しました。';
+        return back()->with('success', $msg);
+    }
+
     public function updateMemo(Request $request, Job $job)
     {
         $request->validate(['admin_memo' => ['nullable', 'string', 'max:2000']]);
@@ -103,8 +111,9 @@ class JobController extends Controller
                 j.contact_email,
                 MAX(j.company_name)       AS company_name,
                 MIN(j.email_verified_at)  AS first_activated_at,
-                MIN(j.monitor_ends_at)    AS trial_ends_at,
-                COUNT(DISTINCT j.id)      AS listing_count,
+                MIN(j.monitor_ends_at)           AS trial_ends_at,
+                MAX(j.is_permanently_free)       AS is_permanently_free,
+                COUNT(DISTINCT j.id)             AS listing_count,
                 COALESCE(SUM(CASE WHEN a.is_valid = 1 THEN 1 ELSE 0 END), 0) AS valid_count,
                 COALESCE(SUM(CASE WHEN a.is_valid = 0 THEN 1 ELSE 0 END), 0) AS invalid_count,
                 COALESCE(SUM(CASE WHEN a.is_billable = 1 THEN 1 ELSE 0 END), 0) AS billable_count
@@ -128,6 +137,7 @@ class JobController extends Controller
         $valid    = (int) $c->valid_count;
         $trialEnd = $c->trial_ends_at ? Carbon::parse($c->trial_ends_at) : null;
 
+        if ((bool) $c->is_permanently_free)                       return 'permanently_free';
         if ($billable > 0)                                        return 'billing';
         if (!$trialEnd)                                           return 'active';
         if (now()->greaterThan($trialEnd) || $valid >= 3)         return 'ended';
