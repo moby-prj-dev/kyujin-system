@@ -109,16 +109,17 @@
                         ];
                         [$statusLabel, $statusClass] = $statusMap[$job->status] ?? ['不明', 'bg-secondary'];
 
-                        $validSub  = (int) ($job->valid_count_sub ?? 0);
-                        $expiresAt = $job->expires_at;
-                        if (!$expiresAt) {
+                        $validSub      = (int) ($job->valid_count_sub ?? 0);
+                        $expiresAt     = $job->expires_at;
+                        $monitorEndsAt = $job->monitor_ends_at;
+                        if (!$monitorEndsAt) {
                             $trialLabel = '—'; $trialClass = 'bg-secondary';
-                        } elseif (now()->greaterThan($expiresAt) || $validSub >= 3) {
+                        } elseif (now()->greaterThan($monitorEndsAt) || $validSub >= 3) {
                             $trialLabel = '終了済み'; $trialClass = 'bg-secondary';
-                        } elseif ($expiresAt->diffInDays(now(), false) >= -7) {
+                        } elseif ($monitorEndsAt->diffInDays(now(), false) >= -7) {
                             $trialLabel = '終了間近'; $trialClass = 'bg-warning text-dark';
                         } else {
-                            $trialLabel = '無料掲載中'; $trialClass = 'bg-success';
+                            $trialLabel = '無料期間内'; $trialClass = 'bg-success';
                         }
                     @endphp
                     <tr class="{{ $job->is_admin_hidden ? 'table-secondary opacity-75' : '' }}">
@@ -126,6 +127,9 @@
                         <td class="fw-bold" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                             title="{{ $job->company_name }}">
                             {{ $job->company_name }}
+                            @if($job->is_monitor)
+                            <span class="badge bg-warning text-dark ms-1" style="font-size:0.68rem;">モニター</span>
+                            @endif
                         </td>
                         <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                             title="{{ $job->title }}">
@@ -176,6 +180,9 @@
                         </td>
                         <td class="text-center text-nowrap" style="font-size:0.82rem;">
                             @if($expiresAt)
+                                @if($job->is_monitor)
+                                <div style="font-size:0.7rem;" class="text-warning fw-bold">モニター期限</div>
+                                @endif
                                 <span class="{{ now()->greaterThan($expiresAt) ? 'text-danger fw-bold' : '' }}">
                                     {{ $expiresAt->format('Y/m/d') }}
                                 </span>

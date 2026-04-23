@@ -11,18 +11,18 @@ use Illuminate\Support\Facades\Mail;
 class SendTrialWarnings extends Command
 {
     protected $signature   = 'billing:send-trial-warnings';
-    protected $description = '無料トライアル終了7日前の警告メールを送信する';
+    protected $description = 'モニター無料期間終了3日前の警告メールを送信する';
 
     public function handle(): void
     {
-        // 企業ごとに最初に有効化された求人票の expires_at を基準にする
+        // monitor_ends_at が3日以内のものを対象にする（解除済みも含む）
         $companies = Job::query()
-            ->selectRaw('contact_email, MIN(email_verified_at) as first_activated_at, MIN(expires_at) as trial_ends_at')
+            ->selectRaw('contact_email, MIN(email_verified_at) as first_activated_at, MIN(monitor_ends_at) as trial_ends_at')
             ->whereNotNull('email_verified_at')
             ->whereNull('deleted_at')
-            ->where('is_monitor', false)
+            ->whereNotNull('monitor_ends_at')
             ->groupBy('contact_email')
-            ->havingRaw('trial_ends_at BETWEEN ? AND ?', [now(), now()->addDays(7)])
+            ->havingRaw('trial_ends_at BETWEEN ? AND ?', [now(), now()->addDays(3)])
             ->get();
 
         foreach ($companies as $company) {

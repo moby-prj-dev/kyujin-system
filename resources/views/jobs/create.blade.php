@@ -16,9 +16,32 @@
     </div>
 </div>
 
+@if(now()->lte($monitorCutoff))
+<div style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:12px 0;text-align:center;">
+    <span style="font-size:0.85rem;font-weight:800;color:#f57f17;">
+        <i class="bi bi-star-fill me-1"></i>無料モニター募集中
+        &nbsp;〜&nbsp;{{ $monitorCutoff->format('Y年m月d日') }}まで
+        &nbsp;｜&nbsp;3か月間または有効応募3件まで成果報酬0円
+    </span>
+</div>
+@endif
+
 <div class="container">
 <div class="row justify-content-center">
 <div class="col-lg-8">
+
+@if(now()->lte($monitorCutoff))
+<div style="background:#fff3cd;border:2px solid #f9a825;border-radius:10px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+    <i class="bi bi-star-fill" style="color:#f57f17;font-size:1.3rem;flex-shrink:0;"></i>
+    <div>
+        <div style="font-size:0.8rem;font-weight:800;color:#f57f17;margin-bottom:2px;">期間限定・無料モニター募集中</div>
+        <div style="font-size:0.88rem;color:#1a1a2e;">
+            <strong>{{ $monitorCutoff->format('Y年m月d日') }}までに登録</strong>された企業は、
+            掲載開始から<strong>3か月間または有効応募3件</strong>まで成果報酬が無料です。
+        </div>
+    </div>
+</div>
+@endif
 
 @if($errors->any())
 <div class="alert alert-danger">

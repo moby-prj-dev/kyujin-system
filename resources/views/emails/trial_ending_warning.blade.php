@@ -13,28 +13,33 @@ body{font-family:'Hiragino Kaku Gothic ProN',sans-serif;background:#f5f7fa;margi
 <body>
 <div class="wrap">
     <div class="header">
-        <h1>⚠️ 求人掲載期限のお知らせ</h1>
+        <h1>モニター無料期間終了のお知らせ</h1>
     </div>
     <div class="body">
         <p>{{ $companyName }} ご担当者様</p>
 
         <div class="alert-box">
-            <strong>現在掲載中の求人の掲載期限が、7日以内に終了します。</strong><br>
-            <span style="font-size:0.9rem;">掲載期限：{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</span>
+            <strong>モニター無料期間が3日後に終了します。</strong><br>
+            <span style="font-size:0.9rem;">無料期間終了日：{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</span>
         </div>
 
-        <p>Care Entry（ケアエントリー）をご利用いただきありがとうございます。</p>
+        <p>Care Entry（ケアエントリー）をモニターとしてご利用いただきありがとうございます。</p>
 
         <p>
-            現在掲載中の求人の掲載期限が <strong>{{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }}</strong> に終了します。<br>
-            引き続き掲載を続けるには、管理ページより更新手続きをお願いします。
+            {{ \Carbon\Carbon::parse($trialEndsAt)->format('Y年m月d日') }} をもちまして、モニター無料期間が終了します。<br>
+            終了後は、有効応募1件につき <strong>3,000円（税別）</strong> が発生する成果報酬型に移行します。
         </p>
 
         <p>
-            掲載を停止される場合は、そのまま期限をお迎えください。
+            引き続き掲載をご希望の場合は、管理ページより求人内容をご確認ください。<br>
+            掲載を停止される場合は、管理ページより「掲載を停止する」をお選びください。
         </p>
 
         <a href="{{ url('/') }}" class="btn">Care Entry 管理ページ</a>
+
+        <p style="margin-top:24px; font-size:0.88rem; color:#666;">
+            ご不明な点がございましたら、お気軽にお問い合わせください。
+        </p>
     </div>
     <div class="footer">
         Care Entry（ケアエントリー）｜沖縄の介護・福祉専門求人サービス

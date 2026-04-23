@@ -35,18 +35,11 @@ class JobController extends Controller
 
         if ($request->filled('trial_status')) {
             match ($request->trial_status) {
-                'ended' => $jobsQuery->where(fn($q) =>
-                    $q->where('expires_at', '<', now())
-                      ->orWhereRaw('(SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1) >= 3')
-                ),
-                'ending_soon' => $jobsQuery
-                    ->where('expires_at', '>=', now())
-                    ->where('expires_at', '<=', now()->addDays(7))
-                    ->whereRaw('(SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1) < 3'),
-                'active' => $jobsQuery
-                    ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()->addDays(7)))
-                    ->whereRaw('(SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1) < 3'),
-                default => null,
+                'ended'       => $jobsQuery->where('expires_at', '<', now()),
+                'ending_soon' => $jobsQuery->where('expires_at', '>=', now())
+                                           ->where('expires_at', '<=', now()->addDays(7)),
+                'active'      => $jobsQuery->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()->addDays(7))),
+                default       => null,
             };
         }
 
@@ -73,12 +66,21 @@ class JobController extends Controller
 
     public function toggleMonitor(Job $job)
     {
-        $job->update([
-            'is_monitor' => !$job->is_monitor,
-            'expires_at' => $job->is_monitor ? now()->addMonths(3) : null,
-        ]);
+        if (!$job->is_monitor) {
+            // モニターに設定：無料期間を3ヶ月セット
+            $monitorEndsAt = now()->addMonths(3);
+            $job->update([
+                'is_monitor'      => true,
+                'monitor_ends_at' => $monitorEndsAt,
+                'expires_at'      => $monitorEndsAt,
+            ]);
+            $msg = '無料モニターに設定しました。（' . $monitorEndsAt->format('Y/m/d') . 'まで無料）';
+        } else {
+            // モニター解除：monitor_ends_at はそのまま（期限まで課金なし）
+            $job->update(['is_monitor' => false]);
+            $msg = 'モニターを解除しました。（' . ($job->monitor_ends_at?->format('Y/m/d') . 'まで課金なし）');
+        }
 
-        $msg = $job->is_monitor ? '無料モニターに設定しました。（掲載期限・請求なし）' : 'モニター解除しました。（掲載期限3ヶ月に設定）';
         return back()->with('success', $msg);
     }
 
@@ -101,7 +103,7 @@ class JobController extends Controller
                 j.contact_email,
                 MAX(j.company_name)       AS company_name,
                 MIN(j.email_verified_at)  AS first_activated_at,
-                MIN(j.expires_at)         AS trial_ends_at,
+                MIN(j.monitor_ends_at)    AS trial_ends_at,
                 COUNT(DISTINCT j.id)      AS listing_count,
                 COALESCE(SUM(CASE WHEN a.is_valid = 1 THEN 1 ELSE 0 END), 0) AS valid_count,
                 COALESCE(SUM(CASE WHEN a.is_valid = 0 THEN 1 ELSE 0 END), 0) AS invalid_count,
@@ -126,10 +128,10 @@ class JobController extends Controller
         $valid    = (int) $c->valid_count;
         $trialEnd = $c->trial_ends_at ? Carbon::parse($c->trial_ends_at) : null;
 
-        if ($billable > 0)  return 'billing';
-        if (!$trialEnd)     return 'active';
-        if (now()->greaterThan($trialEnd) || $valid >= 3) return 'ended';
-        if ($trialEnd->diffInDays(now(), false) >= -7)    return 'ending_soon';
+        if ($billable > 0)                                        return 'billing';
+        if (!$trialEnd)                                           return 'active';
+        if (now()->greaterThan($trialEnd) || $valid >= 3)         return 'ended';
+        if ($trialEnd->diffInDays(now(), false) >= -7)            return 'ending_soon';
 
         return 'active';
     }

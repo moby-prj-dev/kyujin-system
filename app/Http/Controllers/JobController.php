@@ -41,10 +41,11 @@ class JobController extends Controller
         $appeals         = MasterAppeal::active()->orderBy('sort_order')->get()->groupBy('category');
         $agreementText    = config('billing.agreement_text');
         $agreementVersion = config('billing.agreement_version');
+        $monitorCutoff    = \App\Models\Setting::monitorCutoffDate();
 
         return view('jobs.create', compact(
             'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
-            'agreementText', 'agreementVersion'
+            'agreementText', 'agreementVersion', 'monitorCutoff'
         ));
     }
 
@@ -363,20 +364,21 @@ class JobController extends Controller
     {
         if (empty($email)) return false;
 
-        // モニター期間中は全員無料
-        if (now()->lte(\Carbon\Carbon::parse(config('billing.monitor_period_until')))) {
-            return false;
+        // monitor_ends_at が設定されていれば、解除後も期限で判定
+        $monitorJob = Job::where('contact_email', $email)
+            ->whereNotNull('email_verified_at')
+            ->whereNotNull('monitor_ends_at')
+            ->orderBy('email_verified_at')
+            ->first();
+
+        if ($monitorJob) {
+            if ($monitorJob->monitor_ends_at->isPast()) return true;
+            $validCount = \App\Models\Application::whereHas('job', fn($q) => $q->where('contact_email', $email))
+                ->where('is_valid', true)->count();
+            return $validCount >= 3;
         }
 
-        // モニター企業は常に無料
-        $hasMonitorJob = Job::where('contact_email', $email)
-            ->whereNotNull('email_verified_at')
-            ->where('is_monitor', true)
-            ->exists();
-
-        if ($hasMonitorJob) return false;
-
-        // 通常掲載企業はモニター期間終了後、初日から課金
+        // 通常企業：初日から課金
         return Job::where('contact_email', $email)
             ->whereNotNull('email_verified_at')
             ->exists();

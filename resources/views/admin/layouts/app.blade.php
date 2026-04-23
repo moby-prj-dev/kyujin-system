@@ -81,6 +81,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                       href="{{ route('admin.settings.index') }}">
+                        <i class="bi bi-gear"></i>設定
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('admin.logout') }}">
                         <i class="bi bi-box-arrow-right"></i>ログアウト
                     </a>

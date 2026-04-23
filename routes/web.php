@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
-Route::view('/client', 'client.index')->name('client');
+Route::get('/client', [\App\Http\Controllers\ClientController::class, 'index'])->name('client');
 
 // -----------------------------------------------
 // 求人管理（掲載主向け）
@@ -86,6 +86,10 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::get('/articles', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('articles.index');
     Route::post('/articles/generate', [\App\Http\Controllers\Admin\ArticleController::class, 'generate'])->name('articles.generate');
     Route::delete('/articles/{article}', [\App\Http\Controllers\Admin\ArticleController::class, 'destroy'])->name('articles.destroy');
+
+    // 設定
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
 
     // 請求管理
     Route::get('/billings', [\App\Http\Controllers\Admin\BillingController::class, 'index'])->name('billings.index');

@@ -121,23 +121,26 @@ class ApplicationValidationService
         $companyEmail = $application->job->contact_email ?? null;
         if (! $companyEmail) return false;
 
-        // Check if trial period (expires_at of first activated listing) has ended
-        $trialEnd = Job::where('contact_email', $companyEmail)
+        // monitor_ends_at が設定されていれば、解除後も期限まで判定
+        $monitorEnd = Job::where('contact_email', $companyEmail)
             ->whereNotNull('email_verified_at')
+            ->whereNotNull('monitor_ends_at')
             ->orderBy('email_verified_at')
-            ->value('expires_at');
+            ->value('monitor_ends_at');
 
-        if ($trialEnd && $application->applied_at && $application->applied_at->greaterThan($trialEnd)) {
-            return true;
+        if ($monitorEnd && $application->applied_at && $application->applied_at->lessThanOrEqualTo($monitorEnd)) {
+            // モニター期間内：有効応募3件未満なら無料
+            $priorValidCount = Application::whereHas('job', fn($q) => $q->where('contact_email', $companyEmail))
+                ->where('is_valid', true)
+                ->where('id', '!=', $application->id)
+                ->count();
+
+            if ($priorValidCount < 3) {
+                return false;
+            }
         }
 
-        // Check if free quota (3 valid apps company-wide) is exhausted
-        $priorValidCount = Application::whereHas('job', fn($q) => $q->where('contact_email', $companyEmail))
-            ->where('is_valid', true)
-            ->where('id', '!=', $application->id)
-            ->count();
-
-        return $priorValidCount >= 3;
+        return true;
     }
 
     private function markInvalid(Application $application, string $reason): void
