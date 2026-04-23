@@ -541,38 +541,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--color-primary);letter-spacing:.08em;margin-bottom:20px;">PRICING</p>
         <div class="row justify-content-center g-3">
             <div class="col-6 col-md-3">
-                <div style="background:#fff;border:1.5px solid #e3eaf8;border-radius:12px;padding:20px 16px;text-align:center;">
-                    <p style="font-size:0.75rem;color:#888;margin-bottom:6px;">掲載費</p>
-                    <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥0</p>
-                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;">初期費用なし</p>
+                <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #f57c00;border-radius:12px;padding:20px 16px;text-align:center;">
+                    <p style="font-size:0.75rem;color:#e65100;font-weight:700;margin-bottom:6px;">掲載費</p>
+                    <p style="font-size:2.2rem;font-weight:900;color:#e65100;margin:0;">¥0</p>
+                    <p style="font-size:0.72rem;color:#e65100;opacity:.7;margin-top:4px;">初期費用なし</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div style="background:#fff;border:1.5px solid #e3eaf8;border-radius:12px;padding:20px 16px;text-align:center;">
-                    <p style="font-size:0.75rem;color:#888;margin-bottom:6px;">月額費用</p>
-                    <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥0</p>
-                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;">固定費なし</p>
+                <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #f57c00;border-radius:12px;padding:20px 16px;text-align:center;">
+                    <p style="font-size:0.75rem;color:#e65100;font-weight:700;margin-bottom:6px;">月額費用</p>
+                    <p style="font-size:2.2rem;font-weight:900;color:#e65100;margin:0;">¥0</p>
+                    <p style="font-size:0.72rem;color:#e65100;opacity:.7;margin-top:4px;">固定費なし</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div style="background:#fff;border:1.5px solid var(--color-primary);border-radius:12px;padding:20px 16px;text-align:center;">
                     <p style="font-size:0.75rem;color:var(--color-primary);font-weight:700;margin-bottom:6px;">成果報酬（応募1件）</p>
                     <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥3,000</p>
-                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;">有効応募のみ課金・税別</p>
+                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;margin-bottom:0;"><strong>有効応募のみ課金</strong>・税別</p>
+                    <p style="font-size:0.68rem;color:#bbb;margin-top:1px;">※有効応募とは、重複・スパムを除いた応募のことです</p>
                 </div>
             </div>
         </div>
         <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:16px;margin-bottom:4px;">
             ※ 現在はモニター期間中のため、掲載費・成果報酬すべて<strong>無料</strong>でご利用いただけます
         </p>
-        <p style="text-align:center;font-size:0.75rem;color:#aaa;margin-top:4px;margin-bottom:0;">
-            ※ 有効応募とは、重複・スパムを除いた応募を指します
-        </p>
-        <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:8px;margin-bottom:0;">
-            <i class="bi bi-shield-check me-1"></i>掲載の継続・停止はいつでも管理ページから操作できます。自動で課金が続くことはありません。
-        </p>
         <p style="text-align:center;font-size:0.75rem;color:#aaa;margin-top:6px;margin-bottom:0;">
-            ※ お振込の場合、振込手数料はご負担ください
+            ※ 振込手数料はご負担ください　※ 掲載の継続・停止はいつでも管理ページから操作できます
         </p>
     </div>
 </section>
@@ -620,28 +615,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <h2 class="merits__heading">選ばれる理由</h2>
         </div>
         <div class="row g-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-currency-yen"></i></div>
                     <p class="merit-card__title">初期費用・月額費用0円</p>
                     <p class="merit-card__body">掲載にかかる固定費用は一切ありません。応募が届いたときだけ費用が発生する、シンプルな成果型の課金体系です。</p>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
                     <p class="merit-card__title">LINE応募で応募率アップ</p>
                     <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで、応募へのハードルを下げます。フォーム応募にも対応しています。</p>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-stars"></i></div>
                     <p class="merit-card__title">AIが求人文を自動生成</p>
                     <p class="merit-card__body">チェックを選ぶだけでAIが魅力的な求人タイトルと本文を自動作成。専門的な文章力がなくても、伝わる求人が作れます。</p>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-toggle-on"></i></div>
                     <p class="merit-card__title">継続・停止は掲載主が決める</p>
