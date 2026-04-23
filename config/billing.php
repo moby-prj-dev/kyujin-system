@@ -5,5 +5,6 @@ return [
     'agreement_version' => 'v1.1',
     'amount' => 3000,
     'continue_warning_days' => 7,
-    'admin_email' => env('ADMIN_EMAIL', 'careentry.info@gmail.com'),
+    'admin_email'          => env('ADMIN_EMAIL', 'careentry.info@gmail.com'),
+    'monitor_period_until' => env('MONITOR_PERIOD_UNTIL', '2026-07-23'),
 ];

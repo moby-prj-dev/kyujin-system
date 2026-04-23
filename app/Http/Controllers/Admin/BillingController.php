@@ -39,7 +39,7 @@ class BillingController extends Controller
 
     public function updateStatus(Request $request, BillingSummary $billing)
     {
-        $request->validate(['status' => ['required', 'in:unbilled,sent,paid,on_hold']]);
+        $request->validate(['status' => ['required', 'in:unbilled,sent,paid,on_hold,unpaid,overdue']]);
         $billing->update(['status' => $request->status]);
         return back()->with('success', 'ステータスを更新しました。');
     }

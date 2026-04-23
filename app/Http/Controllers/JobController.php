@@ -290,8 +290,7 @@ class JobController extends Controller
             'paused_at' => now(),
         ]);
 
-        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
-            'action'    => 'closed',
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CLOSED, AuditLog::ACTOR_SYSTEM, [
             'paused_at' => now()->toDateTimeString(),
         ]);
 
@@ -314,8 +313,7 @@ class JobController extends Controller
             'expires_at' => $expiresAt,
         ]);
 
-        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
-            'action'     => 'reopened',
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_REOPENED, AuditLog::ACTOR_SYSTEM, [
             'expires_at' => $expiresAt?->toDateTimeString(),
         ]);
 
@@ -340,8 +338,7 @@ class JobController extends Controller
 
         $job->update(['continued_at' => now()]);
 
-        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
-            'action'       => 'continued',
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CONTINUED, AuditLog::ACTOR_SYSTEM, [
             'continued_at' => now()->toDateTimeString(),
         ]);
 
@@ -367,7 +364,7 @@ class JobController extends Controller
         if (empty($email)) return false;
 
         // モニター期間中は全員無料
-        if (now()->lte(\Carbon\Carbon::parse(env('MONITOR_PERIOD_UNTIL', '2026-07-23')))) {
+        if (now()->lte(\Carbon\Carbon::parse(config('billing.monitor_period_until')))) {
             return false;
         }
 
@@ -389,9 +386,7 @@ class JobController extends Controller
     {
         $job = Job::where('token', $token)->firstOrFail();
 
-        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [
-            'action' => 'soft_deleted',
-        ]);
+        AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_DELETED, AuditLog::ACTOR_SYSTEM, []);
 
         $job->delete();
 
