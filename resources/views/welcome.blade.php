@@ -747,7 +747,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <i class="bi bi-geo-alt-fill"></i>沖縄の介護・福祉求人
                 </div>
                 <h1 class="hero__title">
-                    沖縄での介護の仕事探しを、<br>もっとシンプルに。
+                    沖縄での介護・福祉の仕事探しを、<br>もっとシンプルに。
                 </h1>
                 <p class="hero__sub">
                     ケアエントリーは、沖縄の介護・福祉求人に特化した求人サービスです。<br>
@@ -1026,7 +1026,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row align-items-center g-5">
             <div class="col-lg-5">
                 <p class="points__eyebrow">WHY CARE ENTRY</p>
-                <h2 class="points__heading">沖縄での介護の仕事探しを、<br>もっとシンプルにするために</h2>
+                <h2 class="points__heading">沖縄での介護・福祉の仕事探しを、<br>もっとシンプルにするために</h2>
                 <div class="points__cta-group">
                     <a href="#search" class="points__cta-primary">
                         <i class="bi bi-search"></i>求人を探す
