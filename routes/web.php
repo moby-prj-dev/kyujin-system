@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/client', [\App\Http\Controllers\ClientController::class, 'index'])->name('client');
+Route::get('/fb', [\App\Http\Controllers\ClientController::class, 'facebook'])->name('client.facebook');
 
 // -----------------------------------------------
 // 求人管理（掲載主向け）

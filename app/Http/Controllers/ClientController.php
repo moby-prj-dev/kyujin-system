@@ -11,4 +11,10 @@ class ClientController extends Controller
         $monitorCutoff = Setting::monitorCutoffDate();
         return view('client.index', compact('monitorCutoff'));
     }
+
+    public function facebook()
+    {
+        $monitorCutoff = Setting::monitorCutoffDate();
+        return view('pages.facebook_lp', compact('monitorCutoff'));
+    }
 }
