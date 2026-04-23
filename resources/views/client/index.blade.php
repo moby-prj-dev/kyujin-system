@@ -469,20 +469,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <i class="bi bi-building"></i>沖縄の介護・福祉専門 求人掲載サービス
                 </div>
                 <h1 class="hero__title">
-                    沖縄で介護・福祉人材の<br>
-                    採用にお困りの<br>
-                    企業様へ
+                    沖縄での介護・福祉人材の<br>採用を、もっとシンプルに。
                 </h1>
                 <p class="hero__sub">
-                    ケアエントリーは、介護・福祉に特化した沖縄の求人サービスです。<br>
-                    掲載して終わりではなく、求職者が応募しやすい仕組みにこだわっています。
+                    応募前に条件を確認する仕組みにより、ミスマッチを減らす設計です。<br>
+                    求職者と企業の条件を事前にすり合わせることで、無駄な応募を減らします。<br>
+                    <span style="font-size:0.85em;color:#888;">（フォームまたはLINEから応募可能）</span>
                 </p>
                 <div class="hero__features">
                     <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>掲載費0円スタート
                     </span>
                     <span class="hero__feature-item">
-                        <i class="bi bi-check-circle-fill"></i>LINEでかんたん応募対応
+                        <i class="bi bi-check-circle-fill"></i>ミスマッチを減らす設計
                     </span>
                     <span class="hero__feature-item">
                         <i class="bi bi-check-circle-fill"></i>介護・福祉領域に特化
@@ -490,14 +489,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div class="hero__cta-group">
                     <a href="{{ route('jobs.create') }}" class="hero__cta-primary">
-                        <i class="bi bi-plus-circle-fill"></i>無料で掲載を始める
+                        <i class="bi bi-plus-circle-fill"></i>無料で求人を掲載する
                     </a>
                     <a href="#steps" class="hero__cta-secondary">
-                        <i class="bi bi-list-ol"></i>掲載について問い合わせる
+                        <i class="bi bi-list-ol"></i>掲載の流れを見る
                     </a>
                 </div>
                 <p class="hero__note">
-                    <i class="bi bi-shield-check me-1"></i>初期費用・月額費用は一切かかりません
+                    <i class="bi bi-shield-check me-1"></i>まずは無料で掲載し、反応を確認していただけます
                 </p>
             </div>
             <div class="col-lg-6">
@@ -512,8 +511,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="hero__visual-row">
                         <div class="hero__visual-icon"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
                         <div>
-                            <div class="hero__visual-label">求職者が応募しやすい仕組み</div>
-                            <div class="hero__visual-sub">LINE応募対応で求職者のハードルを下げる仕組み。</div>
+                            <div class="hero__visual-label">条件確認の仕組みでミスマッチを減らす</div>
+                            <div class="hero__visual-sub">応募前に条件をすり合わせる設計で、無駄な応募を減らします。</div>
                         </div>
                     </div>
                     <div class="hero__visual-row">
@@ -654,18 +653,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 {{-- ④ 最終CTA --}}
 <section class="cta-band">
     <div class="container">
-        <h2 class="cta-band__title">まずは無料で、掲載を試してみませんか</h2>
-        <p class="cta-band__body">難しい設定なし。フォームに入力するだけで、最短当日から掲載できます。</p>
+        <h2 class="cta-band__title">まずは無料で掲載し、反応を確認してみませんか</h2>
+        <p class="cta-band__body">難しい設定なし。フォームに入力するだけで、最短当日から掲載できます。<br>初期費用・月額費用は一切かかりません。</p>
         <div class="cta-band__actions">
             <a href="{{ route('jobs.create') }}" class="cta-band__btn-primary">
-                <i class="bi bi-plus-circle-fill"></i>無料で掲載を始める
+                <i class="bi bi-plus-circle-fill"></i>無料で求人を掲載する
             </a>
-            <a href="{{ route('jobs.create') }}" class="cta-band__btn-secondary">
-                <i class="bi bi-envelope"></i>掲載について問い合わせる
+            <a href="#steps" class="cta-band__btn-secondary">
+                <i class="bi bi-list-ol"></i>掲載の流れを見る
             </a>
         </div>
         <p class="mt-4 mb-0" style="font-size:0.76rem;opacity:.7;">
-            <i class="bi bi-shield-check me-1"></i>初期費用・月額費用は一切かかりません
+            <i class="bi bi-shield-check me-1"></i>「試してみよう」という気持ちで始めていただけます
         </p>
     </div>
 </section>
