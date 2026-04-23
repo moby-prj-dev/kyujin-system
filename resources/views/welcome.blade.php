@@ -738,6 +738,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </nav>
 
+{{-- 無料モニター告知バー --}}
+<div style="background:#f9a825;padding:8px 0;text-align:center;">
+    <a href="{{ route('client') }}" style="color:#fff;font-size:0.83rem;font-weight:700;text-decoration:none;">
+        <i class="bi bi-star-fill me-1"></i>無料モニター企業を募集中！求人掲載・成果課金すべて無料でお試しいただけます
+        <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+</div>
+
 {{-- ① ファーストビュー --}}
 <section class="hero">
     <div class="container">
