@@ -571,6 +571,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:8px;margin-bottom:0;">
             <i class="bi bi-shield-check me-1"></i>掲載の継続・停止はいつでも管理ページから操作できます。自動で課金が続くことはありません。
         </p>
+        <p style="text-align:center;font-size:0.75rem;color:#aaa;margin-top:6px;margin-bottom:0;">
+            ※ お振込の場合、振込手数料はご負担ください
+        </p>
     </div>
 </section>
 
