@@ -20,10 +20,18 @@ async def scrape_hellowork():
         print(f"タイトル: {await page.title()}")
 
         # 介護カテゴリのチェックボックスをチェック（value=13）
-        # inputはlabelに覆われているのでlabelをクリック
+        # labelクリックはモーダルを開くのでJSで直接チェック
         print("介護カテゴリを選択中...")
         try:
-            await page.click('label[for="ID_daiEasyShokusyuBox13"]')
+            await page.evaluate("""
+                () => {
+                    const cb = document.querySelector('input[name="daiEasyShokusyuBox"][value="13"]');
+                    if (cb) {
+                        cb.checked = true;
+                        cb.dispatchEvent(new Event('change', {bubbles: true}));
+                    }
+                }
+            """)
             await page.wait_for_timeout(500)
         except Exception as e:
             print(f"介護チェックボックスエラー: {e}")
@@ -51,9 +59,15 @@ async def scrape_hellowork():
         except Exception as e:
             print(f"都道府県設定エラー: {e}")
 
-        # 検索ボタンをクリック
+        # 検索ボタンをクリック（モーダルが残っていれば先に非表示にする）
         print("検索実行中...")
         try:
+            await page.evaluate("""
+                () => {
+                    const modal = document.querySelector('.modal_wrap.mom');
+                    if (modal) modal.style.display = 'none';
+                }
+            """)
             await page.click('button[name="searchBtn"]')
             await page.wait_for_timeout(3000)
         except Exception as e:
