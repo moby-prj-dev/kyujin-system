@@ -69,6 +69,7 @@ class ImportHelloworkJobs extends Command
                     'salary_note'          => $data['賃金'] ?? '',
                     'status'               => Job::STATUS_ACTIVE,
                     'contact_email'        => '',
+                    'contact_phone'        => '',
                     'email_verified_at'    => now(),
                     'expires_at'           => $expiresAt,
                     'is_admin_hidden'      => false,
