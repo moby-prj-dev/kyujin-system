@@ -17,6 +17,9 @@ async def scrape_hellowork():
         )
         await page.wait_for_timeout(2000)
 
+        # ページロード時に表示されるmomモーダル（overlay含む）を全て閉じる
+        await page.evaluate("() => { document.querySelectorAll('.mom').forEach(el => el.style.display = 'none'); }")
+
         print(f"タイトル: {await page.title()}")
 
         # 介護カテゴリのチェックボックスをチェック（value=13）
@@ -59,15 +62,9 @@ async def scrape_hellowork():
         except Exception as e:
             print(f"都道府県設定エラー: {e}")
 
-        # 検索ボタンをクリック（モーダルが残っていれば先に非表示にする）
+        # 検索ボタンをクリック
         print("検索実行中...")
         try:
-            await page.evaluate("""
-                () => {
-                    const modal = document.querySelector('.modal_wrap.mom');
-                    if (modal) modal.style.display = 'none';
-                }
-            """)
             await page.click('button[name="searchBtn"]')
             await page.wait_for_timeout(3000)
         except Exception as e:
