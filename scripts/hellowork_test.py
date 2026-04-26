@@ -126,23 +126,18 @@ async def scrape_hellowork():
             if current_page >= total_pages:
                 break
 
-            # 初回のみ: 「件中」付近のHTML（ページネーション）を確認
+            # 初回のみ: 最後のjob body後ろ〜フッター前のHTML（ページネーション領域）を確認
             if current_page == 1:
                 pager_area = await page.evaluate("""
                     () => {
-                        // 「件中」テキストを含む要素の親HTMLを取得
-                        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-                        let node;
-                        while (node = walker.nextNode()) {
-                            if (node.textContent.includes('件中') && node.textContent.includes('件を表示')) {
-                                const parent = node.parentElement?.closest('div,td,section') || node.parentElement;
-                                return parent?.outerHTML?.substring(0, 3000) || 'parent not found';
-                            }
-                        }
-                        return '件中テキスト not found';
+                        const html = document.body.innerHTML;
+                        // 最後のkyujin_body以降のHTML
+                        const lastIdx = html.lastIndexOf('kyujin_body');
+                        if (lastIdx < 0) return 'kyujin_body not found';
+                        return html.substring(lastIdx + 500, lastIdx + 4000);
                     }
                 """)
-                print(f"\n=== 件中付近HTML ===\n{pager_area}")
+                print(f"\n=== job list後ろのHTML ===\n{pager_area}")
 
             break  # デバッグのため1ページで停止
 
