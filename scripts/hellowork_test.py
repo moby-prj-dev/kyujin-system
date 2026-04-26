@@ -22,27 +22,38 @@ async def scrape_hellowork():
 
         print(f"タイトル: {await page.title()}")
 
-        # 介護カテゴリをモーダル経由で選択
-        print("介護カテゴリを選択中...")
-        try:
-            # ラベルクリックでモーダルを開く
-            await page.click('label[for="ID_daiEasyShokusyuBox13"]')
+        # 全カテゴリのvalue値とラベルを確認
+        categories = await page.evaluate("""
+            () => {
+                const cbs = document.querySelectorAll('input[name="daiEasyShokusyuBox"]');
+                return Array.from(cbs).map(cb => {
+                    const lbl = document.querySelector(`label[for="${cb.id}"]`);
+                    return cb.value + ': ' + (lbl ? lbl.innerText.trim() : '?');
+                });
+            }
+        """)
+        print("カテゴリ一覧:", categories)
+
+        # 介護・福祉のvalueを特定してモーダルを開く
+        kaigo_value = next((c.split(':')[0] for c in categories if '介護' in c), None)
+        print(f"介護・福祉 value: {kaigo_value}")
+
+        if kaigo_value:
+            print("介護カテゴリのモーダルを開いています...")
+            await page.click(f'label[for="ID_daiEasyShokusyuBox{kaigo_value}"]')
             await page.wait_for_timeout(1500)
 
-            # モーダルのHTML構造を確認（デバッグ用）
-            modal_html = await page.evaluate("""
+            # モーダル底部（決定ボタン）のHTML確認
+            modal_bottom = await page.evaluate("""
                 () => {
-                    const modal = document.querySelector('.modal_wrap.mom');
-                    return modal ? modal.innerHTML.substring(0, 2000) : 'モーダルなし';
+                    const bottom = document.querySelector('.modal_content.mom .modal.bottom, .modal_content.mom .modal_btn, .modal_content.mom button');
+                    return bottom ? bottom.outerHTML : document.querySelector('.modal_content.mom')?.innerHTML.slice(-500) || 'なし';
                 }
             """)
-            print(f"モーダルHTML先頭: {modal_html[:800]}")
+            print(f"モーダル底部: {modal_bottom}")
 
-            # モーダルを閉じる（一旦Escapeで）
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(500)
-        except Exception as e:
-            print(f"介護チェックボックスエラー: {e}")
 
         # 都道府県（沖縄=47）を設定
         # ID_todohukenHiddenはtype=hiddenなのでJSで直接セット
