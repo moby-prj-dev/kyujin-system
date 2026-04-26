@@ -20,17 +20,34 @@ async def scrape_hellowork():
         print(f"タイトル: {await page.title()}")
 
         # 介護カテゴリのチェックボックスをチェック（value=13）
+        # inputはlabelに覆われているのでlabelをクリック
         print("介護カテゴリを選択中...")
         try:
-            await page.check('input[name="daiEasyShokusyuBox"][value="13"]')
+            await page.click('label[for="ID_daiEasyShokusyuBox13"]')
             await page.wait_for_timeout(500)
         except Exception as e:
             print(f"介護チェックボックスエラー: {e}")
 
-        # 都道府県（沖縄）を入力
+        # 都道府県（沖縄=47）を設定
+        # ID_todohukenHiddenはtype=hiddenなのでJSで直接セット
         print("都道府県（沖縄）を設定中...")
         try:
-            await page.fill('input[id="ID_todohukenHidden"]', '47')
+            await page.evaluate("""
+                () => {
+                    const sel = document.querySelector('select[name="todohuken"]');
+                    if (sel) {
+                        sel.value = '47';
+                        sel.dispatchEvent(new Event('change', {bubbles: true}));
+                        return;
+                    }
+                    const hidden = document.getElementById('ID_todohukenHidden');
+                    if (hidden) {
+                        hidden.value = '47';
+                        hidden.dispatchEvent(new Event('change', {bubbles: true}));
+                    }
+                }
+            """)
+            await page.wait_for_timeout(500)
         except Exception as e:
             print(f"都道府県設定エラー: {e}")
 
