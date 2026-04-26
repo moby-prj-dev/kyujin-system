@@ -126,37 +126,25 @@ async def scrape_hellowork():
             if current_page >= total_pages:
                 break
 
-            # ページ遷移前にデバッグ情報を取得（最初の1回のみ）
+            # 初回のみ: 「件中」付近のHTML（ページネーション）を確認
             if current_page == 1:
-                debug = await page.evaluate("""
+                pager_area = await page.evaluate("""
                     () => {
-                        const forms = Array.from(document.forms).map(f => f.id + ':' + f.action);
-                        const fwFuncs = Object.keys(window).filter(k => /fwList|pageList|goPage|dispPage/i.test(k));
-                        const fwInputs = Array.from(document.querySelectorAll('input[name^="fwList"]')).map(e => e.name + '=' + e.value);
-                        return JSON.stringify({forms, fwFuncs, fwInputs});
+                        // 「件中」テキストを含む要素の親HTMLを取得
+                        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+                        let node;
+                        while (node = walker.nextNode()) {
+                            if (node.textContent.includes('件中') && node.textContent.includes('件を表示')) {
+                                const parent = node.parentElement?.closest('div,td,section') || node.parentElement;
+                                return parent?.outerHTML?.substring(0, 3000) || 'parent not found';
+                            }
+                        }
+                        return '件中テキスト not found';
                     }
                 """)
-                import json as _j; d = _j.loads(debug)
-                print(f"\nフォーム一覧: {d['forms']}")
-                print(f"fwList関連JS関数: {d['fwFuncs']}")
-                print(f"fwList系hidden fields: {d['fwInputs']}")
+                print(f"\n=== 件中付近HTML ===\n{pager_area}")
 
-            # fwListNowPage を更新してフォーム送信
-            submitted = await page.evaluate(f"""
-                () => {{
-                    const nowPage = document.querySelector('input[name="fwListNowPage"]');
-                    if (!nowPage) return 'fwListNowPage not found';
-                    nowPage.value = '{current_page + 1}';
-                    const form = document.getElementById('ID_form_1');
-                    if (!form) return 'ID_form_1 not found';
-                    form.submit();
-                    return 'submitted';
-                }}
-            """)
-            print(f"  送信結果: {submitted}")
-            await page.wait_for_load_state('domcontentloaded')
-            await page.wait_for_timeout(1500)
-            print(f"  遷移後URL: {page.url}")
+            break  # デバッグのため1ページで停止
 
         print(f"\n合計 {len(all_jobs)} 件取得完了")
 
