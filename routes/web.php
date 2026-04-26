@@ -25,6 +25,11 @@ Route::get('/jobs/okinawa', [\App\Http\Controllers\SeoJobController::class, 'ind
 Route::get('/jobs/okinawa/{slug}', [\App\Http\Controllers\SeoJobController::class, 'area'])->name('seo.jobs.area');
 
 // -----------------------------------------------
+// ハローワーク求人ページ
+// -----------------------------------------------
+Route::get('/hellowork', [\App\Http\Controllers\HelloworkJobController::class, 'index'])->name('hellowork.index');
+
+// -----------------------------------------------
 // コンテンツSEO記事
 // -----------------------------------------------
 Route::get('/articles', [\App\Http\Controllers\ContentArticleController::class, 'index'])->name('articles.index');
