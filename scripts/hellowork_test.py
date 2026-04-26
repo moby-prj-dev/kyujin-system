@@ -73,8 +73,18 @@ async def scrape_hellowork():
 
         # 結果テキストを確認
         content = await page.inner_text('body')
-        print("\n--- 結果テキスト（先頭500文字）---")
-        print(content[:500])
+        print(f"\n--- ページ全文字数: {len(content)} ---")
+        print("\n--- 先頭1000文字 ---")
+        print(content[:1000])
+
+        # 求人件数を探す
+        count_el = await page.query_selector('#ID_total, .result_count, [id*="count"], [id*="total"]')
+        if count_el:
+            print(f"\n件数: {await count_el.inner_text()}")
+
+        # 求人リストを取得
+        jobs = await page.query_selector_all('.kyuujin_item, .result_item, [class*="job"], tr.data')
+        print(f"\n求人要素数: {len(jobs)}")
 
         await browser.close()
 
