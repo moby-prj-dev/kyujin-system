@@ -248,10 +248,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="info-value">{{ $areaNames }}</span>
             </div>
             @endif
-            @if($job->source !== 'hellowork')
+            @php $jobTypeNames = $job->jobJobTypes->map(fn($j) => $j->jobType->name)->filter()->implode('・'); @endphp
+            @if($jobTypeNames)
             <div class="info-row">
                 <span class="info-label"><i class="bi bi-person-badge me-1 text-primary"></i>職種</span>
-                <span class="info-value">{{ $job->jobJobTypes->map(fn($j) => $j->jobType->name)->implode('・') ?: '未設定' }}</span>
+                <span class="info-value">{{ $jobTypeNames }}</span>
             </div>
             @endif
             @php $empNames = $job->jobEmploymentTypes->map(fn($e) => $e->employmentType->name)->filter()->implode('・'); @endphp

@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Job;
+use App\Models\JobJobType;
 use App\Models\MasterArea;
 use App\Models\MasterEmploymentType;
+use App\Models\MasterJobType;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
@@ -25,10 +27,11 @@ class GenerateHelloworkLps extends Command
             return self::FAILURE;
         }
 
-        $limit  = (int) $this->option('limit');
-        $today  = now()->startOfDay();
-        $areas  = MasterArea::where('prefecture', '沖縄県')->get();
+        $limit    = (int) $this->option('limit');
+        $today    = now()->startOfDay();
+        $areas    = MasterArea::where('prefecture', '沖縄県')->get();
         $empTypes = MasterEmploymentType::all();
+        $jobTypes = MasterJobType::all();
 
         // JSON読み込み・期限内のみ・受付年月日降順で上位N件
         $all = collect(json_decode(file_get_contents($path), true))
@@ -121,6 +124,10 @@ class GenerateHelloworkLps extends Command
             $empType = $this->matchEmploymentType($empTypes, $data['雇用形態'] ?? '');
             if ($empType) $job->jobEmploymentTypes()->create(['employment_type_id' => $empType->id]);
 
+            $job->jobJobTypes()->delete();
+            $jobType = $this->matchJobType($jobTypes, $data['職種'] ?? '');
+            if ($jobType) $job->jobJobTypes()->create(['job_type_id' => $jobType->id]);
+
             $isNew ? $created++ : $updated++;
             $this->line("  → 完了: {$generated['seo_title']}");
 
@@ -205,6 +212,39 @@ PROMPT;
     {
         foreach ($areas as $area) {
             if (str_contains($location, $area->name)) return $area;
+        }
+        return null;
+    }
+
+    private function matchJobType($jobTypes, string $jobTitle): ?MasterJobType
+    {
+        $map = [
+            '介護福祉士'   => '介護福祉士',
+            'ケアマネ'     => 'ケアマネジャー（介護支援専門員）',
+            '訪問介護'     => 'ホームヘルパー（訪問介護員）',
+            'ヘルパー'     => 'ホームヘルパー（訪問介護員）',
+            '生活相談'     => '生活相談員',
+            '保育士'       => '保育士',
+            '児童指導員'   => '児童指導員',
+            '生活支援員'   => '生活支援員',
+            '就労支援'     => '就労支援員',
+            'サービス管理' => 'サービス管理責任者（サビ管）',
+            '社会福祉士'   => '社会福祉士',
+            '精神保健'     => '精神保健福祉士（PSW）',
+            '相談支援'     => '相談支援専門員',
+            '看護師'       => '看護師（福祉施設勤務）',
+            '理学療法士'   => '理学療法士（PT）',
+            '作業療法士'   => '作業療法士（OT）',
+            '言語聴覚士'   => '言語聴覚士（ST）',
+            '栄養士'       => '管理栄養士（施設）',
+            '介護事務'     => '介護事務',
+            '医療事務'     => '医療事務',
+            '介護'         => '介護職員（施設）',
+        ];
+        foreach ($map as $keyword => $name) {
+            if (str_contains($jobTitle, $keyword)) {
+                return $jobTypes->firstWhere('name', $name);
+            }
         }
         return null;
     }
