@@ -241,18 +241,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </span>
             </div>
             @endif
+            @php $areaNames = $job->jobAreas->map(fn($a) => $a->area->name)->filter()->implode('・'); @endphp
+            @if($areaNames)
             <div class="info-row">
                 <span class="info-label"><i class="bi bi-geo-alt me-1 text-primary"></i>勤務地</span>
-                <span class="info-value">{{ $job->jobAreas->map(fn($a) => $a->area->name)->implode('・') ?: '未設定' }}</span>
+                <span class="info-value">{{ $areaNames }}</span>
             </div>
+            @endif
+            @if($job->source !== 'hellowork')
             <div class="info-row">
                 <span class="info-label"><i class="bi bi-person-badge me-1 text-primary"></i>職種</span>
                 <span class="info-value">{{ $job->jobJobTypes->map(fn($j) => $j->jobType->name)->implode('・') ?: '未設定' }}</span>
             </div>
+            @endif
+            @php $empNames = $job->jobEmploymentTypes->map(fn($e) => $e->employmentType->name)->filter()->implode('・'); @endphp
+            @if($empNames)
             <div class="info-row">
                 <span class="info-label"><i class="bi bi-building me-1 text-primary"></i>雇用形態</span>
-                <span class="info-value">{{ $job->jobEmploymentTypes->map(fn($e) => $e->employmentType->name)->implode('・') ?: '未設定' }}</span>
+                <span class="info-value">{{ $empNames }}</span>
             </div>
+            @endif
         </div>
 
         @if($job->jobConditions->isNotEmpty())
@@ -284,6 +292,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         @endif
 
+        @if($job->source !== 'hellowork')
         <div class="section-card">
             <div class="section-title"><i class="bi bi-send-fill"></i> 応募方法</div>
             <div class="apply-method-item">
@@ -306,6 +315,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <i class="bi bi-shield-check me-1"></i>応募は無料です。個人情報は適切に管理されます。
             </p>
         </div>
+        @endif
 
     </div>
 </div>
