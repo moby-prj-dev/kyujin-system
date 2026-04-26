@@ -40,19 +40,44 @@ async def scrape_hellowork():
 
         if kaigo_value:
             print("介護カテゴリのモーダルを開いています...")
-            await page.click(f'label[for="ID_daiEasyShokusyuBox{kaigo_value}"]')
+            # PlaywrightのクリックはインターセプトされるのでJSで直接クリック
+            result = await page.evaluate(f"""
+                () => {{
+                    const cb = document.querySelector('input[name="daiEasyShokusyuBox"][value="{kaigo_value}"]');
+                    if (!cb) return 'input not found';
+                    const label = document.querySelector(`label[for="${{cb.id}}"]`);
+                    if (!label) return `label not found for ${{cb.id}}`;
+                    label.click();
+                    return `clicked: ${{cb.id}}`;
+                }}
+            """)
+            print(f"ラベルクリック結果: {result}")
             await page.wait_for_timeout(1500)
 
-            # モーダル底部（決定ボタン）のHTML確認
-            modal_bottom = await page.evaluate("""
+            # モーダルの底部HTML（決定ボタン確認）
+            modal_info = await page.evaluate("""
                 () => {
-                    const bottom = document.querySelector('.modal_content.mom .modal.bottom, .modal_content.mom .modal_btn, .modal_content.mom button');
-                    return bottom ? bottom.outerHTML : document.querySelector('.modal_content.mom')?.innerHTML.slice(-500) || 'なし';
+                    const modal = document.querySelector('.modal_content.mom');
+                    if (!modal) return 'モーダルなし';
+                    return modal.innerHTML.slice(-800);
                 }
             """)
-            print(f"モーダル底部: {modal_bottom}")
+            print(f"モーダル底部HTML: {modal_info}")
 
-            await page.keyboard.press('Escape')
+            # 「こだわらない」をチェックしてモーダルを確定
+            confirm_result = await page.evaluate(f"""
+                () => {{
+                    // こだわらないチェック（value = カテゴリ値 + '00'）
+                    const nodawari = document.querySelector('input[name="modalTmpEasyShokusyuBox"][value="{kaigo_value}00"]');
+                    if (nodawari) nodawari.checked = true;
+
+                    // 決定/閉じるボタンを探してクリック
+                    const btn = document.querySelector('.modal_content.mom .modal.bottom button, .modal_content.mom button, .mom_btn_ok');
+                    if (btn) {{ btn.click(); return `決定クリック: ${{btn.outerHTML.slice(0,100)}}`; }}
+                    return `決定ボタンなし / nodawari=${{!!nodawari}}`;
+                }}
+            """)
+            print(f"モーダル確定: {confirm_result}")
             await page.wait_for_timeout(500)
 
         # 都道府県（沖縄=47）を設定
