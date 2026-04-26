@@ -214,6 +214,7 @@
                                 <th>種別</th>
                                 <th class="text-center">有効性</th>
                                 <th class="text-center">課金</th>
+                                <th class="text-center">申告</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -260,6 +261,18 @@
                                         <span class="text-success small">無料枠内</span>
                                     @else
                                         <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($app->is_valid && !$app->disputes()->where('status', '!=', 'rejected')->exists())
+                                        <a href="{{ route('disputes.create', [$job->manage_token, $app]) }}"
+                                           class="btn btn-outline-danger btn-sm" style="font-size:0.75rem;">
+                                            <i class="bi bi-flag me-1"></i>無効申告
+                                        </a>
+                                    @elseif($app->disputes()->where('status', 'pending')->exists())
+                                        <span class="text-warning small"><i class="bi bi-clock me-1"></i>審査中</span>
+                                    @elseif($app->disputes()->where('status', 'approved')->exists())
+                                        <span class="text-muted small">申告承認済</span>
                                     @endif
                                 </td>
                             </tr>
