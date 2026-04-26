@@ -105,50 +105,37 @@ async def scrape_hellowork():
         await page.click('button[name="searchBtn"]')
         await page.wait_for_timeout(3000)
 
-        all_jobs = []
-        page_num = 1
+        # 総件数・総ページ数を取得
+        total = await page.evaluate("""
+            () => {
+                const el = document.querySelector('input[name="kyujinkensu"]');
+                return el ? parseInt(el.value) : 0;
+            }
+        """)
+        per_page = 30
+        total_pages = (total + per_page - 1) // per_page
+        print(f"合計 {total} 件 / {total_pages} ページ")
 
-        while True:
+        all_jobs = []
+
+        for current_page in range(1, total_pages + 1):
             jobs = await extract_jobs(page)
             all_jobs.extend(jobs)
-            print(f"  ページ {page_num}: {len(jobs)} 件取得（累計 {len(all_jobs)} 件）")
+            print(f"  ページ {current_page}/{total_pages}: {len(jobs)} 件取得（累計 {len(all_jobs)} 件）")
 
-            # ページネーション調査（デバッグ用、初回のみ）
-            if page_num == 1:
-                pager_info = await page.evaluate("""
-                    () => {
-                        // onclick属性に"page"や"disp"を含む要素を探す
-                        const onclickEls = Array.from(document.querySelectorAll('[onclick]'))
-                            .filter(e => /page|disp|next|Page/i.test(e.getAttribute('onclick')))
-                            .map(e => e.outerHTML.substring(0, 200));
-                        // hidden inputを全取得
-                        const hiddens = Array.from(document.querySelectorAll('input[type="hidden"]'))
-                            .map(e => e.name + '=' + e.value);
-                        // ページ末尾HTML（求人リスト以降）
-                        const tailHtml = document.body.innerHTML.slice(-3000);
-                        return JSON.stringify({ onclickEls, hiddens, tailHtml });
-                    }
-                """)
-                import json as _json
-                info = _json.loads(pager_info)
-                print(f"\nonclick要素: {info['onclickEls'][:5]}")
-                print(f"\nhidden inputs: {info['hiddens']}")
-                print(f"\nページ末尾HTML:\n{info['tailHtml'][:2000]}")
-
-            # 次へボタンを探す
-            next_btn = await page.query_selector('a.next, a[id*="next"], input[value="次へ"], a:has-text("次へ")')
-            if not next_btn:
-                print("最終ページに到達しました")
+            if current_page >= total_pages:
                 break
 
-            await next_btn.click()
-            await page.wait_for_timeout(2000)
-            page_num += 1
-
-            # 安全のため100ページまで
-            if page_num > 100:
-                print("100ページ上限に達しました")
-                break
+            # fwListNowPage を更新してフォーム送信
+            await page.evaluate(f"""
+                () => {{
+                    document.querySelector('input[name="fwListNowPage"]').value = '{current_page + 1}';
+                    document.querySelector('input[name="action"]').value = 'changeSearchCond';
+                    document.getElementById('ID_form_1').submit();
+                }}
+            """)
+            await page.wait_for_load_state('domcontentloaded')
+            await page.wait_for_timeout(1500)
 
         print(f"\n合計 {len(all_jobs)} 件取得完了")
 
