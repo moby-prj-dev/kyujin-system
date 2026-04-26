@@ -22,16 +22,24 @@ async def scrape_hellowork():
 
         print(f"タイトル: {await page.title()}")
 
-        # 介護カテゴリのチェックボックスをチェック（value=13）
-        # labelクリックはモーダルを開くのでJSで直接チェック
+        # 介護カテゴリをモーダル経由で選択
         print("介護カテゴリを選択中...")
         try:
-            await page.evaluate("""
+            # ラベルクリックでモーダルを開く
+            await page.click('label[for="ID_daiEasyShokusyuBox13"]')
+            await page.wait_for_timeout(1500)
+
+            # モーダルのHTML構造を確認（デバッグ用）
+            modal_html = await page.evaluate("""
                 () => {
-                    const cb = document.querySelector('input[name="daiEasyShokusyuBox"][value="13"]');
-                    if (cb) cb.checked = true;
+                    const modal = document.querySelector('.modal_wrap.mom');
+                    return modal ? modal.innerHTML.substring(0, 2000) : 'モーダルなし';
                 }
             """)
+            print(f"モーダルHTML先頭: {modal_html[:800]}")
+
+            # モーダルを閉じる（一旦Escapeで）
+            await page.keyboard.press('Escape')
             await page.wait_for_timeout(500)
         except Exception as e:
             print(f"介護チェックボックスエラー: {e}")
