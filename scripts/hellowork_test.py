@@ -126,20 +126,15 @@ async def scrape_hellowork():
             if current_page >= total_pages:
                 break
 
-            # 初回のみ: 最後のjob body後ろ〜フッター前のHTML（ページネーション領域）を確認
-            if current_page == 1:
-                pager_area = await page.evaluate("""
-                    () => {
-                        const html = document.body.innerHTML;
-                        // 最後のkyujin_foot以降のHTML（ページネーション領域）
-                        const lastFoot = html.lastIndexOf('kyujin_foot');
-                        if (lastFoot < 0) return 'kyujin_foot not found';
-                        return html.substring(lastFoot + 2000, lastFoot + 6000);
-                    }
-                """)
-                print(f"\n=== job list後ろのHTML ===\n{pager_area}")
+            # 「次へ＞」ボタンをクリックして次ページへ
+            next_btn = await page.query_selector('input[name="fwListNaviBtnNext"]:not([disabled])')
+            if not next_btn:
+                print("最終ページに到達しました")
+                break
 
-            break  # デバッグのため1ページで停止
+            await next_btn.click()
+            await page.wait_for_load_state('domcontentloaded')
+            await page.wait_for_timeout(1000)
 
         print(f"\n合計 {len(all_jobs)} 件取得完了")
 
