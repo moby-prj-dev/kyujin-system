@@ -64,17 +64,20 @@ async def scrape_hellowork():
             """)
             print(f"モーダル底部HTML: {modal_info}")
 
-            # 「こだわらない」をチェックしてモーダルを確定
+            # 「こだわらない」をチェックしてsaveEasyShokusyuModalで確定
             confirm_result = await page.evaluate(f"""
                 () => {{
-                    // こだわらないチェック（value = カテゴリ値 + '00'）
                     const nodawari = document.querySelector('input[name="modalTmpEasyShokusyuBox"][value="{kaigo_value}00"]');
                     if (nodawari) nodawari.checked = true;
 
-                    // 決定/閉じるボタンを探してクリック
-                    const btn = document.querySelector('.modal_content.mom .modal.bottom button, .modal_content.mom button, .mom_btn_ok');
-                    if (btn) {{ btn.click(); return `決定クリック: ${{btn.outerHTML.slice(0,100)}}`; }}
-                    return `決定ボタンなし / nodawari=${{!!nodawari}}`;
+                    if (typeof saveEasyShokusyuModal === 'function') {{
+                        saveEasyShokusyuModal('{kaigo_value}');
+                        return `saveEasyShokusyuModal('{kaigo_value}') 呼び出し成功`;
+                    }}
+                    // フォールバック: #ID_saveBtnをクリック
+                    const btn = document.querySelector('#ID_saveBtn');
+                    if (btn) {{ btn.click(); return '決定ボタンクリック'; }}
+                    return `失敗 / nodawari=${{!!nodawari}}`;
                 }}
             """)
             print(f"モーダル確定: {confirm_result}")
