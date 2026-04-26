@@ -131,10 +131,10 @@ async def scrape_hellowork():
                 pager_area = await page.evaluate("""
                     () => {
                         const html = document.body.innerHTML;
-                        // 最後のkyujin_body以降のHTML
-                        const lastIdx = html.lastIndexOf('kyujin_body');
-                        if (lastIdx < 0) return 'kyujin_body not found';
-                        return html.substring(lastIdx + 500, lastIdx + 4000);
+                        // 最後のkyujin_foot以降のHTML（ページネーション領域）
+                        const lastFoot = html.lastIndexOf('kyujin_foot');
+                        if (lastFoot < 0) return 'kyujin_foot not found';
+                        return html.substring(lastFoot + 2000, lastFoot + 6000);
                     }
                 """)
                 print(f"\n=== job list後ろのHTML ===\n{pager_area}")
