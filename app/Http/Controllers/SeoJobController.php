@@ -79,7 +79,10 @@ class SeoJobController extends Controller
         $filterIds          = $this->applyFilters($query, $request);
         $searchConditionIds = [...$searchConditionIds, ...$filterIds];
 
-        $jobs = $query->latest()->paginate(20)->withQueryString();
+        $jobs = $query
+            ->orderByRaw("CASE WHEN source = 'care_entry' THEN 0 ELSE 1 END")
+            ->latest()
+            ->paginate(20)->withQueryString();
 
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
@@ -110,7 +113,10 @@ class SeoJobController extends Controller
         $filterIds          = $this->applyFilters($query, $request);
         $searchConditionIds = ['area_ids' => [$currentArea->id], ...$filterIds];
 
-        $jobs = $query->latest()->paginate(20)->withQueryString();
+        $jobs = $query
+            ->orderByRaw("CASE WHEN source = 'care_entry' THEN 0 ELSE 1 END")
+            ->latest()
+            ->paginate(20)->withQueryString();
 
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')

@@ -410,14 +410,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 @php $entryBaseParams = $searchConditionIds ?? []; @endphp
                 @forelse($jobs as $job)
+                    @php $isHw = $job->source === 'hellowork'; @endphp
                     <div class="job-card">
                         <p class="job-card__company">{{ $job->company_name }}</p>
                         <p class="job-card__title">
-                            <a href="{{ route('lp.show', $job->token) }}">
+                            <a href="{{ $isHw ? $job->hw_job_url : route('lp.show', $job->token) }}"
+                               @if($isHw) target="_blank" rel="noopener" @endif>
                                 {{ $job->seo_title ?: $job->title }}
                             </a>
                         </p>
                         <div class="job-card__tags">
+                            @if($isHw)
+                                <span class="job-card__tag" style="background:#fff3e0;color:#e65100;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:4px;">ハローワーク</span>
+                            @endif
                             @foreach($job->jobAreas->take(2) as $ja)
                                 @if($ja->area)
                                     <span class="job-card__tag job-card__tag--area">
