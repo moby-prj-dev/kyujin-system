@@ -98,6 +98,12 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::put('/articles/{article}', [\App\Http\Controllers\Admin\ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{article}', [\App\Http\Controllers\Admin\ArticleController::class, 'destroy'])->name('articles.destroy');
 
+    // ハローワーク求人管理
+    Route::get('/hellowork', [\App\Http\Controllers\Admin\HelloworkJobController::class, 'index'])->name('hellowork.index');
+    Route::get('/hellowork/{job}/edit', [\App\Http\Controllers\Admin\HelloworkJobController::class, 'edit'])->name('hellowork.edit');
+    Route::put('/hellowork/{job}', [\App\Http\Controllers\Admin\HelloworkJobController::class, 'update'])->name('hellowork.update');
+    Route::delete('/hellowork/{job}', [\App\Http\Controllers\Admin\HelloworkJobController::class, 'destroy'])->name('hellowork.destroy');
+
     // 設定
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');

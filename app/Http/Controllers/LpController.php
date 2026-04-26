@@ -30,11 +30,6 @@ class LpController extends Controller
             abort(404);
         }
 
-        // ハローワーク求人はハローワークサイトへリダイレクト
-        if ($job->source === 'hellowork' && $job->hw_job_url) {
-            return redirect($job->hw_job_url);
-        }
-
         try {
             LpView::create([
                 'job_id'     => $job->id,
