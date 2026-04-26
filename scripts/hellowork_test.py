@@ -113,19 +113,27 @@ async def scrape_hellowork():
             all_jobs.extend(jobs)
             print(f"  ページ {page_num}: {len(jobs)} 件取得（累計 {len(all_jobs)} 件）")
 
-            # ページネーションHTML確認（デバッグ用、初回のみ）
+            # ページネーション調査（デバッグ用、初回のみ）
             if page_num == 1:
-                pager_html = await page.evaluate("""
+                pager_info = await page.evaluate("""
                     () => {
-                        const el = document.querySelector('.pager, [class*="page"], [id*="page"], [class*="navi"]');
-                        if (el) return el.outerHTML.substring(0, 1000);
-                        // 「次へ」テキストを含む要素を探す
-                        const all = Array.from(document.querySelectorAll('a, button, input[type="submit"], input[type="button"]'));
-                        const next = all.find(e => e.innerText?.includes('次') || e.value?.includes('次'));
-                        return next ? next.outerHTML : '次へ要素なし / body末尾: ' + document.body.innerHTML.slice(-2000);
+                        // onclick属性に"page"や"disp"を含む要素を探す
+                        const onclickEls = Array.from(document.querySelectorAll('[onclick]'))
+                            .filter(e => /page|disp|next|Page/i.test(e.getAttribute('onclick')))
+                            .map(e => e.outerHTML.substring(0, 200));
+                        // hidden inputを全取得
+                        const hiddens = Array.from(document.querySelectorAll('input[type="hidden"]'))
+                            .map(e => e.name + '=' + e.value);
+                        // ページ末尾HTML（求人リスト以降）
+                        const tailHtml = document.body.innerHTML.slice(-3000);
+                        return JSON.stringify({ onclickEls, hiddens, tailHtml });
                     }
                 """)
-                print(f"\nページネーションHTML: {pager_html[:1500]}")
+                import json as _json
+                info = _json.loads(pager_info)
+                print(f"\nonclick要素: {info['onclickEls'][:5]}")
+                print(f"\nhidden inputs: {info['hiddens']}")
+                print(f"\nページ末尾HTML:\n{info['tailHtml'][:2000]}")
 
             # 次へボタンを探す
             next_btn = await page.query_selector('a.next, a[id*="next"], input[value="次へ"], a:has-text("次へ")')
