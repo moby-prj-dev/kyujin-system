@@ -14,13 +14,15 @@ class Application extends Model
         'phone','normalized_phone','email','normalized_email',
         'status','applied_at',
         'is_valid','invalid_reason','is_billable','billable_snapshot','counted_at',
+        'is_suspicious','suspicious_reason',
     ];
 
     protected $casts = [
-        'applied_at'  => 'datetime',
-        'counted_at'  => 'datetime',
-        'is_valid'    => 'boolean',
-        'is_billable' => 'boolean',
+        'applied_at'    => 'datetime',
+        'counted_at'    => 'datetime',
+        'is_valid'      => 'boolean',
+        'is_billable'   => 'boolean',
+        'is_suspicious' => 'boolean',
     ];
 
     const TYPE_LINE = 'line';
@@ -35,6 +37,7 @@ class Application extends Model
     const INVALID_SPAM           = 'spam_or_bot';
     const INVALID_TEST           = 'test_submission';
     const INVALID_MANUAL         = 'manually_invalidated';
+    const INVALID_EMPLOYER       = 'employer_dispute';
 
     const INVALID_REASON_LABELS = [
         self::INVALID_MISSING_FIELDS => '必須項目不足',
@@ -42,6 +45,7 @@ class Application extends Model
         self::INVALID_SPAM           => 'スパム/ボット',
         self::INVALID_TEST           => 'テスト投稿',
         self::INVALID_MANUAL         => '手動無効',
+        self::INVALID_EMPLOYER       => '掲載主申告',
     ];
 
     public function job(): BelongsTo { return $this->belongsTo(Job::class); }
@@ -52,6 +56,7 @@ class Application extends Model
     public function lineConditionAnswers(): HasMany { return $this->hasMany(LineConditionAnswer::class); }
     public function billing(): HasOne { return $this->hasOne(Billing::class); }
     public function notifications(): HasMany { return $this->hasMany(ApplicationNotification::class); }
+    public function disputes(): HasMany { return $this->hasMany(ApplicationDispute::class); }
 
     public function scopeLine($q) { return $q->where('application_type', self::TYPE_LINE); }
     public function scopeForm($q) { return $q->where('application_type', self::TYPE_FORM); }

@@ -73,6 +73,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.disputes.*') ? 'active' : '' }}"
+                       href="{{ route('admin.disputes.index') }}">
+                        <i class="bi bi-flag"></i>無効申告
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}"
                        href="{{ route('admin.articles.index') }}">
                         <i class="bi bi-file-earmark-text"></i>記事管理

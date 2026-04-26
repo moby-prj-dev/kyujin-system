@@ -36,6 +36,8 @@ Route::post('/jobs/{token}/continue', [\App\Http\Controllers\JobController::clas
 Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class, 'close'])->name('jobs.close');
 Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class, 'reopen'])->name('jobs.reopen');
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');
+Route::get('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'create'])->name('disputes.create');
+Route::post('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'store'])->name('disputes.store')->middleware('throttle:10,60');
 
 // -----------------------------------------------
 // LINE 応募エントリー（検索条件付きでLINEに遷移）
@@ -94,6 +96,11 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     // 設定
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+
+    // 無効申告管理
+    Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');
+    Route::patch('/disputes/{dispute}/approve', [\App\Http\Controllers\Admin\DisputeController::class, 'approve'])->name('disputes.approve');
+    Route::patch('/disputes/{dispute}/reject', [\App\Http\Controllers\Admin\DisputeController::class, 'reject'])->name('disputes.reject');
 
     // 請求管理
     Route::get('/billings', [\App\Http\Controllers\Admin\BillingController::class, 'index'])->name('billings.index');
