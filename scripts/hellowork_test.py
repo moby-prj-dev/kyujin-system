@@ -126,11 +126,11 @@ async def scrape_hellowork():
             if current_page >= total_pages:
                 break
 
-            # fwListNowPage を更新してフォーム送信
+            # fwListNowPage を更新してフォーム送信（actionは空のまま）
             await page.evaluate(f"""
                 () => {{
-                    document.querySelector('input[name="fwListNowPage"]').value = '{current_page + 1}';
-                    document.querySelector('input[name="action"]').value = 'changeSearchCond';
+                    const nowPage = document.querySelector('input[name="fwListNowPage"]');
+                    if (nowPage) nowPage.value = '{current_page + 1}';
                     document.getElementById('ID_form_1').submit();
                 }}
             """)
