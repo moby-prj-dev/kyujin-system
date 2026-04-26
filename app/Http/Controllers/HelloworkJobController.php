@@ -21,6 +21,18 @@ class HelloworkJobController extends Controller
         } else {
             $all = collect(json_decode(file_get_contents($path), true));
 
+            // 紹介期限切れを除外
+            $today = now()->startOfDay();
+            $all = $all->filter(function ($j) use ($today) {
+                $limit = $j['紹介期限日'] ?? '';
+                if (! $limit) return true;
+                try {
+                    return \Carbon\Carbon::createFromFormat('Y年n月j日', $limit)->startOfDay()->gte($today);
+                } catch (\Exception $e) {
+                    return true;
+                }
+            });
+
             // キーワード検索
             $keyword = $request->input('q');
             if ($keyword) {
