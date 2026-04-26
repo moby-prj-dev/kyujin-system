@@ -29,10 +29,7 @@ async def scrape_hellowork():
             await page.evaluate("""
                 () => {
                     const cb = document.querySelector('input[name="daiEasyShokusyuBox"][value="13"]');
-                    if (cb) {
-                        cb.checked = true;
-                        cb.dispatchEvent(new Event('change', {bubbles: true}));
-                    }
+                    if (cb) cb.checked = true;
                 }
             """)
             await page.wait_for_timeout(500)
@@ -62,9 +59,10 @@ async def scrape_hellowork():
         except Exception as e:
             print(f"都道府県設定エラー: {e}")
 
-        # 検索ボタンをクリック
+        # 検索ボタンをクリック（momモーダルが再表示されていれば再度消す）
         print("検索実行中...")
         try:
+            await page.evaluate("() => { document.querySelectorAll('.mom').forEach(el => el.style.display = 'none'); }")
             await page.click('button[name="searchBtn"]')
             await page.wait_for_timeout(3000)
         except Exception as e:
