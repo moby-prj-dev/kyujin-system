@@ -126,16 +126,37 @@ async def scrape_hellowork():
             if current_page >= total_pages:
                 break
 
-            # fwListNowPage を更新してフォーム送信（actionは空のまま）
-            await page.evaluate(f"""
+            # ページ遷移前にデバッグ情報を取得（最初の1回のみ）
+            if current_page == 1:
+                debug = await page.evaluate("""
+                    () => {
+                        const forms = Array.from(document.forms).map(f => f.id + ':' + f.action);
+                        const fwFuncs = Object.keys(window).filter(k => /fwList|pageList|goPage|dispPage/i.test(k));
+                        const fwInputs = Array.from(document.querySelectorAll('input[name^="fwList"]')).map(e => e.name + '=' + e.value);
+                        return JSON.stringify({forms, fwFuncs, fwInputs});
+                    }
+                """)
+                import json as _j; d = _j.loads(debug)
+                print(f"\nフォーム一覧: {d['forms']}")
+                print(f"fwList関連JS関数: {d['fwFuncs']}")
+                print(f"fwList系hidden fields: {d['fwInputs']}")
+
+            # fwListNowPage を更新してフォーム送信
+            submitted = await page.evaluate(f"""
                 () => {{
                     const nowPage = document.querySelector('input[name="fwListNowPage"]');
-                    if (nowPage) nowPage.value = '{current_page + 1}';
-                    document.getElementById('ID_form_1').submit();
+                    if (!nowPage) return 'fwListNowPage not found';
+                    nowPage.value = '{current_page + 1}';
+                    const form = document.getElementById('ID_form_1');
+                    if (!form) return 'ID_form_1 not found';
+                    form.submit();
+                    return 'submitted';
                 }}
             """)
+            print(f"  送信結果: {submitted}")
             await page.wait_for_load_state('domcontentloaded')
             await page.wait_for_timeout(1500)
+            print(f"  遷移後URL: {page.url}")
 
         print(f"\n合計 {len(all_jobs)} 件取得完了")
 
