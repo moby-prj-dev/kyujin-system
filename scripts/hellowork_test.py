@@ -53,12 +53,16 @@ async def scrape_hellowork():
         print(f"結果ページタイトル: {await page.title()}")
         print(f"URL: {page.url}")
 
-        # 結果ページHTML構造を確認（求人リスト部分）
+        # 求人リストのHTML構造を確認
         page_html = await page.content()
-        # 求人リストは概ねHTML中盤以降にある
-        midpoint = len(page_html) // 3
-        print("=== 結果HTML抜粋（中盤〜） ===")
-        print(page_html[midpoint:midpoint + 3000])
+        # 「受付年月日」の位置を起点に求人データ部分を抽出
+        idx = page_html.find('受付年月日')
+        if idx > 0:
+            print("=== 求人リストHTML（最初の求人付近） ===")
+            print(page_html[idx - 200 : idx + 2000])
+        else:
+            print("求人リストが見つかりません")
+            print(page_html[-3000:])
 
 if __name__ == "__main__":
     asyncio.run(scrape_hellowork())
