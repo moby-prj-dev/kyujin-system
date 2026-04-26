@@ -3,6 +3,7 @@
 沖縄×介護・福祉求人を取得する
 """
 import asyncio
+import json
 from playwright.async_api import async_playwright
 
 async def scrape_hellowork():
@@ -17,12 +18,8 @@ async def scrape_hellowork():
         )
         await page.wait_for_timeout(2000)
 
-        # ページロード時に出現するmomオーバーレイを非表示
         await page.evaluate("() => { document.querySelectorAll('.mom').forEach(el => el.style.display = 'none'); }")
 
-        # 介護・福祉カテゴリを直接チェック
-        # モーダル内の easyShokusyuBox チェックボックスはフォームに直接埋め込まれているため
-        # モーダル操作不要でそのまま設定できる
         print("介護カテゴリを選択中...")
         await page.evaluate("""
             () => {
@@ -34,7 +31,6 @@ async def scrape_hellowork():
         """)
         await page.wait_for_timeout(300)
 
-        # 都道府県（沖縄=47）を設定
         print("都道府県（沖縄）を設定中...")
         await page.evaluate("""
             () => {
@@ -44,25 +40,64 @@ async def scrape_hellowork():
         """)
         await page.wait_for_timeout(300)
 
-        # momオーバーレイを再度非表示にしてから検索ボタンをクリック
         print("検索実行中...")
         await page.evaluate("() => { document.querySelectorAll('.mom').forEach(el => el.style.display = 'none'); }")
         await page.click('button[name="searchBtn"]')
         await page.wait_for_timeout(3000)
 
-        print(f"結果ページタイトル: {await page.title()}")
-        print(f"URL: {page.url}")
+        # 求人データを構造化して取得
+        jobs = await page.evaluate("""
+            () => {
+                const results = [];
+                const heads  = document.querySelectorAll('.kyujin_head_date');
+                const kbns   = document.querySelectorAll('.kyujin_head_kbn');
+                const bodies = document.querySelectorAll('tr.kyujin_body');
 
-        # 求人リストのHTML構造を確認
-        page_html = await page.content()
-        # 「受付年月日」の位置を起点に求人データ部分を抽出
-        idx = page_html.find('受付年月日')
-        if idx > 0:
-            print("=== 求人リストHTML（最初の求人付近） ===")
-            print(page_html[idx - 200 : idx + 2000])
-        else:
-            print("求人リストが見つかりません")
-            print(page_html[-3000:])
+                bodies.forEach((body, i) => {
+                    const job = {};
+
+                    // 受付年月日・紹介期限日
+                    if (heads[i]) {
+                        heads[i].querySelectorAll('.flex.nowrap.mr1').forEach(item => {
+                            const parts = item.querySelectorAll(':scope > div');
+                            if (parts.length >= 2) {
+                                const key = parts[0].innerText.trim();
+                                const val = parts[1].innerText.trim().replace('：', '');
+                                job[key] = val;
+                            }
+                        });
+                    }
+
+                    // 雇用形態・都道府県
+                    if (kbns[i]) {
+                        const labels = Array.from(kbns[i].querySelectorAll('.bg_label div'))
+                            .map(l => l.innerText.trim()).filter(Boolean);
+                        job['雇用形態'] = [...new Set(labels)].join('/');
+                        const area = kbns[i].querySelector('.disp_inline_block');
+                        if (area) job['就業都道府県'] = area.innerText.trim();
+                    }
+
+                    // 左・右テーブルのラベル-値ペア
+                    body.querySelectorAll('table.noborder tr').forEach(row => {
+                        const label = row.querySelector('.label_col span')?.innerText?.trim();
+                        const value = row.querySelector('.data_col')?.innerText?.trim();
+                        if (label && value) job[label] = value;
+                    });
+
+                    results.push(job);
+                });
+
+                return results;
+            }
+        """)
+
+        print(f"\n取得件数（1ページ目）: {len(jobs)} 件")
+        print("\n=== 最初の3件 ===")
+        for job in jobs[:3]:
+            print(json.dumps(job, ensure_ascii=False, indent=2))
+            print("---")
+
+        await browser.close()
 
 if __name__ == "__main__":
     asyncio.run(scrape_hellowork())
