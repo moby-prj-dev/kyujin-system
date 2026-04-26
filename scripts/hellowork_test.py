@@ -53,10 +53,12 @@ async def scrape_hellowork():
         print(f"結果ページタイトル: {await page.title()}")
         print(f"URL: {page.url}")
 
-        content = await page.inner_text('body')
-        print(f"\n--- ページ全文字数: {len(content)} ---")
-        print("\n--- 後半2000文字（件数・求人一覧）---")
-        print(content[-2000:])
+        # 結果ページHTML構造を確認（求人リスト部分）
+        page_html = await page.content()
+        # 求人リストは概ねHTML中盤以降にある
+        midpoint = len(page_html) // 3
+        print("=== 結果HTML抜粋（中盤〜） ===")
+        print(page_html[midpoint:midpoint + 3000])
 
 if __name__ == "__main__":
     asyncio.run(scrape_hellowork())
