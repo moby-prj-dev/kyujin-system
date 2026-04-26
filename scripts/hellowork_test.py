@@ -113,6 +113,20 @@ async def scrape_hellowork():
             all_jobs.extend(jobs)
             print(f"  ページ {page_num}: {len(jobs)} 件取得（累計 {len(all_jobs)} 件）")
 
+            # ページネーションHTML確認（デバッグ用、初回のみ）
+            if page_num == 1:
+                pager_html = await page.evaluate("""
+                    () => {
+                        const el = document.querySelector('.pager, [class*="page"], [id*="page"], [class*="navi"]');
+                        if (el) return el.outerHTML.substring(0, 1000);
+                        // 「次へ」テキストを含む要素を探す
+                        const all = Array.from(document.querySelectorAll('a, button, input[type="submit"], input[type="button"]'));
+                        const next = all.find(e => e.innerText?.includes('次') || e.value?.includes('次'));
+                        return next ? next.outerHTML : '次へ要素なし / body末尾: ' + document.body.innerHTML.slice(-2000);
+                    }
+                """)
+                print(f"\nページネーションHTML: {pager_html[:1500]}")
+
             # 次へボタンを探す
             next_btn = await page.query_selector('a.next, a[id*="next"], input[value="次へ"], a:has-text("次へ")')
             if not next_btn:
