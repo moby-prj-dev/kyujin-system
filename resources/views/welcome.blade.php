@@ -22,6 +22,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>沖縄の介護・福祉求人｜Care Entry（ケアエントリー）</title>
     <meta name="description" content="沖縄の介護・福祉に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
+    <meta property="og:title" content="沖縄の介護・福祉求人｜Care Entry（ケアエントリー）">
+    <meta property="og:description" content="沖縄の介護・福祉に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:image" content="{{ url('/images/ogp.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ url('/images/ogp.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/welcome.css">
