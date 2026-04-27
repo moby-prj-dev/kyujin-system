@@ -82,7 +82,8 @@ class GenerateHelloworkLps extends Command
                 $this->warn("  → Gemini失敗、フォールバックで作成");
                 $location  = $data['就業場所'] ?? $data['就業都道府県'] ?? '沖縄県';
                 $generated = [
-                    'seo_title'        => "{$data['職種']} | {$data['事業所名']}",
+                    'title'            => "{$location}で{$data['職種']}として働きませんか？",
+                    'seo_title'        => "{$location} {$data['職種']}求人 | {$data['事業所名']}",
                     'meta_description' => "{$location}の{$data['職種']}求人。{$data['事業所名']}の求人詳細はこちら。",
                     'description'      => $data['仕事の内容'] ?? '',
                 ];
@@ -103,7 +104,7 @@ class GenerateHelloworkLps extends Command
                     'source'               => 'hellowork',
                     'hw_job_url'           => $hwUrl,
                     'company_name'         => mb_substr($data['事業所名'] ?? '', 0, 100),
-                    'title'                => mb_substr($generated['seo_title'], 0, 100),
+                    'title'                => mb_substr($generated['title'] ?? $generated['seo_title'], 0, 100),
                     'seo_title'            => mb_substr($generated['seo_title'], 0, 100),
                     'meta_description'     => mb_substr($generated['meta_description'], 0, 320),
                     'description_generated'=> $generated['description'],
@@ -171,7 +172,8 @@ class GenerateHelloworkLps extends Command
 【出力形式】
 以下のキーを持つJSONのみを返してください（説明文不要）:
 {
-  "seo_title": "SEO最適化されたページタイトル（例：那覇市の介護職員求人 | 社会医療法人敬愛会）60文字以内",
+  "title": "LPのh1に使う自然なキャッチコピー（例：「沖縄市で看護師として活躍しませんか？」「介護のプロとして、浦添市でやりがいある仕事を。」）。体言止め・疑問形・呼びかけなど人が読んで響く表現。40文字以内。",
+  "seo_title": "ブラウザタブ用SEOタイトル（例：那覇市 介護職員求人 | 社会医療法人敬愛会 | Care Entry）60文字以内",
   "meta_description": "このページの説明文（120文字以内）",
   "description": "求職者に伝わる魅力的な仕事紹介文（400〜600文字）。仕事内容・職場環境・働き方などを具体的に。最後にハローワーク経由で応募できる旨を自然に添えること。"
 }
