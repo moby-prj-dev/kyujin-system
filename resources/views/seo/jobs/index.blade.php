@@ -373,33 +373,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="{{ route('home') }}#search" class="btn-seo-search">
                 <i class="bi bi-search"></i>求人を検索する
             </a>
-            <a href="https://lin.ee/" class="btn-seo-line">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                LINEで応募する
-            </a>
         </div>
     </div>
 </div>
 
-{{-- エリアナビ --}}
-<div class="area-nav">
-    <div class="container">
-        <div class="area-nav__inner">
-            <a href="{{ route('seo.jobs.okinawa') }}"
-               class="area-nav__link {{ $currentArea === null ? 'area-nav__link--active' : '' }}">
-                沖縄県すべて
-            </a>
-            @foreach($areas as $region => $regionAreas)
-                @foreach($regionAreas as $area)
-                    <a href="{{ route('seo.jobs.area', $area->slug) }}"
-                       class="area-nav__link {{ ($currentArea && $currentArea->slug === $area->slug) ? 'area-nav__link--active' : '' }}">
-                        {{ $area->name }}
-                    </a>
-                @endforeach
-            @endforeach
-        </div>
-    </div>
-</div>
 
 {{-- メインコンテンツ --}}
 <div class="seo-main">
@@ -407,9 +384,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row g-4">
             {{-- 求人一覧 --}}
             <div class="col-lg-8">
-                <p class="result-count">
-                    <strong>{{ number_format($jobs->total()) }}件</strong> の求人が見つかりました
-                </p>
+                @php
+                    $careEntryCount = \App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden', false)->where('source', 'care_entry')->whereHas('jobAreas.area', fn($q) => $q->where('prefecture', '沖縄県'))->count();
+                    $hwCount        = \App\Models\Job::active()->where('source', 'hellowork')->count();
+                    $hasFilters     = request()->hasAny(['job_types', 'employment_types', 'condition_ids', 'appeal_ids', 'area']);
+                @endphp
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <div>
+                        <p class="result-count mb-0">
+                            <strong>{{ number_format($jobs->total()) }}件</strong> の求人が見つかりました
+                        </p>
+                        <p class="mb-0" style="font-size:0.78rem;color:var(--color-muted);">
+                            Care Entry掲載 <strong>{{ $careEntryCount }}</strong>件 ／ ハローワーク <strong>{{ $hwCount }}</strong>件
+                        </p>
+                    </div>
+                    @if($hasFilters)
+                        <a href="{{ route('seo.jobs.okinawa') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>条件をリセット
+                        </a>
+                    @endif
+                </div>
 
                 @php $entryBaseParams = $searchConditionIds ?? []; @endphp
                 @forelse($jobs as $job)
@@ -444,14 +438,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </p>
                         @endif
                         <div class="job-card__actions">
-                            @php
-                                $entryUrl = route('line.entry', $job->token) . ($entryBaseParams ? '?' . http_build_query($entryBaseParams) : '');
-                            @endphp
-                            <a href="{{ $entryUrl }}" class="btn-card-line">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                                LINEで応募する
-                            </a>
-                            <a href="{{ route('lp.show', $job->token) }}{{ $entryBaseParams ? '?' . http_build_query($entryBaseParams) : '' }}" class="btn-card-detail">
+                            <a href="{{ route('lp.show', $job->token) }}" class="btn-card-detail">
                                 <i class="bi bi-arrow-right-circle"></i>詳細を見る
                             </a>
                         </div>
@@ -478,34 +465,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 {{-- LP誘導 --}}
                 <div class="seo-lp-cta">
                     <h3>自分に合う求人を探す</h3>
-                    <p>エリアや職種から絞り込んで、自分に合う職場を見つけましょう</p>
+                    <p>職種や勤務条件から絞り込んで、自分に合う職場を見つけましょう</p>
                     <div class="seo-lp-cta__actions">
                         <a href="{{ route('home') }}#search" class="btn-seo-search">
                             <i class="bi bi-search"></i>求人を検索する
                         </a>
-                        <a href="https://lin.ee/" class="btn-seo-line">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                            LINEで応募する
-                        </a>
                     </div>
                 </div>
 
-                {{-- エリア一覧 --}}
-                <div class="seo-supplement mt-3">
-                    <h3><i class="bi bi-geo-alt-fill text-primary me-1"></i>エリアから探す</h3>
-                    @foreach($areas as $region => $regionAreas)
-                        <p class="fw-bold small text-muted mb-1 mt-2">{{ $region }}</p>
-                        <div class="d-flex flex-wrap gap-1 mb-1">
-                            @foreach($regionAreas as $area)
-                                <a href="{{ route('seo.jobs.area', $area->slug) }}"
-                                   class="badge text-decoration-none {{ ($currentArea && $currentArea->slug === $area->slug) ? 'bg-primary' : 'bg-light text-dark border' }}"
-                                   style="font-size:0.78rem;padding:5px 10px;">
-                                    {{ $area->name }}
-                                </a>
-                            @endforeach
-                        </div>
-                    @endforeach
-                </div>
 
                 {{-- 補助コンテンツ --}}
                 <div class="seo-supplement">
