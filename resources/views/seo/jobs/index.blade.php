@@ -369,6 +369,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </p>
         <h1 class="seo-header__title">{{ $pageTitle }}</h1>
         <p class="seo-header__desc">{{ $pageDesc }}</p>
+        <p style="font-size:1rem;font-weight:700;opacity:.95;margin-bottom:20px;">
+            <i class="bi bi-briefcase-fill me-1"></i>現在 <span style="font-size:1.3rem;">{{ number_format(\App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden',false)->whereHas('jobAreas.area',fn($q)=>$q->where('prefecture','沖縄県'))->count()) }}</span> 件の求人を掲載中
+        </p>
         <div class="seo-header__cta-group">
             <a href="{{ route('home') }}#search" class="btn-seo-search">
                 <i class="bi bi-search"></i>求人を検索する
