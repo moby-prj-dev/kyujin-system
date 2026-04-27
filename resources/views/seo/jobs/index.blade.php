@@ -384,20 +384,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row g-4">
             {{-- 求人一覧 --}}
             <div class="col-lg-8">
-                @php
-                    $careEntryCount = \App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden', false)->where('source', 'care_entry')->whereHas('jobAreas.area', fn($q) => $q->where('prefecture', '沖縄県'))->count();
-                    $hwCount        = \App\Models\Job::active()->where('source', 'hellowork')->count();
-                    $hasFilters     = request()->hasAny(['job_types', 'employment_types', 'condition_ids', 'appeal_ids', 'area']);
-                @endphp
+                @php $hasFilters = request()->hasAny(['job_types', 'employment_types', 'condition_ids', 'appeal_ids', 'area']); @endphp
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                    <div>
-                        <p class="result-count mb-0">
-                            <strong>{{ number_format($jobs->total()) }}件</strong> の求人が見つかりました
-                        </p>
-                        <p class="mb-0" style="font-size:0.78rem;color:var(--color-muted);">
-                            Care Entry掲載 <strong>{{ $careEntryCount }}</strong>件 ／ ハローワーク <strong>{{ $hwCount }}</strong>件
-                        </p>
-                    </div>
+                    <p class="result-count mb-0">
+                        <strong>{{ number_format($jobs->total()) }}件</strong> の求人が見つかりました
+                    </p>
                     @if($hasFilters)
                         <a href="{{ route('seo.jobs.okinawa') }}" class="btn btn-sm btn-outline-secondary">
                             <i class="bi bi-x-circle me-1"></i>条件をリセット
