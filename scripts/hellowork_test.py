@@ -59,6 +59,15 @@ async def extract_jobs(page) -> list[dict]:
                     if (label && value) job[label] = value;
                 });
 
+                // kodawariバッジ（こだわり条件）を取得
+                // kyujin_bodyの次のtrにある
+                const kodawariTr = body.nextElementSibling;
+                if (kodawariTr) {
+                    const badges = Array.from(kodawariTr.querySelectorAll('.kodawari span'))
+                        .map(s => s.innerText.trim()).filter(Boolean);
+                    if (badges.length) job['こだわり条件'] = badges;
+                }
+
                 results.push(job);
             });
 

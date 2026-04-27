@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Job;
 use App\Models\JobJobType;
 use App\Models\MasterArea;
+use App\Models\MasterCondition;
 use App\Models\MasterEmploymentType;
 use App\Models\MasterJobType;
 use Carbon\Carbon;
@@ -27,11 +28,12 @@ class GenerateHelloworkLps extends Command
             return self::FAILURE;
         }
 
-        $limit    = (int) $this->option('limit');
-        $today    = now()->startOfDay();
-        $areas    = MasterArea::where('prefecture', '沖縄県')->get();
-        $empTypes = MasterEmploymentType::all();
-        $jobTypes = MasterJobType::all();
+        $limit      = (int) $this->option('limit');
+        $today      = now()->startOfDay();
+        $areas      = MasterArea::where('prefecture', '沖縄県')->get();
+        $empTypes   = MasterEmploymentType::all();
+        $jobTypes   = MasterJobType::all();
+        $conditions = MasterCondition::all();
 
         // JSON読み込み・期限内のみ・受付年月日降順で上位N件
         $all = collect(json_decode(file_get_contents($path), true))
@@ -128,6 +130,12 @@ class GenerateHelloworkLps extends Command
             $jobType = $this->matchJobType($jobTypes, $data['職種'] ?? '');
             if ($jobType) $job->jobJobTypes()->create(['job_type_id' => $jobType->id]);
 
+            $job->jobConditions()->delete();
+            $matchedConditions = $this->matchConditions($conditions, $data);
+            foreach ($matchedConditions as $condition) {
+                $job->jobConditions()->create(['condition_id' => $condition->id]);
+            }
+
             $isNew ? $created++ : $updated++;
             $this->line("  → 完了: {$generated['seo_title']}");
 
@@ -214,6 +222,56 @@ PROMPT;
             if (str_contains($location, $area->name)) return $area;
         }
         return null;
+    }
+
+    private function matchConditions($conditions, array $data): array
+    {
+        $badges   = $data['こだわり条件'] ?? [];
+        $holiday  = $data['休日'] ?? '';
+        $workTime = $data['就業時間'] ?? '';
+
+        // バッジ → MasterCondition名 のマッピング
+        $badgeMap = [
+            'マイカー通勤可'        => '車通勤OK',
+            'バイク通勤可'          => 'バイク通勤OK',
+            '通勤手当あり'          => '交通費全額支給',
+            '時間外労働なし'        => '残業ほぼなし',
+            '駅近（徒歩１０分以内）'=> '駅徒歩10分以内',
+            '社会保険完備'          => '社会保険完備',
+            '週休二日制（土日休）'  => '土日休み',
+        ];
+
+        $matched = [];
+
+        // バッジから条件を特定
+        foreach ($badges as $badge) {
+            foreach ($badgeMap as $keyword => $condName) {
+                if (str_contains($badge, $keyword)) {
+                    $cond = $conditions->firstWhere('name', $condName);
+                    if ($cond && ! in_array($cond->id, array_column($matched, 'id'))) {
+                        $matched[] = $cond;
+                    }
+                }
+            }
+        }
+
+        // 休日フィールドから土日休みを判定（バッジにない場合）
+        if (str_contains($holiday, '土日') && ! $conditions->firstWhere('name', '土日休み')?->id) {
+            $cond = $conditions->firstWhere('name', '土日休み');
+            if ($cond && ! in_array($cond->id, array_column($matched, 'id'))) {
+                $matched[] = $cond;
+            }
+        }
+
+        // 就業時間に夜勤があるか判定
+        if (preg_match('/00時00分〜|22時|23時|深夜/', $workTime)) {
+            $cond = $conditions->firstWhere('name', '夜勤あり');
+            if ($cond && ! in_array($cond->id, array_column($matched, 'id'))) {
+                $matched[] = $cond;
+            }
+        }
+
+        return $matched;
     }
 
     private function matchJobType($jobTypes, string $jobTitle): ?MasterJobType
