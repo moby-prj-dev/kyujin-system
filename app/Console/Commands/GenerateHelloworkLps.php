@@ -76,12 +76,16 @@ class GenerateHelloworkLps extends Command
 
             $this->line("生成中: {$data['職種']} / {$data['事業所名']}");
 
-            // Gemini でコンテンツ生成
+            // Gemini でコンテンツ生成（失敗時はスクレイピングデータでフォールバック）
             $generated = $this->generateContent($data);
             if (! $generated) {
-                $this->warn("  → Gemini失敗、スキップ");
-                $failed++;
-                continue;
+                $this->warn("  → Gemini失敗、フォールバックで作成");
+                $location  = $data['就業場所'] ?? $data['就業都道府県'] ?? '沖縄県';
+                $generated = [
+                    'seo_title'        => "{$data['職種']} | {$data['事業所名']}",
+                    'meta_description' => "{$location}の{$data['職種']}求人。{$data['事業所名']}の求人詳細はこちら。",
+                    'description'      => $data['仕事の内容'] ?? '',
+                ];
             }
 
             $expiresAt = Carbon::createFromFormat('Y年n月j日', $data['紹介期限日']);
@@ -199,8 +203,10 @@ PROMPT;
             if ($data && isset($data['seo_title'], $data['meta_description'], $data['description'])) {
                 return $data;
             }
+            Log::warning('HW LP Gemini: 予期しないレスポンス', ['raw' => $text ?? '']);
         } catch (\Exception $e) {
             Log::warning('HW LP Gemini生成失敗: ' . $e->getMessage());
+            $this->warn('    Geminiエラー: ' . $e->getMessage());
         }
 
         return null;
