@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContentArticle;
+use App\Models\Job;
 use App\Models\MasterArea;
 
 class SitemapController extends Controller
@@ -17,8 +18,13 @@ class SitemapController extends Controller
             ->where('prefecture', '沖縄県')
             ->get(['slug']);
 
+        $jobs = Job::active()
+            ->whereNotNull('email_verified_at')
+            ->where('is_admin_hidden', false)
+            ->get(['token', 'updated_at', 'source']);
+
         return response()
-            ->view('sitemap', compact('articles', 'areas'))
+            ->view('sitemap', compact('articles', 'areas', 'jobs'))
             ->header('Content-Type', 'application/xml');
     }
 }

@@ -37,4 +37,14 @@
     </url>
     @endforeach
 
+    {{-- 求人LPページ --}}
+    @foreach($jobs as $job)
+    <url>
+        <loc>{{ route('lp.show', $job->token) }}</loc>
+        <lastmod>{{ $job->updated_at->toAtomString() }}</lastmod>
+        <changefreq>{{ $job->source === 'hellowork' ? 'daily' : 'weekly' }}</changefreq>
+        <priority>{{ $job->source === 'hellowork' ? '0.6' : '0.8' }}</priority>
+    </url>
+    @endforeach
+
 </urlset>
