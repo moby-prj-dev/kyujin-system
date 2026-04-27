@@ -417,12 +417,26 @@
             margin-top: 18px;
             display: flex;
             justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
         }
         .search__footer .search__submit {
             width: auto;
             min-width: 200px;
             padding: 12px 28px;
         }
+        .search__reset {
+            font-size: 0.85rem;
+            color: var(--color-muted);
+            background: none;
+            border: 1px solid var(--color-border);
+            border-radius: 24px;
+            padding: 9px 18px;
+            cursor: pointer;
+            transition: .15s;
+            white-space: nowrap;
+        }
+        .search__reset:hover { background: #f8f9fa; color: var(--color-text); }
 
         /* =====================
            特長セクション
@@ -1036,6 +1050,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             {{-- 検索ボタン（常にフォーム末尾）--}}
             <div class="search__footer">
+                <button type="button" class="search__reset" id="searchResetBtn">
+                    <i class="bi bi-x-circle me-1"></i>リセット
+                </button>
                 <button type="submit" class="search__submit">
                     <i class="bi bi-search"></i>求人を検索する
                 </button>
@@ -1340,6 +1357,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 if (areaSelect.value) current['area'] = areaSelect.value;
                 else delete current['area'];
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+            });
+        }
+
+        // リセットボタン
+        const resetBtn = document.getElementById('searchResetBtn');
+        if (resetBtn && form) {
+            resetBtn.addEventListener('click', () => {
+                form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                    cb.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                const sel = form.querySelector('select[name="area"]');
+                if (sel) { sel.value = ''; sel.dispatchEvent(new Event('change')); }
+                localStorage.removeItem(STORAGE_KEY);
             });
         }
     })();
