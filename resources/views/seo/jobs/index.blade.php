@@ -417,8 +417,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="job-card">
                         <p class="job-card__company">{{ $job->company_name }}</p>
                         <p class="job-card__title">
-                            <a href="{{ $isHw ? $job->hw_job_url : route('lp.show', $job->token) }}"
-                               @if($isHw) target="_blank" rel="noopener" @endif>
+                            <a href="{{ route('lp.show', $job->token) }}">
                                 {{ $job->seo_title ?: $job->title }}
                             </a>
                         </p>
