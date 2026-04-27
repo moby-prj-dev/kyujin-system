@@ -218,6 +218,20 @@
             font-weight: 800;
             color: #1a1a1a;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .search__count-badge {
+            font-size: 0.78rem;
+            font-weight: 700;
+            background: var(--color-soft);
+            color: var(--color-primary);
+            border: 1px solid #c8d8f8;
+            border-radius: 20px;
+            padding: 3px 12px;
+            white-space: nowrap;
         }
         .search__sub {
             font-size: 0.84rem;
@@ -846,7 +860,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 {{-- ② 求人検索フォーム --}}
 <section class="search" id="search">
     <div class="container">
-        <p class="search__heading">沖縄の求人を探す</p>
+        <p class="search__heading">
+            沖縄の求人を探す
+            <span class="search__count-badge">
+                <i class="bi bi-briefcase-fill me-1"></i>現在 {{ number_format(\App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden', false)->count()) }} 件掲載中
+            </span>
+        </p>
         <p class="search__sub">エリア・職種・雇用形態・勤務条件から絞り込めます</p>
         <form action="{{ route('seo.jobs.okinawa') }}" method="GET" class="search__form">
             {{-- 基本条件：エリアのみ --}}
