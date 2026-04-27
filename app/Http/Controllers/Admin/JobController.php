@@ -131,6 +131,12 @@ class JobController extends Controller
         });
     }
 
+    public function destroy(Job $job): \Illuminate\Http\RedirectResponse
+    {
+        $job->forceDelete();
+        return redirect()->route('admin.jobs.index')->with('success', '求人を削除しました。');
+    }
+
     private function companyTrialStatus(object $c): string
     {
         $billable = (int) $c->billable_count;

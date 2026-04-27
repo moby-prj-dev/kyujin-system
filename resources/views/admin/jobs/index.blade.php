@@ -247,6 +247,14 @@
                                    class="btn btn-xs btn-outline-primary" target="_blank">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                {{-- 削除 --}}
+                                <form method="POST" action="{{ route('admin.jobs.destroy', $job) }}"
+                                      onsubmit="return confirm('「{{ $job->title ?: $job->company_name }}」を完全に削除しますか？この操作は取り消せません。')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-xs btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
 {{-- メモ --}}
                                 <button type="button" class="btn btn-xs btn-outline-warning"
                                         data-bs-toggle="collapse"

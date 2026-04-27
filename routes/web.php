@@ -86,6 +86,7 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::patch('/jobs/{job}/toggle-monitor', [\App\Http\Controllers\Admin\JobController::class, 'toggleMonitor'])->name('jobs.toggle_monitor');
     Route::patch('/jobs/{job}/toggle-permanently-free', [\App\Http\Controllers\Admin\JobController::class, 'togglePermanentlyFree'])->name('jobs.toggle_permanently_free');
     Route::patch('/jobs/{job}/memo', [\App\Http\Controllers\Admin\JobController::class, 'updateMemo'])->name('jobs.memo');
+    Route::delete('/jobs/{job}', [\App\Http\Controllers\Admin\JobController::class, 'destroy'])->name('admin.jobs.destroy');
 
     // 応募一覧
     Route::get('/applications', [\App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
