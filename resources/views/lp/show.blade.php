@@ -38,47 +38,29 @@
         $empTypesSchema = $job->jobEmploymentTypes->map(fn($e) => $empTypeMap[$e->employmentType->name] ?? 'OTHER')->values()->toArray();
         $areaName = $job->jobAreas->first()?->area?->name ?? '沖縄県';
         $salaryUnitMap = ['hourly' => 'HOUR', 'monthly' => 'MONTH'];
+        $schema = [
+            '@context'    => 'https://schema.org/',
+            '@type'       => 'JobPosting',
+            'title'       => $job->title,
+            'description' => mb_substr(strip_tags($job->description_generated ?? $job->meta_description ?? ''), 0, 500),
+            'datePosted'  => $job->created_at->toDateString(),
+            'employmentType' => count($empTypesSchema) ? $empTypesSchema : ['OTHER'],
+            'hiringOrganization' => ['@type' => 'Organization', 'name' => $job->company_name],
+            'jobLocation' => ['@type' => 'Place', 'address' => [
+                '@type' => 'PostalAddress',
+                'addressRegion'   => '沖縄県',
+                'addressLocality' => $areaName,
+                'addressCountry'  => 'JP',
+            ]],
+        ];
+        if ($job->expires_at) $schema['validThrough'] = $job->expires_at->toIso8601String();
+        if ($job->salary_type && $job->salary_min) {
+            $salaryValue = ['@type' => 'QuantitativeValue', 'minValue' => $job->salary_min, 'unitText' => $salaryUnitMap[$job->salary_type] ?? 'MONTH'];
+            if ($job->salary_max) $salaryValue['maxValue'] = $job->salary_max;
+            $schema['baseSalary'] = ['@type' => 'MonetaryAmount', 'currency' => 'JPY', 'value' => $salaryValue];
+        }
     @endphp
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org/",
-        "@type": "JobPosting",
-        "title": "{{ e($job->title) }}",
-        "description": "{{ e(Str::limit($job->description_generated ?? $job->meta_description, 500)) }}",
-        "datePosted": "{{ $job->created_at->toDateString() }}",
-        @if($job->expires_at)
-        "validThrough": "{{ $job->expires_at->toIso8601String() }}",
-        @endif
-        "employmentType": @json(count($empTypesSchema) ? $empTypesSchema : ['OTHER']),
-        "hiringOrganization": {
-            "@type": "Organization",
-            "name": "{{ e($job->company_name) }}"
-        },
-        "jobLocation": {
-            "@type": "Place",
-            "address": {
-                "@type": "PostalAddress",
-                "addressRegion": "沖縄県",
-                "addressLocality": "{{ e($areaName) }}",
-                "addressCountry": "JP"
-            }
-        }
-        @if($job->salary_type && $job->salary_min)
-        ,"baseSalary": {
-            "@type": "MonetaryAmount",
-            "currency": "JPY",
-            "value": {
-                "@type": "QuantitativeValue",
-                "minValue": {{ $job->salary_min }},
-                @if($job->salary_max)
-                "maxValue": {{ $job->salary_max }},
-                @endif
-                "unitText": "{{ $salaryUnitMap[$job->salary_type] ?? 'MONTH' }}"
-            }
-        }
-        @endif
-    }
-    </script>
+    <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
 </head>
 <body>
 @if(app()->environment('production'))
