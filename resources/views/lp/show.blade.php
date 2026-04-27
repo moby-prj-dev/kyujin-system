@@ -33,6 +33,52 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/lp.css">
+    @php
+        $empTypeMap = ['正社員' => 'FULL_TIME', 'パート' => 'PART_TIME', '契約社員' => 'CONTRACTOR', '派遣社員' => 'TEMPORARY'];
+        $empTypesSchema = $job->jobEmploymentTypes->map(fn($e) => $empTypeMap[$e->employmentType->name] ?? 'OTHER')->values()->toArray();
+        $areaName = $job->jobAreas->first()?->area?->name ?? '沖縄県';
+        $salaryUnitMap = ['hourly' => 'HOUR', 'monthly' => 'MONTH'];
+    @endphp
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org/",
+        "@type": "JobPosting",
+        "title": "{{ e($job->title) }}",
+        "description": "{{ e(Str::limit($job->description_generated ?? $job->meta_description, 500)) }}",
+        "datePosted": "{{ $job->created_at->toDateString() }}",
+        @if($job->expires_at)
+        "validThrough": "{{ $job->expires_at->toIso8601String() }}",
+        @endif
+        "employmentType": @json(count($empTypesSchema) ? $empTypesSchema : ['OTHER']),
+        "hiringOrganization": {
+            "@type": "Organization",
+            "name": "{{ e($job->company_name) }}"
+        },
+        "jobLocation": {
+            "@type": "Place",
+            "address": {
+                "@type": "PostalAddress",
+                "addressRegion": "沖縄県",
+                "addressLocality": "{{ e($areaName) }}",
+                "addressCountry": "JP"
+            }
+        }
+        @if($job->salary_type && $job->salary_min)
+        ,"baseSalary": {
+            "@type": "MonetaryAmount",
+            "currency": "JPY",
+            "value": {
+                "@type": "QuantitativeValue",
+                "minValue": {{ $job->salary_min }},
+                @if($job->salary_max)
+                "maxValue": {{ $job->salary_max }},
+                @endif
+                "unitText": "{{ $salaryUnitMap[$job->salary_type] ?? 'MONTH' }}"
+            }
+        }
+        @endif
+    }
+    </script>
 </head>
 <body>
 @if(app()->environment('production'))
