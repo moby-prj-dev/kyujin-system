@@ -50,7 +50,7 @@ body{font-family:'Hiragino Kaku Gothic ProN',sans-serif;background:#f5f7fa;margi
 
         <p style="font-size:0.88rem;color:#666;line-height:1.9;">
             サービス名：Care Entry（ケア・エントリー）<br>
-            運営者名：岸本　安史<br>
+            運営：沖縄デジタルワークス 代表者 岸本 安史<br>
             メール：<a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a><br>
             電話：070-6401-9492（平日10:00〜18:00）
         </p>
