@@ -57,7 +57,7 @@
             <tbody>
                 <tr>
                     <th class="bg-light" style="width:180px; vertical-align:middle;">事業者名</th>
-                    <td>ケアエントリー運営事務局</td>
+                    <td>沖縄デジタルワークス 代表者 岸本 安史</td>
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">所在地</th>
@@ -65,7 +65,7 @@
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">電話番号</th>
-                    <td><a href="tel:07094019492">070-9401-9492</a></td>
+                    <td><a href="tel:07064019492">070-6401-9492</a></td>
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">メールアドレス</th>
@@ -98,8 +98,8 @@
             <a href="mailto:careentry.info@gmail.com" class="btn btn-primary px-4">
                 <i class="bi bi-envelope me-1"></i>メールで問い合わせる
             </a>
-            <a href="tel:07094019492" class="btn btn-outline-primary px-4">
-                <i class="bi bi-telephone me-1"></i>070-9401-9492
+            <a href="tel:07064019492" class="btn btn-outline-primary px-4">
+                <i class="bi bi-telephone me-1"></i>070-6401-9492
             </a>
         </div>
     </div>
