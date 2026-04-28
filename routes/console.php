@@ -20,8 +20,8 @@ Schedule::command('billing:generate-monthly')->monthlyOn(1, '08:00');
 // 毎日深夜2時：SEOコンテンツ記事を生成
 Schedule::command('articles:generate')->dailyAt('02:00');
 
-// 毎日深夜3時30分：ハローワーク求人のAI生成LP更新（最新5件）
-Schedule::command('hellowork:generate-lps')->dailyAt('03:30');
+// 毎日深夜3時30分：ハローワーク求人のAI生成LP更新（最新20件）
+Schedule::command('hellowork:generate-lps --limit=20')->dailyAt('03:30');
 
 // 毎日深夜4時：期限切れのハローワーク求人を削除
 Schedule::call(function () {
