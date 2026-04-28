@@ -18,7 +18,7 @@
             <tbody>
                 <tr>
                     <th class="bg-light" style="width:200px; vertical-align:middle;">事業者名</th>
-                    <td>ケアエントリー運営事務局</td>
+                    <td>沖縄デジタルワークス 代表者 岸本 安史</td>
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">所在地</th>
@@ -27,7 +27,7 @@
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">電話番号</th>
                     <td>
-                        <a href="tel:07094019492">070-9401-9492</a><br>
+                        <a href="tel:07064019492">070-6401-9492</a><br>
                         <span class="text-muted small">受付時間：平日10:00〜18:00（土日祝休）</span>
                     </td>
                 </tr>
