@@ -22,7 +22,7 @@
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">所在地</th>
-                    <td>沖縄県豊見城市</td>
+                    <td>東京都台東区上野1丁目17番6号広小路ビル8F-B</td>
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">電話番号</th>
