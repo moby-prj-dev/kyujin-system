@@ -87,12 +87,13 @@
                         <th style="width:50px;">ID</th>
                         <th>会社名</th>
                         <th>求人タイトル</th>
+                        <th style="width:160px;">メール</th>
+                        <th class="text-center" style="width:70px;">ソース</th>
                         <th class="text-center" style="width:90px;">公開状態</th>
-                        <th class="text-center" style="width:90px;">非公開</th>
                         <th class="text-center" style="width:80px;">トライアル</th>
-                        <th class="text-center" style="width:70px;">継続</th>
                         <th class="text-center" style="width:60px;">応募数</th>
-                        <th class="text-center" style="width:90px;">掲載終了予定</th>
+                        <th class="text-center" style="width:85px;">登録日</th>
+                        <th class="text-center" style="width:85px;">掲載終了</th>
                         <th class="text-center" style="width:200px;">操作</th>
                     </tr>
                 </thead>
@@ -135,32 +136,32 @@
                         </td>
                         <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                             title="{{ $job->title }}">
-                            {{ $job->title ?: '（タイトル未設定）' }}
+                            <a href="{{ route('lp.show', $job->token) }}" target="_blank"
+                               class="text-decoration-none text-dark fw-bold">
+                                {{ $job->title ?: '（タイトル未設定）' }}
+                            </a>
                             @if($job->admin_memo)
-                            <i class="bi bi-sticky-fill text-warning ms-1" title="{{ $job->admin_memo }}"
+                            <i class="bi bi-sticky-fill text-warning ms-1"
                                style="cursor:pointer;" data-bs-toggle="collapse"
                                data-bs-target="#memo-{{ $job->id }}"></i>
+                            @endif
+                        </td>
+                        <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.8rem;"
+                            title="{{ $job->contact_email }}">
+                            {{ $job->contact_email ?: '—' }}
+                        </td>
+                        <td class="text-center">
+                            @if($job->source === 'hellowork')
+                                <span class="badge" style="background:#fff3e0;color:#e65100;font-size:0.72rem;">HW</span>
+                            @else
+                                <span class="badge bg-primary" style="font-size:0.72rem;">CE</span>
                             @endif
                         </td>
                         <td class="text-center">
                             <span class="badge {{ $statusClass }}">{{ $statusLabel }}</span>
                         </td>
                         <td class="text-center">
-                            @if($job->is_admin_hidden)
-                                <span class="badge bg-danger">非公開</span>
-                            @else
-                                <span class="text-muted small">—</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
                             <span class="badge {{ $trialClass }}" style="font-size:0.75rem;">{{ $trialLabel }}</span>
-                        </td>
-                        <td class="text-center">
-                            @if($job->continued_at)
-                                <span class="badge bg-info text-dark">継続済み</span>
-                            @else
-                                <span class="text-muted small">—</span>
-                            @endif
                         </td>
                         <td class="text-center">
                             @php $total = (int)$job->applications_count; @endphp
@@ -179,6 +180,9 @@
                                 @endif
                             </div>
                             @endif
+                        </td>
+                        <td class="text-center text-nowrap" style="font-size:0.82rem;">
+                            {{ $job->created_at->format('Y/m/d') }}
                         </td>
                         <td class="text-center text-nowrap" style="font-size:0.82rem;">
                             @if($expiresAt)
@@ -267,7 +271,7 @@
                     </tr>
                     {{-- メモ展開行 --}}
                     <tr class="collapse {{ $job->admin_memo ? 'show' : '' }}" id="memo-{{ $job->id }}">
-                        <td colspan="10" class="py-2 px-4 bg-light">
+                        <td colspan="11" class="py-2 px-4 bg-light">
                             <form method="POST"
                                   action="{{ route('admin.jobs.memo', $job) }}"
                                   class="d-flex align-items-start gap-2">
