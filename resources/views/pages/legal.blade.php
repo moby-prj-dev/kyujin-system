@@ -47,8 +47,21 @@
                     <th class="bg-light" style="vertical-align:middle;">販売価格</th>
                     <td>
                         求人掲載料：無料（モニター企業は掲載開始から3か月間または有効応募3件まで）<br>
-                        モニター期間外・期間終了後：有効応募1件につき <strong>3,000円（税別）</strong> の成果報酬が発生します。<br>
-                        <span class="text-muted small">※ 有効応募とは、必須項目が入力された重複・スパムでない応募を指します。</span>
+                        モニター期間外・期間終了後：有効応募1件につき <strong>3,000円（税別）</strong> の成果報酬が発生します。
+                    </td>
+                </tr>
+                <tr>
+                    <th class="bg-light" style="vertical-align:middle;">有効応募の定義</th>
+                    <td>
+                        以下のすべての条件を満たす応募を「有効応募」とし、課金対象といたします。
+                        <ol class="mb-2 mt-1">
+                            <li>応募フォームの必須項目がすべて入力されていること</li>
+                            <li>重複応募・スパム・なりすまし応募ではないこと</li>
+                            <li>求職者の希望条件（職種カテゴリ・勤務地エリア等）と、求人情報の掲載条件が合致していること</li>
+                        </ol>
+                        <strong>課金タイミング：</strong>応募が成立した時点で課金が発生します。面接実施・採用の有無、および求職者との連絡継続性は、課金対象の判定には影響いたしません。<br>
+                        <strong>合致判定：</strong>上記3点目の判定は当社（沖縄デジタルワークス）が行います。判定基準に関するご質問は <a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a> までお問い合わせください。<br>
+                        <span class="text-muted small">詳細は<a href="{{ route('terms') }}">利用規約 第7条</a>もご参照ください。</span>
                     </td>
                 </tr>
                 <tr>
