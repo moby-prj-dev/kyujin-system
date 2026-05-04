@@ -120,7 +120,346 @@ class ArticleGeneratorService
                 'job_type' => 'social_welfare_worker',
                 'keywords' => ['社会福祉士', '相談支援専門員', '相談支援', '仕事内容', '給与', '沖縄'],
             ],
+
+            // ── 業界情報（追加） ────────────────────────────────────
+            [
+                'slug'     => 'okinawa-kaigo-salary',
+                'category' => 'industry',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['沖縄', '介護', '給与', '賃金', '月収', '手当', '相場'],
+            ],
+            [
+                'slug'     => 'okinawa-kaigo-working-style',
+                'category' => 'industry',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['沖縄', '介護', '働き方', '夜勤', 'シフト', '休日', 'ワークライフバランス'],
+            ],
+            [
+                'slug'     => 'okinawa-kaigo-future',
+                'category' => 'industry',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['沖縄', '介護', '将来性', 'キャリアパス', 'スキルアップ', '管理職', '独立'],
+            ],
+            [
+                'slug'     => 'okinawa-facility-types',
+                'category' => 'industry',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['特別養護老人ホーム', '老健', 'グループホーム', 'デイサービス', '施設の違い', '沖縄'],
+            ],
+
+            // ── 職種別（追加） ──────────────────────────────────────
+            [
+                'slug'     => 'okinawa-care-welfare-worker-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'care_welfare_worker',
+                'keywords' => ['介護福祉士', '資格', '仕事内容', '給与', '沖縄', 'キャリアアップ'],
+            ],
+            [
+                'slug'     => 'okinawa-service-provision-manager-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'service_provision_manager',
+                'keywords' => ['サービス提供責任者', 'サ責', '訪問介護', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-life-consultant-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'life_consultant',
+                'keywords' => ['生活相談員', '施設', '相談業務', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-employment-support-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'employment_support_worker',
+                'keywords' => ['就労支援員', '障害者就労', '就労継続支援', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-service-manager-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'service_manager',
+                'keywords' => ['サービス管理責任者', 'サビ管', '障害福祉', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-psychiatric-social-worker-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'psychiatric_social_worker',
+                'keywords' => ['精神保健福祉士', 'PSW', '相談支援', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-nurse-welfare-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'nurse_welfare_facility',
+                'keywords' => ['看護師', '福祉施設', '介護施設', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-pt-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'physical_therapist',
+                'keywords' => ['理学療法士', 'PT', 'リハビリ', '仕事内容', '給与', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-ot-jobs',
+                'category' => 'job_type',
+                'area'     => null,
+                'job_type' => 'occupational_therapist',
+                'keywords' => ['作業療法士', 'OT', 'リハビリ', '仕事内容', '給与', '沖縄'],
+            ],
+
+            // ── エリア（追加・那覇南部） ────────────────────────────
+            [
+                'slug'     => 'tomigusuku-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'tomigusuku',
+                'job_type' => null,
+                'keywords' => ['豊見城市', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'itoman-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'itoman',
+                'job_type' => null,
+                'keywords' => ['糸満市', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'nanjo-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'nanjo',
+                'job_type' => null,
+                'keywords' => ['南城市', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'haebaru-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'haebaru',
+                'job_type' => null,
+                'keywords' => ['南風原町', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'yonabaru-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'yonabaru',
+                'job_type' => null,
+                'keywords' => ['与那原町', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+
+            // ── エリア（追加・中部） ────────────────────────────────
+            [
+                'slug'     => 'ginowan-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'ginowan',
+                'job_type' => null,
+                'keywords' => ['宜野湾市', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'chatan-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'chatan',
+                'job_type' => null,
+                'keywords' => ['北谷町', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'yomitan-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'yomitan',
+                'job_type' => null,
+                'keywords' => ['読谷村', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+            [
+                'slug'     => 'nishihara-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'nishihara',
+                'job_type' => null,
+                'keywords' => ['西原町', '介護', '福祉', '求人', '給与', '職場'],
+            ],
+
+            // ── エリア（追加・北部） ────────────────────────────────
+            [
+                'slug'     => 'nago-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'nago',
+                'job_type' => null,
+                'keywords' => ['名護市', '介護', '福祉', '求人', '給与', '北部'],
+            ],
+            [
+                'slug'     => 'onna-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'onna',
+                'job_type' => null,
+                'keywords' => ['恩納村', '介護', '福祉', '求人', '給与', '北部'],
+            ],
+            [
+                'slug'     => 'motobu-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'motobu',
+                'job_type' => null,
+                'keywords' => ['本部町', '介護', '福祉', '求人', '給与', '北部'],
+            ],
+
+            // ── エリア（追加・離島） ────────────────────────────────
+            [
+                'slug'     => 'ishigaki-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'ishigaki',
+                'job_type' => null,
+                'keywords' => ['石垣市', '介護', '福祉', '求人', '給与', '離島', '八重山'],
+            ],
+            [
+                'slug'     => 'miyakojima-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'miyakojima',
+                'job_type' => null,
+                'keywords' => ['宮古島市', '介護', '福祉', '求人', '給与', '離島'],
+            ],
+            [
+                'slug'     => 'kumejima-kaigo-jobs',
+                'category' => 'area',
+                'area'     => 'kumejima',
+                'job_type' => null,
+                'keywords' => ['久米島町', '介護', '福祉', '求人', '給与', '離島'],
+            ],
+
+            // ── 資格と研修（追加） ──────────────────────────────────
+            [
+                'slug'     => 'okinawa-shonin-kenshu',
+                'category' => 'qualification',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['介護職員初任者研修', '取得方法', '費用', '期間', 'ヘルパー2級', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-jitsumu-kenshu',
+                'category' => 'qualification',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['実務者研修', '取得方法', '費用', 'たんの吸引', '医療的ケア', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-kaigo-fukushi-exam',
+                'category' => 'qualification',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['介護福祉士', '国家試験', '合格率', '勉強方法', '受験資格', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-care-manager-exam',
+                'category' => 'qualification',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['ケアマネジャー', '試験', '受験資格', '合格率', '勉強法', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-service-manager-qualification',
+                'category' => 'qualification',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['サービス管理責任者', 'サビ管', '要件', '研修', '実務経験', '沖縄'],
+            ],
+            [
+                'slug'     => 'okinawa-childcare-qualification',
+                'category' => 'qualification',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['保育士資格', '取得方法', '試験', '養成校', '沖縄', '児童福祉'],
+            ],
+
+            // ── 未経験と転職（追加） ────────────────────────────────
+            [
+                'slug'     => 'okinawa-career-change-kaigo',
+                'category' => 'beginner',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['他業種', '転職', '介護', '沖縄', '未経験', '流れ', '志望動機'],
+            ],
+            [
+                'slug'     => 'okinawa-kaigo-40s',
+                'category' => 'beginner',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['40代', '転職', '介護', '沖縄', '未経験', '採用', 'キャリアチェンジ'],
+            ],
+            [
+                'slug'     => 'okinawa-kaigo-50s',
+                'category' => 'beginner',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['50代', '転職', '介護', '沖縄', '再就職', '体力', 'シニア'],
+            ],
+            [
+                'slug'     => 'okinawa-mens-kaigo',
+                'category' => 'beginner',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['男性', '介護士', '沖縄', '仕事', '給与', 'キャリア', '夜勤'],
+            ],
+            [
+                'slug'     => 'okinawa-part-time-kaigo',
+                'category' => 'beginner',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['パート', 'アルバイト', '介護', '沖縄', '時給', '主婦', '扶養'],
+            ],
+            [
+                'slug'     => 'okinawa-kaigo-interview',
+                'category' => 'beginner',
+                'area'     => null,
+                'job_type' => null,
+                'keywords' => ['介護', '面接', '履歴書', '志望動機', '自己PR', '沖縄', '転職'],
+            ],
         ];
+    }
+
+    // フェーズ2: 主要エリア×主要職種の組み合わせ記事
+    public static function dynamicDefinitions(): array
+    {
+        $areas = [
+            'naha'         => ['那覇市',   ['介護', '福祉', '求人', '那覇']],
+            'urasoe'       => ['浦添市',   ['介護', '福祉', '求人', '浦添']],
+            'ginowan'      => ['宜野湾市', ['介護', '福祉', '求人', '宜野湾']],
+            'okinawa_city' => ['沖縄市',   ['介護', '福祉', '求人', '沖縄市']],
+            'uruma'        => ['うるま市', ['介護', '福祉', '求人', 'うるま']],
+            'tomigusuku'   => ['豊見城市', ['介護', '福祉', '求人', '豊見城']],
+            'nago'         => ['名護市',   ['介護', '福祉', '求人', '名護']],
+            'itoman'       => ['糸満市',   ['介護', '福祉', '求人', '糸満']],
+            'ishigaki'     => ['石垣市',   ['介護', '福祉', '求人', '石垣']],
+            'miyakojima'   => ['宮古島市', ['介護', '福祉', '求人', '宮古島']],
+        ];
+
+        $jobTypes = [
+            'care_staff_facility'      => ['介護職員（施設）',     ['介護職員', '施設', '仕事内容', '給与', '夜勤']],
+            'home_helper'              => ['ホームヘルパー',        ['訪問介護', 'ホームヘルパー', '仕事内容', '給与']],
+            'care_manager'             => ['ケアマネジャー',        ['ケアマネ', '介護支援専門員', '仕事内容', '給与']],
+            'care_welfare_worker'      => ['介護福祉士',            ['介護福祉士', '資格', '仕事内容', '給与']],
+            'service_provision_manager'=> ['サービス提供責任者',    ['サ責', 'サービス提供責任者', '仕事内容', '給与']],
+            'childcare_worker'         => ['保育士',                ['保育士', '児童福祉', '仕事内容', '給与']],
+            'life_support_worker'      => ['生活支援員',            ['生活支援員', '障害福祉', '仕事内容', '給与']],
+            'social_welfare_worker'    => ['社会福祉士',            ['社会福祉士', '相談支援', '仕事内容', '給与']],
+        ];
+
+        $definitions = [];
+        foreach ($areas as $areaSlug => [$areaName, $areaKeywords]) {
+            foreach ($jobTypes as $jobTypeSlug => [$jobTypeName, $jobKeywords]) {
+                $definitions[] = [
+                    'slug'     => "{$areaSlug}-{$jobTypeSlug}-jobs",
+                    'category' => 'area',
+                    'area'     => $areaSlug,
+                    'job_type' => $jobTypeSlug,
+                    'keywords' => array_merge([$areaName, $jobTypeName], $areaKeywords, $jobKeywords),
+                ];
+            }
+        }
+
+        return $definitions;
     }
 
     // 管理画面からの手動生成
