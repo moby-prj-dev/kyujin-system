@@ -4,4 +4,4 @@ Allow: /
 User-agent: *
 Disallow:
 
-Sitemap: https://care-entry.com/sitemap.xml
+Sitemap: https://care-entry.net/sitemap.xml
