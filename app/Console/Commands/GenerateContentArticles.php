@@ -37,7 +37,21 @@ class GenerateContentArticles extends Command
                 return self::SUCCESS;
             }
 
-            $definitions = array_slice($definitions, 0, (int) $limit);
+            // カテゴリが偏らないようラウンドロビンで選択
+            $byCategory = [];
+            foreach ($definitions as $def) {
+                $byCategory[$def['category']][] = $def;
+            }
+            $picked = [];
+            $n      = (int) $limit;
+            while (count($picked) < $n && !empty($byCategory)) {
+                foreach ($byCategory as $cat => &$items) {
+                    if (count($picked) >= $n) break;
+                    $picked[] = array_shift($items);
+                    if (empty($items)) unset($byCategory[$cat]);
+                }
+            }
+            $definitions = $picked;
         }
 
         $this->info('記事生成を開始します（' . count($definitions) . '件）');
