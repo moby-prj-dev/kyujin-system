@@ -29,3 +29,6 @@ Schedule::call(function () {
         ->where('expires_at', '<', now())
         ->delete();
 })->dailyAt('04:00')->name('hellowork:cleanup-expired');
+
+// 毎朝5時：Google Indexing API へ未送信URLを通知（クロール促進）
+Schedule::command('indexing:submit --type=all')->dailyAt('05:00');

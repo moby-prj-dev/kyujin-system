@@ -47,5 +47,11 @@ return [
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
-    ],    
+    ],
+
+    'google_indexing' => [
+        'service_account_json' => env('GOOGLE_INDEXING_SERVICE_ACCOUNT_JSON'),
+        'daily_limit'          => (int) env('GOOGLE_INDEXING_DAILY_LIMIT', 100),
+        'resubmit_after_days'  => (int) env('GOOGLE_INDEXING_RESUBMIT_DAYS', 30),
+    ],
 ];
