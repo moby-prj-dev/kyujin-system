@@ -24,7 +24,7 @@ class Setting extends Model
 
     public static function monitorStartDate(): string
     {
-        return static::get('monitor_start_date', now()->toDateString());
+        return static::get('monitor_start_date', '2026-04-28');
     }
 
     public static function monitorMonths(): int
