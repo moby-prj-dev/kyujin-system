@@ -87,6 +87,26 @@
         </table>
     </div>
 
+    {{-- 代表者プロフィール --}}
+    <div class="form-section">
+        <h5>代表者プロフィール</h5>
+        <p class="fw-bold mb-3" style="font-size:1rem;">岸本 安史（きしもと やすし）</p>
+        <p class="mb-3" style="font-size:0.93rem; line-height:1.9;">
+            業務システム開発の経験を約10年積んだのち、2026年に沖縄県豊見城市にて
+            「沖縄デジタルワークス」を屋号として個人事業を開業。
+            Laravel / PHP を中心としたWebシステム開発を行っています。
+        </p>
+        <p class="mb-3" style="font-size:0.93rem; line-height:1.9;">
+            ケアエントリーは、沖縄の介護・福祉現場と求職者をつなぐ仕組みとして、
+            「会員登録不要」「LINEで応募完結」「条件マッチで無駄な応募を減らす」
+            という設計思想のもと開発・運営しています。
+        </p>
+        <p class="mb-0" style="font-size:0.93rem; line-height:1.9;">
+            事業者様にとって「気軽に試せて、結果が出たときだけ費用が発生する」
+            シンプルな仕組みを目指しています。お気軽にお問い合わせください。
+        </p>
+    </div>
+
     {{-- お問い合わせ誘導 --}}
     <div class="form-section text-center py-4">
         <h5 style="font-size:1rem;">お問い合わせ</h5>
