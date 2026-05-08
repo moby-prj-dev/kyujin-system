@@ -263,10 +263,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="mb-3 d-flex justify-content-center gap-3 flex-wrap" style="font-size:0.8rem;">
             <a href="/company">運営者情報</a>
-            <a href="/contact">お問い合わせ</a>
             <a href="/privacy-policy">プライバシーポリシー</a>
             <a href="/terms">利用規約</a>
             <a href="/legal">特定商取引法に基づく表記</a>
+            <a href="/contact">お問い合わせ</a>
         </div>
         <p class="mb-0">&copy; {{ date('Y') }} Care Entry. All rights reserved.</p>
     </div>
