@@ -58,7 +58,7 @@
                     @error('reason')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text text-muted">申告内容は当社が確認のうえ判断します。虚偽の申告が確認された場合、以降の申告受付を停止することがあります。</div>
+                    <div class="form-text text-muted">申告内容は当事業者が確認のうえ判断します。虚偽の申告が確認された場合、以降の申告受付を停止することがあります。</div>
                 </div>
 
                 <div class="d-flex gap-2">

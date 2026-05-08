@@ -307,6 +307,23 @@
     </div>
 </div>
 
+{{-- 利用規約・プライバシーポリシー同意 --}}
+<div class="form-section">
+    <h5>利用規約・プライバシーポリシーへの同意 <span class="text-danger">*</span></h5>
+    <div class="form-check">
+        <input class="form-check-input @error('terms_agreed') is-invalid @enderror"
+               type="checkbox" name="terms_agreed" id="terms_agreed" value="1"
+               {{ old('terms_agreed') ? 'checked' : '' }} required>
+        <label class="form-check-label" for="terms_agreed">
+            <a href="{{ route('terms') }}" target="_blank" rel="noopener">利用規約</a>
+            および
+            <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener">プライバシーポリシー</a>
+            に同意します
+        </label>
+        @error('terms_agreed') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+</div>
+
 <input type="hidden" name="trial_confirmed" id="trialConfirmed" value="0">
 
 <div class="text-center mt-4">

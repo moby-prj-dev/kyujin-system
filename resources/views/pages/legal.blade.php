@@ -60,7 +60,7 @@
                             <li>求職者の希望条件（職種カテゴリ・勤務地エリア等）と、求人情報の掲載条件が合致していること</li>
                         </ol>
                         <strong>課金タイミング：</strong>応募が成立した時点で課金が発生します。面接実施・採用の有無、および求職者との連絡継続性は、課金対象の判定には影響いたしません。<br>
-                        <strong>合致判定：</strong>上記3点目の判定は当社（沖縄デジタルワークス）が行います。判定基準に関するご質問は <a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a> までお問い合わせください。<br>
+                        <strong>合致判定：</strong>上記3点目の判定は当事業者（沖縄デジタルワークス）が行います。判定基準に関するご質問は <a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a> までお問い合わせください。<br>
                         <span class="text-muted small">詳細は<a href="{{ route('terms') }}">利用規約 第7条</a>もご参照ください。</span>
                     </td>
                 </tr>
@@ -70,7 +70,7 @@
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">支払時期</th>
-                    <td>当社からの請求書発行後、指定の期日まで</td>
+                    <td>当事業者からの請求書発行後、指定の期日まで</td>
                 </tr>
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">支払方法</th>
