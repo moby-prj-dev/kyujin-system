@@ -87,6 +87,7 @@ class StoreJobRequest extends FormRequest
             'contact_email'       => ['required', 'email', 'max:255'],
             'contact_phone'       => ['required', 'regex:/^[0-9]{10,11}$/'],
             'agreement_flag'      => ['required', 'accepted'],
+            'terms_agreed'        => ['required', 'accepted'],
         ];
     }
 
@@ -117,6 +118,8 @@ class StoreJobRequest extends FormRequest
             'salary_max.gte'              => '最高給与額は最低給与額以上で入力してください。',
             'agreement_flag.required'     => '応募時課金への同意が必要です。',
             'agreement_flag.accepted'     => '応募時課金への同意にチェックを入れてください。',
+            'terms_agreed.required'       => '利用規約・プライバシーポリシーへの同意が必要です。',
+            'terms_agreed.accepted'       => '利用規約・プライバシーポリシーへの同意が必要です。',
         ];
     }
 }

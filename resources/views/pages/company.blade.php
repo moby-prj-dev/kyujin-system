@@ -115,13 +115,13 @@
             平日10:00〜18:00にて対応いたします。
         </p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="mailto:careentry.info@gmail.com" class="btn btn-primary px-4">
-                <i class="bi bi-envelope me-1"></i>メールで問い合わせる
-            </a>
-            <a href="tel:07064019492" class="btn btn-outline-primary px-4">
-                <i class="bi bi-telephone me-1"></i>070-6401-9492
+            <a href="{{ route('contact.show') }}" class="btn btn-primary px-4">
+                <i class="bi bi-envelope me-1"></i>お問い合わせフォーム
             </a>
         </div>
+        <p class="text-muted small mt-3 mb-0">
+            お電話でのお問い合わせ：<a href="tel:07064019492">070-6401-9492</a>（平日10:00〜18:00）
+        </p>
     </div>
 
     <div class="text-center mt-3">

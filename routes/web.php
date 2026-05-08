@@ -128,3 +128,11 @@ Route::view('/company', 'pages.company')->name('company');
 Route::view('/privacy-policy', 'pages.privacy_policy')->name('privacy-policy');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/legal', 'pages.legal')->name('legal');
+
+// -----------------------------------------------
+// お問い合わせフォーム
+// -----------------------------------------------
+Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
+Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'send'])
+    ->middleware('throttle:5,1')
+    ->name('contact.send');
