@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\Job;
 use App\Models\LineApplicationDetail;
+use App\Models\LineEntryToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +30,34 @@ class LiffController extends Controller
         $liffId = config('line.liff_id');
 
         return view('lp.liff', compact('job', 'liffId'));
+    }
+
+    public function autoSend(string $token)
+    {
+        $entryToken = LineEntryToken::where('token', $token)->firstOrFail();
+        if (!$entryToken->isValid()) {
+            abort(404);
+        }
+
+        $liffId      = config('line.liff_id');
+        $oaUrl       = config('line.oa_url');
+        $fallbackUrl = !empty($oaUrl) ? $this->buildOaMessageUrl($oaUrl, $entryToken->token) : url('/');
+
+        return view('lp.liff_auto_send', [
+            'entryToken'  => $entryToken,
+            'liffId'      => $liffId,
+            'fallbackUrl' => $fallbackUrl,
+        ]);
+    }
+
+    private function buildOaMessageUrl(string $oaUrl, string $tokenValue): string
+    {
+        if (preg_match('/@([A-Za-z0-9_-]+)/', $oaUrl, $m)) {
+            $basicId = '@' . $m[1];
+        } else {
+            $basicId = '@' . ltrim(trim($oaUrl), '@');
+        }
+        return 'https://line.me/R/oaMessage/' . $basicId . '/?' . urlencode('apply:' . $tokenValue);
     }
 
     public function callback(Request $request)

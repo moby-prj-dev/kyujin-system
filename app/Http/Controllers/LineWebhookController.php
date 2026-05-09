@@ -10,6 +10,7 @@ use App\Models\MasterAppeal;
 use App\Models\MasterArea;
 use App\Models\MasterCondition;
 use App\Models\MasterEmploymentType;
+use App\Models\MasterJobType;
 use App\Services\LineAlternativeJobFinder;
 use App\Services\LineMatchService;
 use App\Services\LineMessageBuilder;
@@ -239,6 +240,10 @@ class LineWebhookController extends Controller
         if (!empty($conditions['area_ids'])) {
             $names = MasterArea::whereIn('id', $conditions['area_ids'])->pluck('name')->join('、');
             if ($names) $parts[] = "勤務地：{$names}";
+        }
+        if (!empty($conditions['job_type_ids'])) {
+            $names = MasterJobType::whereIn('id', $conditions['job_type_ids'])->pluck('name')->join('、');
+            if ($names) $parts[] = "希望職種：{$names}";
         }
         if (!empty($conditions['employment_type_ids'])) {
             $names = MasterEmploymentType::whereIn('id', $conditions['employment_type_ids'])->pluck('name')->join('、');

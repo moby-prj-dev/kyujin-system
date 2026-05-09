@@ -38,14 +38,19 @@ class LineEntryController extends Controller
             'search_conditions_json' => $searchConditions,
         ]);
 
-        $oaUrl = config('line.oa_url');
+        $oaUrl  = config('line.oa_url');
+        $liffId = config('line.liff_id');
 
-        if (empty($oaUrl)) {
+        if (empty($oaUrl) && empty($liffId)) {
             return redirect()->route('lp.show', $job->token);
         }
 
-        $lineUrl = $this->buildOaMessageUrl($oaUrl, $entryToken->token);
+        if (!empty($liffId)) {
+            $liffUrl = 'https://liff.line.me/' . $liffId . '/auto-send/' . $entryToken->token;
+            return redirect()->away($liffUrl);
+        }
 
+        $lineUrl = $this->buildOaMessageUrl($oaUrl, $entryToken->token);
         return redirect()->away($lineUrl);
     }
 

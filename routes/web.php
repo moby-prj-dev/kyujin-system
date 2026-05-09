@@ -53,6 +53,7 @@ Route::get('/line-entry/{token}', [\App\Http\Controllers\LineEntryController::cl
 // LINE LIFF（求職者向け）
 // -----------------------------------------------
 Route::get('/liff', [\App\Http\Controllers\LiffController::class, 'callback'])->name('liff.callback');
+Route::get('/liff/auto-send/{token}', [\App\Http\Controllers\LiffController::class, 'autoSend'])->name('liff.auto_send');
 Route::get('/liff/{token}', [\App\Http\Controllers\LiffController::class, 'show'])->name('liff.show');
 Route::post('/liff/{token}/apply', [\App\Http\Controllers\LiffController::class, 'store'])->name('liff.apply.store');
 Route::get('/liff/{token}/thanks', [\App\Http\Controllers\LiffController::class, 'thanks'])->name('liff.thanks');
