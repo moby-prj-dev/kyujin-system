@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\Job;
 use App\Services\ApplicationValidationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ApplicationController extends Controller
 {
@@ -80,5 +81,16 @@ class ApplicationController extends Controller
         $application->save();
 
         return back()->with('success', '応募情報を更新しました。');
+    }
+
+    public function destroy(Application $application)
+    {
+        DB::transaction(function () use ($application) {
+            DB::table('billings')->where('application_id', $application->id)->delete();
+            DB::table('application_notifications')->where('application_id', $application->id)->delete();
+            $application->delete();
+        });
+
+        return back()->with('success', '応募データを削除しました。');
     }
 }

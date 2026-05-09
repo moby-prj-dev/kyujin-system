@@ -133,8 +133,43 @@ class JobController extends Controller
 
     public function destroy(Job $job): \Illuminate\Http\RedirectResponse
     {
-        $job->forceDelete();
+        DB::transaction(function () use ($job) {
+            $appIds = DB::table('applications')->where('job_id', $job->id)->pluck('id');
+            if ($appIds->isNotEmpty()) {
+                DB::table('billings')->whereIn('application_id', $appIds)->delete();
+                DB::table('application_notifications')->whereIn('application_id', $appIds)->delete();
+            }
+            DB::table('billings')->where('job_id', $job->id)->delete();
+            DB::table('applications')->where('job_id', $job->id)->delete();
+            $job->forceDelete();
+        });
+
         return redirect()->route('admin.jobs.index')->with('success', '求人を削除しました。');
+    }
+
+    public function destroyCompany(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $email = $request->input('email');
+        if (!is_string($email) || $email === '') {
+            return back()->withErrors(['email' => '対象の企業メールが不正です。']);
+        }
+
+        DB::transaction(function () use ($email) {
+            $jobIds = DB::table('job_listings')->where('contact_email', $email)->pluck('id');
+            if ($jobIds->isEmpty()) {
+                return;
+            }
+            $appIds = DB::table('applications')->whereIn('job_id', $jobIds)->pluck('id');
+            if ($appIds->isNotEmpty()) {
+                DB::table('billings')->whereIn('application_id', $appIds)->delete();
+                DB::table('application_notifications')->whereIn('application_id', $appIds)->delete();
+            }
+            DB::table('billings')->whereIn('job_id', $jobIds)->delete();
+            DB::table('applications')->whereIn('job_id', $jobIds)->delete();
+            DB::table('job_listings')->whereIn('id', $jobIds)->delete();
+        });
+
+        return redirect()->route('admin.jobs.index')->with('success', "「{$email}」の企業データと関連求人を削除しました。");
     }
 
     private function companyTrialStatus(object $c): string

@@ -329,6 +329,7 @@
                         <th class="text-center">請求対象</th>
                         <th class="text-end">請求額</th>
                         <th class="text-center">求人数</th>
+                        <th class="text-center">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -367,9 +368,19 @@
                             {{ $billingAmount > 0 ? '¥' . number_format($billingAmount) : '—' }}
                         </td>
                         <td class="text-center text-muted">{{ $c->listing_count }}</td>
+                        <td class="text-center">
+                            <form method="POST" action="{{ route('admin.companies.destroy') }}" class="d-inline"
+                                  onsubmit="return confirm('「{{ $c->company_name }}」({{ $c->contact_email }}) の企業データと関連する求人 {{ $c->listing_count }} 件・応募・請求情報を完全に削除します。この操作は取り消せません。よろしいですか？')">
+                                @csrf @method('DELETE')
+                                <input type="hidden" name="email" value="{{ $c->contact_email }}">
+                                <button type="submit" class="btn btn-xs btn-outline-secondary">
+                                    <i class="bi bi-trash"></i>削除
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     @empty
-                    <tr><td colspan="10" class="text-center text-muted py-4">データがありません</td></tr>
+                    <tr><td colspan="11" class="text-center text-muted py-4">データがありません</td></tr>
                     @endforelse
                 </tbody>
             </table>

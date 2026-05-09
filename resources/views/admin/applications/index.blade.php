@@ -142,6 +142,13 @@
                                         onclick="return confirm('この応募を有効にしますか？')">有効化</button>
                             @endif
                         </form>
+                        <form method="POST" action="{{ route('admin.applications.destroy', $app) }}" class="d-inline ms-1">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-xs btn-outline-secondary"
+                                    onclick="return confirm('この応募データを完全に削除します。この操作は取り消せません。よろしいですか？')">
+                                <i class="bi bi-trash"></i>削除
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @empty
