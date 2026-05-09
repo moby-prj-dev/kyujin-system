@@ -78,11 +78,20 @@ function showError(msg, detail) {
         if (!res.ok) {
             let msg = '応募開始に失敗しました。';
             let detail = 'HTTP ' + res.status;
+            let code = '';
             try {
                 const j = await res.json();
                 if (j && j.message) msg = j.message;
-                if (j && j.error)   detail = j.error;
+                if (j && j.error)   { detail = j.error; code = j.error; }
             } catch (_) {}
+
+            // 友だち未追加でPushが失敗した場合は、手動送信URLにフォールバック
+            // (oaMessage URLでチャットに apply:xxx が事前入力されるので、ユーザーは送信ボタンを1回タップするだけ)
+            if (code === 'push_failed') {
+                location.href = FALLBACK_URL;
+                return;
+            }
+
             showError(msg, detail);
             return;
         }
