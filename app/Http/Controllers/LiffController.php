@@ -33,14 +33,16 @@ class LiffController extends Controller
 
     public function callback(Request $request)
     {
-        $state = $request->query('liff.state');
+        $state = $this->extractLiffState($request);
 
         if (is_string($state) && $state !== '') {
             $parsed = parse_url($state);
             $path   = ltrim($parsed['path'] ?? '', '/');
 
             if ($path !== '' && preg_match('/^[A-Za-z0-9]{16,128}$/', $path)) {
-                $forward = $request->except('liff.state');
+                $forward = collect($request->query())
+                    ->except(['liff.state', 'liff_state'])
+                    ->all();
                 if (!empty($parsed['query'])) {
                     parse_str($parsed['query'], $stateQuery);
                     $forward = array_merge($stateQuery, $forward);
@@ -51,6 +53,19 @@ class LiffController extends Controller
         }
 
         abort(404);
+    }
+
+    private function extractLiffState(Request $request): ?string
+    {
+        $raw = $request->server('QUERY_STRING') ?? '';
+        foreach (explode('&', $raw) as $pair) {
+            if ($pair === '') continue;
+            [$k, $v] = array_pad(explode('=', $pair, 2), 2, '');
+            if (urldecode($k) === 'liff.state') {
+                return urldecode($v);
+            }
+        }
+        return null;
     }
 
     public function store(Request $request, string $token)
