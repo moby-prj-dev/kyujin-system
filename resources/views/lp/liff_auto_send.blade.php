@@ -58,6 +58,26 @@ function showError(msg) {
             location.href = FALLBACK_URL;
             return;
         }
+
+        // chat_message.write 権限チェック・必要なら同意ダイアログを出す
+        let canSend = true;
+        try {
+            const perm = await liff.permission.query('chat_message.write');
+            canSend = perm && perm.state === 'granted';
+        } catch (e) {
+            canSend = true;
+        }
+        if (!canSend) {
+            document.getElementById('msg').textContent = 'メッセージ送信の許可をリクエストしています...';
+            try {
+                await liff.permission.requestAll();
+            } catch (e) {
+                showError('メッセージ送信の許可が必要です。下のボタンから手動で送信してください。');
+                document.getElementById('errDetail').textContent = (e && e.message) ? e.message : '';
+                return;
+            }
+        }
+
         document.getElementById('msg').textContent = '応募情報を送信中...';
         await liff.sendMessages([{ type: 'text', text: APPLY_TEXT }]);
         liff.closeWindow();
