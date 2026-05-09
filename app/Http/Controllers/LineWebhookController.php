@@ -124,24 +124,33 @@ class LineWebhookController extends Controller
 
         $entryToken->markAsUsed($lineUserId);
 
-        $this->reply($api, $replyToken, LineMessageBuilder::confirmation($job));
+        $this->reply($api, $replyToken, LineMessageBuilder::confirmation(
+            $job,
+            $entryToken->search_conditions_json ?? []
+        ));
     }
 
     private function handleConfirming(MessagingApiApi $api, string $replyToken, LineChatSession $session, string $text): void
     {
         $normalized = mb_strtolower(preg_replace('/[\s　]/u', '', $text));
         $isYes      = in_array($normalized, ['はい', 'yes', 'ok', 'ﾊｲ', '○', '◯', '✓']);
-        $isReview   = str_contains($text, '確認');
-
-        if (!$isYes && !$isReview) {
-            $job = $session->job;
-            $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition']);
-            $this->reply($api, $replyToken, LineMessageBuilder::confirmation($job));
-            return;
-        }
+        $isReview   = str_contains($text, '確認') || str_contains($text, '内容');
 
         $job = $session->job;
         $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition']);
+
+        if ($isReview && !$isYes) {
+            $this->reply($api, $replyToken, LineMessageBuilder::confirmation($job, []));
+            return;
+        }
+
+        if (!$isYes) {
+            $this->reply($api, $replyToken, LineMessageBuilder::confirmation(
+                $job,
+                $session->search_conditions_json ?? []
+            ));
+            return;
+        }
 
         $mismatches = (new LineMatchService())->getMismatches($job, $session->search_conditions_json ?? []);
 

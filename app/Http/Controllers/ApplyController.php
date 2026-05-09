@@ -62,14 +62,22 @@ class ApplyController extends Controller
     {
         $job        = $this->findActiveJob($token);
         $conditions = $this->parseConditions($request);
+        $via        = $request->input('via') === 'line' ? 'line' : null;
 
         if ($this->hasConditions($conditions)) {
+            if ($via === 'line') {
+                return redirect()->route('line.entry', array_merge(
+                    ['token' => $job->token],
+                    $this->conditionsToQuery($conditions),
+                ));
+            }
             // 検索条件あり → 確認画面
             return view('lp.apply', [
                 'job'        => $job,
                 'step'       => 'confirm',
                 'conditions' => $conditions,
                 'conditionLabels' => $this->buildConditionLabels($conditions),
+                'via'        => $via,
             ]);
         }
 
@@ -80,6 +88,7 @@ class ApplyController extends Controller
             'areas'           => MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get(),
             'jobTypes'        => MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category'),
             'employmentTypes' => MasterEmploymentType::active()->orderBy('sort_order')->get(),
+            'via'             => $via,
         ]);
     }
 
@@ -88,14 +97,22 @@ class ApplyController extends Controller
     {
         $job        = $this->findActiveJob($token);
         $conditions = $this->parseConditions($request);
+        $via        = $request->input('via') === 'line' ? 'line' : null;
 
         $mismatches = $matchService->getMismatches($job, $conditions);
 
         if (empty($mismatches)) {
+            if ($via === 'line') {
+                return redirect()->route('line.entry', array_merge(
+                    ['token' => $job->token],
+                    $this->conditionsToQuery($conditions),
+                ));
+            }
             return view('lp.apply', [
                 'job'        => $job,
                 'step'       => 'form',
                 'conditions' => $conditions,
+                'via'        => $via,
             ]);
         }
 
@@ -105,7 +122,19 @@ class ApplyController extends Controller
             'mismatches'   => $mismatches,
             'conditions'   => $conditions,
             'alternatives' => $this->findAlternativeJobs($job, $conditions),
+            'via'          => $via,
         ]);
+    }
+
+    private function conditionsToQuery(array $conditions): array
+    {
+        $query = [];
+        foreach (['area_ids', 'job_type_ids', 'employment_type_ids', 'condition_ids', 'appeal_ids'] as $key) {
+            if (!empty($conditions[$key])) {
+                $query[$key] = $conditions[$key];
+            }
+        }
+        return $query;
     }
 
     // STEP3: 応募保存

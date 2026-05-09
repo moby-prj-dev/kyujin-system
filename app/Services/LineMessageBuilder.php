@@ -3,6 +3,11 @@
 namespace App\Services;
 
 use App\Models\Job;
+use App\Models\MasterAppeal;
+use App\Models\MasterArea;
+use App\Models\MasterCondition;
+use App\Models\MasterEmploymentType;
+use App\Models\MasterJobType;
 use Illuminate\Database\Eloquent\Collection;
 use LINE\Clients\MessagingApi\Model\MessageAction;
 use LINE\Clients\MessagingApi\Model\QuickReply;
@@ -19,19 +24,27 @@ class LineMessageBuilder
         ]);
     }
 
-    public static function confirmation(Job $job): TextMessage
+    public static function confirmation(Job $job, array $searchConditions = []): TextMessage
     {
-        $areas      = $job->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->join(' / ');
-        $jobTypes   = $job->jobJobTypes->map(fn($jt) => $jt->jobType?->name)->filter()->join('、');
-        $empTypes   = $job->jobEmploymentTypes->map(fn($je) => $je->employmentType?->name)->filter()->join('、');
-        $conditions = $job->jobConditions->map(fn($jc) => $jc->condition?->name)->filter()->join(' / ');
+        $userPrefs = self::formatUserPreferences($searchConditions);
 
-        $lines = ["ご応募ありがとうございます！\n\n以下の求人への応募を受け付けます。\n"];
-        if ($areas)      $lines[] = "・勤務地：{$areas}";
-        if ($jobTypes)   $lines[] = "・職種：{$jobTypes}";
-        if ($empTypes)   $lines[] = "・雇用形態：{$empTypes}";
-        if ($conditions) $lines[] = "・勤務条件：{$conditions}";
-        $lines[] = "\nこの内容で応募しますか？";
+        if ($userPrefs !== []) {
+            $lines = ["ご応募ありがとうございます！\n\n以下の希望条件で応募を受け付けます。\n"];
+            $lines = array_merge($lines, $userPrefs);
+            $lines[] = "\nこの求人はあなたの希望条件と一致しています。\nこの内容で応募しますか？";
+        } else {
+            $areas      = $job->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->join(' / ');
+            $jobTypes   = $job->jobJobTypes->map(fn($jt) => $jt->jobType?->name)->filter()->join('、');
+            $empTypes   = $job->jobEmploymentTypes->map(fn($je) => $je->employmentType?->name)->filter()->join('、');
+            $conditions = $job->jobConditions->map(fn($jc) => $jc->condition?->name)->filter()->join(' / ');
+
+            $lines = ["ご応募ありがとうございます！\n\n以下の求人への応募を受け付けます。\n"];
+            if ($areas)      $lines[] = "・勤務地：{$areas}";
+            if ($jobTypes)   $lines[] = "・職種：{$jobTypes}";
+            if ($empTypes)   $lines[] = "・雇用形態：{$empTypes}";
+            if ($conditions) $lines[] = "・勤務条件：{$conditions}";
+            $lines[] = "\nこの内容で応募しますか？";
+        }
 
         return new TextMessage([
             'type'       => 'text',
@@ -49,6 +62,34 @@ class LineMessageBuilder
                 ],
             ]),
         ]);
+    }
+
+    private static function formatUserPreferences(array $conditions): array
+    {
+        $lines = [];
+
+        if (!empty($conditions['area_ids'])) {
+            $names = MasterArea::whereIn('id', $conditions['area_ids'])->pluck('name')->join(' / ');
+            if ($names !== '') $lines[] = "・希望勤務地：{$names}";
+        }
+        if (!empty($conditions['job_type_ids'])) {
+            $names = MasterJobType::whereIn('id', $conditions['job_type_ids'])->pluck('name')->join('、');
+            if ($names !== '') $lines[] = "・希望職種：{$names}";
+        }
+        if (!empty($conditions['employment_type_ids'])) {
+            $names = MasterEmploymentType::whereIn('id', $conditions['employment_type_ids'])->pluck('name')->join('、');
+            if ($names !== '') $lines[] = "・希望雇用形態：{$names}";
+        }
+        if (!empty($conditions['condition_ids'])) {
+            $names = MasterCondition::whereIn('id', $conditions['condition_ids'])->pluck('name')->join(' / ');
+            if ($names !== '') $lines[] = "・希望勤務条件：{$names}";
+        }
+        if (!empty($conditions['appeal_ids'])) {
+            $names = MasterAppeal::whereIn('id', $conditions['appeal_ids'])->pluck('name')->join(' / ');
+            if ($names !== '') $lines[] = "・重視ポイント：{$names}";
+        }
+
+        return $lines;
     }
 
     public static function askName(): TextMessage

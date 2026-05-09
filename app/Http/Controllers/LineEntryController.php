@@ -17,12 +17,21 @@ class LineEntryController extends Controller
             ->firstOrFail();
 
         $searchConditions = [
-            'area_ids'            => array_map('intval', (array) $request->input('area_ids', [])),
-            'job_type_ids'        => array_map('intval', (array) $request->input('job_type_ids', [])),
-            'employment_type_ids' => array_map('intval', (array) $request->input('employment_type_ids', [])),
-            'condition_ids'       => array_map('intval', (array) $request->input('condition_ids', [])),
-            'appeal_ids'          => array_map('intval', (array) $request->input('appeal_ids', [])),
+            'area_ids'            => array_values(array_filter(array_map('intval', (array) $request->input('area_ids', [])))),
+            'job_type_ids'        => array_values(array_filter(array_map('intval', (array) $request->input('job_type_ids', [])))),
+            'employment_type_ids' => array_values(array_filter(array_map('intval', (array) $request->input('employment_type_ids', [])))),
+            'condition_ids'       => array_values(array_filter(array_map('intval', (array) $request->input('condition_ids', [])))),
+            'appeal_ids'          => array_values(array_filter(array_map('intval', (array) $request->input('appeal_ids', [])))),
         ];
+
+        $hasConditions = !empty($searchConditions['area_ids'])
+            || !empty($searchConditions['job_type_ids'])
+            || !empty($searchConditions['employment_type_ids'])
+            || !empty($searchConditions['condition_ids']);
+
+        if (!$hasConditions) {
+            return redirect()->route('lp.apply', ['token' => $job->token, 'via' => 'line']);
+        }
 
         $entryToken = LineEntryToken::create([
             'job_id'                 => $job->id,

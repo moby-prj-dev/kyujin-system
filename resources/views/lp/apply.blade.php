@@ -324,6 +324,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <form method="POST" action="{{ route('lp.apply.judge', $job->token) }}">
         @csrf
+        @if(($via ?? null) === 'line')
+            <input type="hidden" name="via" value="line">
+        @endif
 
         <div class="card-section">
             <div class="section-title"><i class="bi bi-geo-alt-fill"></i> 希望エリア<span class="required-badge">必須</span></div>
@@ -362,8 +365,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary-round">
-            <i class="bi bi-arrow-right-circle me-2"></i>条件を確認して次へ
+        <button type="submit" class="btn-primary-round" @if(($via ?? null) === 'line') style="background:#06C755;" @endif>
+            @if(($via ?? null) === 'line')
+                <svg class="line-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="vertical-align:-3px;margin-right:6px;"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
+                LINEで応募に進む
+            @else
+                <i class="bi bi-arrow-right-circle me-2"></i>条件を確認して次へ
+            @endif
         </button>
     </form>
 
