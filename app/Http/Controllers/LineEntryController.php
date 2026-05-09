@@ -44,8 +44,19 @@ class LineEntryController extends Controller
             return redirect()->route('lp.show', $job->token);
         }
 
-        $lineUrl = rtrim($oaUrl, '/') . '?text=' . urlencode('apply:' . $entryToken->token);
+        $lineUrl = $this->buildOaMessageUrl($oaUrl, $entryToken->token);
 
         return redirect()->away($lineUrl);
+    }
+
+    private function buildOaMessageUrl(string $oaUrl, string $entryTokenValue): string
+    {
+        if (preg_match('/@([A-Za-z0-9_-]+)/', $oaUrl, $m)) {
+            $basicId = '@' . $m[1];
+        } else {
+            $basicId = '@' . ltrim(trim($oaUrl), '@');
+        }
+
+        return 'https://line.me/R/oaMessage/' . $basicId . '/?' . urlencode('apply:' . $entryTokenValue);
     }
 }
