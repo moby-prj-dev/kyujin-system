@@ -21,8 +21,8 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        $adminId       = env('ADMIN_ID', 'admin');
-        $adminPassword = env('ADMIN_PASSWORD', '');
+        $adminId       = config('admin.id', 'admin');
+        $adminPassword = config('admin.password', '');
 
         if (
             $request->input('id') === $adminId &&

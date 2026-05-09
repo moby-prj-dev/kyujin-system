@@ -54,4 +54,8 @@ return [
         'daily_limit'          => (int) env('GOOGLE_INDEXING_DAILY_LIMIT', 100),
         'resubmit_after_days'  => (int) env('GOOGLE_INDEXING_RESUBMIT_DAYS', 30),
     ],
+
+    'pexels' => [
+        'api_key' => env('PEXELS_API_KEY'),
+    ],
 ];

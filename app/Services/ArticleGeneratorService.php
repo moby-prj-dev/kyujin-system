@@ -586,7 +586,7 @@ PROMPT;
     private function fetchUnsplashImage(string $query): ?string
     {
         try {
-            $apiKey   = env('PEXELS_API_KEY');
+            $apiKey   = config('services.pexels.api_key');
             $encoded  = urlencode($query . ' Japan');
             $client   = new Client(['timeout' => 10]);
             $response = $client->get("https://api.pexels.com/v1/search?query={$encoded}&per_page=1", [
