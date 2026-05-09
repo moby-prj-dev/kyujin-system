@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>LINE応募｜送信中</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -33,23 +34,16 @@
     <a class="fallback-link" id="fallbackLink" href="{{ $fallbackUrl }}" style="display:none;">LINEで送信する</a>
 
 <script>
-const LIFF_ID     = @json($liffId);
-const APPLY_TEXT  = 'apply:' + @json($entryToken->token);
+const LIFF_ID      = @json($liffId);
+const START_URL    = @json(route('liff.auto_send.start', ['token' => $entryToken->token]));
 const FALLBACK_URL = @json($fallbackUrl);
+const CSRF_TOKEN   = document.querySelector('meta[name="csrf-token"]').content;
 
-function showError(msg) {
+function showError(msg, detail) {
     document.getElementById('msg').textContent = msg;
     document.querySelector('.spinner').style.display = 'none';
     document.getElementById('fallbackLink').style.display = 'inline-block';
-}
-
-async function isPermissionGranted() {
-    try {
-        const perm = await liff.permission.query('chat_message.write');
-        return !!(perm && perm.state === 'granted');
-    } catch (e) {
-        return false;
-    }
+    if (detail) document.getElementById('errDetail').textContent = detail;
 }
 
 (async () => {
@@ -63,46 +57,44 @@ async function isPermissionGranted() {
             liff.login({ redirectUri: location.href });
             return;
         }
-        if (!liff.isInClient()) {
-            location.href = FALLBACK_URL;
-            return;
-        }
 
-        let granted = await isPermissionGranted();
+        document.getElementById('msg').textContent = '応募情報を準備しています...';
+        const profile = await liff.getProfile();
 
-        if (!granted) {
-            // 1段目: requestAll で同意ダイアログ
+        const res = await fetch(START_URL, {
+            method:  'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept':       'application/json',
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                line_user_id:      profile.userId,
+                line_display_name: profile.displayName,
+            }),
+        });
+
+        if (!res.ok) {
+            let msg = '応募開始に失敗しました。';
+            let detail = 'HTTP ' + res.status;
             try {
-                await liff.permission.requestAll();
-                granted = await isPermissionGranted();
-            } catch (e) {
-                // 環境によっては失敗するので2段目に進む
-            }
-        }
-
-        if (!granted) {
-            // 2段目: ログアウト→再ログインで OAuth 同意フローを強制発動
-            const params = new URLSearchParams(location.search);
-            if (!params.has('reauth')) {
-                params.set('reauth', '1');
-                const sep = location.pathname + '?' + params.toString();
-                document.getElementById('msg').textContent = '権限を再取得しています...';
-                liff.logout();
-                liff.login({ redirectUri: location.origin + sep });
-                return;
-            }
-            // 再ログイン後もダメ → フォールバック(手動送信)
-            location.href = FALLBACK_URL;
+                const j = await res.json();
+                if (j && j.message) msg = j.message;
+                if (j && j.error)   detail = j.error;
+            } catch (_) {}
+            showError(msg, detail);
             return;
         }
 
-        document.getElementById('msg').textContent = '応募情報を送信中...';
-        await liff.sendMessages([{ type: 'text', text: APPLY_TEXT }]);
-        liff.closeWindow();
+        if (liff.isInClient()) {
+            liff.closeWindow();
+        } else {
+            location.href = FALLBACK_URL;
+        }
     } catch (e) {
         console.error(e);
-        showError('自動送信に失敗しました。下のボタンからLINEで送信してください。');
-        document.getElementById('errDetail').textContent = (e && e.message) ? e.message : '';
+        showError('LINE連携に失敗しました。下のボタンからLINEで送信してください。', (e && e.message) ? e.message : '');
     }
 })();
 </script>

@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\Job;
 use App\Models\LineApplicationDetail;
+use App\Models\LineChatSession;
 use App\Models\LineEntryToken;
+use App\Services\LineMessageBuilder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -48,6 +52,56 @@ class LiffController extends Controller
             'liffId'      => $liffId,
             'fallbackUrl' => $fallbackUrl,
         ]);
+    }
+
+    public function startConversation(Request $request, string $token)
+    {
+        $entryToken = LineEntryToken::where('token', $token)->firstOrFail();
+        if (!$entryToken->isValid()) {
+            return response()->json(['error' => 'expired'], 410);
+        }
+
+        $data = $request->validate([
+            'line_user_id'      => ['required', 'string', 'max:64'],
+            'line_display_name' => ['nullable', 'string', 'max:200'],
+        ]);
+
+        $lineUserId = $data['line_user_id'];
+
+        $job = $entryToken->job;
+        $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition']);
+        $searchConditions = $entryToken->search_conditions_json ?? [];
+
+        DB::transaction(function () use ($lineUserId, $job, $token, $searchConditions, $entryToken) {
+            LineChatSession::where('line_user_id', $lineUserId)->delete();
+            LineChatSession::create([
+                'line_user_id'           => $lineUserId,
+                'step'                   => LineChatSession::STEP_CONFIRMING,
+                'job_id'                 => $job->id,
+                'entry_token'            => $token,
+                'search_conditions_json' => $searchConditions,
+                'expires_at'             => now()->addMinutes(30),
+            ]);
+            $entryToken->markAsUsed($lineUserId);
+        });
+
+        try {
+            $config = \LINE\Clients\MessagingApi\Configuration::getDefaultConfiguration()
+                ->setAccessToken(config('line.channel_access_token'));
+            $api = new \LINE\Clients\MessagingApi\Api\MessagingApiApi(new \GuzzleHttp\Client(), $config);
+            $api->pushMessage(new \LINE\Clients\MessagingApi\Model\PushMessageRequest([
+                'to'       => $lineUserId,
+                'messages' => [LineMessageBuilder::confirmation($job, $searchConditions)],
+            ]));
+        } catch (\Throwable $e) {
+            Log::warning('LINE push failed: ' . $e->getMessage());
+            return response()->json([
+                'error'   => 'push_failed',
+                'message' => '応募確認の送信に失敗しました。Care Entryを友だち追加してから再度お試しください。',
+            ], 500);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     private function buildOaMessageUrl(string $oaUrl, string $tokenValue): string
