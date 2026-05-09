@@ -98,6 +98,8 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::patch('/applications/{id}/restore', [\App\Http\Controllers\Admin\ApplicationController::class, 'restore'])->name('applications.restore');
     Route::delete('/applications/{id}/force', [\App\Http\Controllers\Admin\ApplicationController::class, 'forceDestroy'])->name('applications.force_destroy');
 
+    Route::delete('/companies/by-email', [\App\Http\Controllers\Admin\JobController::class, 'destroyCompany'])->name('companies.destroy');
+
     // 記事管理
     Route::get('/articles', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('articles.index');
     Route::post('/articles/generate', [\App\Http\Controllers\Admin\ArticleController::class, 'generate'])->name('articles.generate');

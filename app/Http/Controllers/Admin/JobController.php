@@ -106,21 +106,35 @@ class JobController extends Controller
 
     private function getCompanies(): \Illuminate\Support\Collection
     {
+        // 集計の二重カウントを防ぐため、応募集計と求人数を別クエリで取って結合
         $rows = DB::select("
             SELECT
                 j.contact_email,
-                MAX(j.company_name)       AS company_name,
-                MIN(j.email_verified_at)  AS first_activated_at,
-                MIN(j.monitor_ends_at)           AS trial_ends_at,
-                MAX(j.is_permanently_free)       AS is_permanently_free,
-                COUNT(DISTINCT j.id)             AS listing_count,
-                COALESCE(SUM(CASE WHEN a.is_valid = 1 THEN 1 ELSE 0 END), 0) AS valid_count,
-                COALESCE(SUM(CASE WHEN a.is_valid = 0 THEN 1 ELSE 0 END), 0) AS invalid_count,
-                COALESCE(SUM(CASE WHEN a.is_billable = 1 THEN 1 ELSE 0 END), 0) AS billable_count
+                MAX(j.company_name)                                                AS company_name,
+                MIN(j.email_verified_at)                                           AS first_activated_at,
+                MIN(j.monitor_ends_at)                                             AS trial_ends_at,
+                MAX(j.is_permanently_free)                                         AS is_permanently_free,
+                COUNT(DISTINCT CASE WHEN j.deleted_at IS NULL THEN j.id END)       AS listing_count,
+                COALESCE((
+                    SELECT SUM(CASE WHEN a.is_valid = 1 THEN 1 ELSE 0 END)
+                    FROM applications a
+                    INNER JOIN job_listings j2 ON j2.id = a.job_id
+                    WHERE j2.contact_email = j.contact_email AND a.deleted_at IS NULL
+                ), 0) AS valid_count,
+                COALESCE((
+                    SELECT SUM(CASE WHEN a.is_valid = 0 THEN 1 ELSE 0 END)
+                    FROM applications a
+                    INNER JOIN job_listings j2 ON j2.id = a.job_id
+                    WHERE j2.contact_email = j.contact_email AND a.deleted_at IS NULL
+                ), 0) AS invalid_count,
+                COALESCE((
+                    SELECT SUM(CASE WHEN a.is_billable = 1 THEN 1 ELSE 0 END)
+                    FROM applications a
+                    INNER JOIN job_listings j2 ON j2.id = a.job_id
+                    WHERE j2.contact_email = j.contact_email AND a.deleted_at IS NULL
+                ), 0) AS billable_count
             FROM job_listings j
-            LEFT JOIN applications a ON a.job_id = j.id AND a.deleted_at IS NULL
             WHERE j.email_verified_at IS NOT NULL
-              AND j.deleted_at IS NULL
             GROUP BY j.contact_email
             ORDER BY first_activated_at DESC
         ");
@@ -147,7 +161,48 @@ class JobController extends Controller
         return redirect()->route('admin.jobs.index')->with('success', '求人を削除しました。');
     }
 
+    public function destroyCompany(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $email = $request->input('email');
+        if (!is_string($email) || $email === '') {
+            return back()->withErrors(['email' => '対象の企業メールが不正です。']);
+        }
 
+        // アクティブ(未削除)な求人がある場合は削除を拒否
+        $activeCount = DB::table('job_listings')
+            ->where('contact_email', $email)
+            ->whereNull('deleted_at')
+            ->count();
+
+        if ($activeCount > 0) {
+            return back()->withErrors([
+                'company' => "この企業にはまだアクティブな求人が {$activeCount} 件あります。先に求人を全て削除してください。",
+            ]);
+        }
+
+        DB::transaction(function () use ($email) {
+            // 当該企業のすべての job_listings (soft-deleted も含む)
+            $jobIds = DB::table('job_listings')
+                ->where('contact_email', $email)
+                ->pluck('id');
+
+            if ($jobIds->isEmpty()) {
+                return;
+            }
+
+            $appIds = DB::table('applications')->whereIn('job_id', $jobIds)->pluck('id');
+            if ($appIds->isNotEmpty()) {
+                DB::table('billings')->whereIn('application_id', $appIds)->delete();
+                DB::table('application_notifications')->whereIn('application_id', $appIds)->delete();
+            }
+            DB::table('billings')->whereIn('job_id', $jobIds)->delete();
+            DB::table('applications')->whereIn('job_id', $jobIds)->delete();
+            DB::table('job_listings')->whereIn('id', $jobIds)->delete();
+        });
+
+        return redirect()->route('admin.jobs.index')
+            ->with('success', "「{$email}」の企業データを完全に削除しました。");
+    }
 
     private function companyTrialStatus(object $c): string
     {
