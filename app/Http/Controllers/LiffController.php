@@ -68,7 +68,10 @@ class LiffController extends Controller
             $parsed = parse_url($state);
             $path   = ltrim($parsed['path'] ?? '', '/');
 
-            if ($path !== '' && preg_match('/^[A-Za-z0-9]{16,128}$/', $path)) {
+            $isToken     = (bool) preg_match('/^[A-Za-z0-9]{16,128}$/', $path);
+            $isAutoSend  = (bool) preg_match('/^auto-send\/[A-Za-z0-9]{16,128}$/', $path);
+
+            if ($path !== '' && ($isToken || $isAutoSend)) {
                 $forward = collect($request->query())
                     ->except(['liff.state', 'liff_state'])
                     ->all();
