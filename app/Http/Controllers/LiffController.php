@@ -8,8 +8,6 @@ use App\Models\LineApplicationDetail;
 use App\Models\LineChatSession;
 use App\Models\LineEntryToken;
 use App\Services\LineMessageBuilder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
