@@ -31,6 +31,28 @@ class LiffController extends Controller
         return view('lp.liff', compact('job', 'liffId'));
     }
 
+    public function callback(Request $request)
+    {
+        $state = $request->query('liff.state');
+
+        if (is_string($state) && $state !== '') {
+            $parsed = parse_url($state);
+            $path   = ltrim($parsed['path'] ?? '', '/');
+
+            if ($path !== '' && preg_match('/^[A-Za-z0-9]{16,128}$/', $path)) {
+                $forward = $request->except('liff.state');
+                if (!empty($parsed['query'])) {
+                    parse_str($parsed['query'], $stateQuery);
+                    $forward = array_merge($stateQuery, $forward);
+                }
+                $qs = http_build_query($forward);
+                return redirect()->to('/liff/' . $path . ($qs !== '' ? '?' . $qs : ''));
+            }
+        }
+
+        abort(404);
+    }
+
     public function store(Request $request, string $token)
     {
         $job = $this->findActiveJob($token);
