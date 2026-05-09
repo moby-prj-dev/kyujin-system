@@ -106,7 +106,7 @@ class JobController extends Controller
 
     private function getCompanies(): \Illuminate\Support\Collection
     {
-        // 集計の二重カウントを防ぐため、応募集計と求人数を別クエリで取って結合
+        // ハローワーク等の外部スクレイピング求人は企業一覧から除外
         $rows = DB::select("
             SELECT
                 j.contact_email,
@@ -119,22 +119,29 @@ class JobController extends Controller
                     SELECT SUM(CASE WHEN a.is_valid = 1 THEN 1 ELSE 0 END)
                     FROM applications a
                     INNER JOIN job_listings j2 ON j2.id = a.job_id
-                    WHERE j2.contact_email = j.contact_email AND a.deleted_at IS NULL
+                    WHERE j2.contact_email = j.contact_email
+                      AND a.deleted_at IS NULL
+                      AND (j2.source IS NULL OR j2.source <> 'hellowork')
                 ), 0) AS valid_count,
                 COALESCE((
                     SELECT SUM(CASE WHEN a.is_valid = 0 THEN 1 ELSE 0 END)
                     FROM applications a
                     INNER JOIN job_listings j2 ON j2.id = a.job_id
-                    WHERE j2.contact_email = j.contact_email AND a.deleted_at IS NULL
+                    WHERE j2.contact_email = j.contact_email
+                      AND a.deleted_at IS NULL
+                      AND (j2.source IS NULL OR j2.source <> 'hellowork')
                 ), 0) AS invalid_count,
                 COALESCE((
                     SELECT SUM(CASE WHEN a.is_billable = 1 THEN 1 ELSE 0 END)
                     FROM applications a
                     INNER JOIN job_listings j2 ON j2.id = a.job_id
-                    WHERE j2.contact_email = j.contact_email AND a.deleted_at IS NULL
+                    WHERE j2.contact_email = j.contact_email
+                      AND a.deleted_at IS NULL
+                      AND (j2.source IS NULL OR j2.source <> 'hellowork')
                 ), 0) AS billable_count
             FROM job_listings j
             WHERE j.email_verified_at IS NOT NULL
+              AND (j.source IS NULL OR j.source <> 'hellowork')
             GROUP BY j.contact_email
             ORDER BY first_activated_at DESC
         ");
