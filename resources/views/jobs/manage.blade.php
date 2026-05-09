@@ -265,7 +265,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($app->is_valid && !$app->disputes()->where('status', '!=', 'rejected')->exists())
-                                        <a href="{{ route('disputes.create', [$job->manage_token, $app]) }}"
+                                        <a href="{{ route('disputes.create', [$job->token, $app]) }}"
                                            class="btn btn-outline-danger btn-sm" style="font-size:0.75rem;">
                                             <i class="bi bi-flag me-1"></i>無効申告
                                         </a>

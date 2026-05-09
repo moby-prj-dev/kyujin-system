@@ -11,7 +11,7 @@ class DisputeController extends Controller
 {
     public function create(string $token, Application $application)
     {
-        $job = Job::where('manage_token', $token)->firstOrFail();
+        $job = Job::where('token', $token)->firstOrFail();
 
         abort_unless($application->job_id === $job->id, 403);
         abort_unless($application->is_valid, 403, 'すでに無効な応募です。');
@@ -25,7 +25,7 @@ class DisputeController extends Controller
 
     public function store(Request $request, string $token, Application $application)
     {
-        $job = Job::where('manage_token', $token)->firstOrFail();
+        $job = Job::where('token', $token)->firstOrFail();
 
         abort_unless($application->job_id === $job->id, 403);
         abort_unless($application->is_valid, 403);
