@@ -43,6 +43,15 @@ function showError(msg) {
     document.getElementById('fallbackLink').style.display = 'inline-block';
 }
 
+async function isPermissionGranted() {
+    try {
+        const perm = await liff.permission.query('chat_message.write');
+        return !!(perm && perm.state === 'granted');
+    } catch (e) {
+        return false;
+    }
+}
+
 (async () => {
     if (!LIFF_ID) {
         location.href = FALLBACK_URL;
@@ -59,23 +68,32 @@ function showError(msg) {
             return;
         }
 
-        // chat_message.write 権限チェック・必要なら同意ダイアログを出す
-        let canSend = true;
-        try {
-            const perm = await liff.permission.query('chat_message.write');
-            canSend = perm && perm.state === 'granted';
-        } catch (e) {
-            canSend = true;
-        }
-        if (!canSend) {
-            document.getElementById('msg').textContent = 'メッセージ送信の許可をリクエストしています...';
+        let granted = await isPermissionGranted();
+
+        if (!granted) {
+            // 1段目: requestAll で同意ダイアログ
             try {
                 await liff.permission.requestAll();
+                granted = await isPermissionGranted();
             } catch (e) {
-                showError('メッセージ送信の許可が必要です。下のボタンから手動で送信してください。');
-                document.getElementById('errDetail').textContent = (e && e.message) ? e.message : '';
+                // 環境によっては失敗するので2段目に進む
+            }
+        }
+
+        if (!granted) {
+            // 2段目: ログアウト→再ログインで OAuth 同意フローを強制発動
+            const params = new URLSearchParams(location.search);
+            if (!params.has('reauth')) {
+                params.set('reauth', '1');
+                const sep = location.pathname + '?' + params.toString();
+                document.getElementById('msg').textContent = '権限を再取得しています...';
+                liff.logout();
+                liff.login({ redirectUri: location.origin + sep });
                 return;
             }
+            // 再ログイン後もダメ → フォールバック(手動送信)
+            location.href = FALLBACK_URL;
+            return;
         }
 
         document.getElementById('msg').textContent = '応募情報を送信中...';
