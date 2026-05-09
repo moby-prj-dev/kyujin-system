@@ -314,6 +314,9 @@
         <div class="card-header px-4 py-3">
             企業一覧（メールアドレス単位）
             <span class="text-muted fw-normal ms-2" style="font-size:0.82rem;">{{ count($companies) }}社</span>
+            <div class="text-muted fw-normal mt-1" style="font-size:0.75rem;">
+                <i class="bi bi-info-circle me-1"></i>企業データは紐づく求人を全て削除すると自動的にこのリストから消えます。
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-hover mb-0">
@@ -329,7 +332,6 @@
                         <th class="text-center">請求対象</th>
                         <th class="text-end">請求額</th>
                         <th class="text-center">求人数</th>
-                        <th class="text-center">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -368,19 +370,9 @@
                             {{ $billingAmount > 0 ? '¥' . number_format($billingAmount) : '—' }}
                         </td>
                         <td class="text-center text-muted">{{ $c->listing_count }}</td>
-                        <td class="text-center">
-                            <form method="POST" action="{{ route('admin.companies.destroy') }}" class="d-inline"
-                                  onsubmit="return confirm('「{{ $c->company_name }}」({{ $c->contact_email }}) の企業データと関連する求人 {{ $c->listing_count }} 件・応募・請求情報を完全に削除します。この操作は取り消せません。よろしいですか？')">
-                                @csrf @method('DELETE')
-                                <input type="hidden" name="email" value="{{ $c->contact_email }}">
-                                <button type="submit" class="btn btn-xs btn-outline-secondary">
-                                    <i class="bi bi-trash"></i>削除
-                                </button>
-                            </form>
-                        </td>
                     </tr>
                     @empty
-                    <tr><td colspan="11" class="text-center text-muted py-4">データがありません</td></tr>
+                    <tr><td colspan="10" class="text-center text-muted py-4">データがありません</td></tr>
                     @endforelse
                 </tbody>
             </table>

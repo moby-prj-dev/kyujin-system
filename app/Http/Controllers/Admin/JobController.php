@@ -15,10 +15,10 @@ class JobController extends Controller
         $jobsQuery = Job::query()
             ->selectRaw('
                 job_listings.*,
-                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id) AS applications_count,
-                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1) AS valid_count_sub,
-                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 0) AS invalid_count_sub,
-                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_billable = 1) AS billable_count_sub
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND deleted_at IS NULL) AS applications_count,
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 1 AND deleted_at IS NULL) AS valid_count_sub,
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_valid = 0 AND deleted_at IS NULL) AS invalid_count_sub,
+                (SELECT COUNT(*) FROM applications WHERE job_id = job_listings.id AND is_billable = 1 AND deleted_at IS NULL) AS billable_count_sub
             ')
             ->whereNull('deleted_at');
 
@@ -118,7 +118,7 @@ class JobController extends Controller
                 COALESCE(SUM(CASE WHEN a.is_valid = 0 THEN 1 ELSE 0 END), 0) AS invalid_count,
                 COALESCE(SUM(CASE WHEN a.is_billable = 1 THEN 1 ELSE 0 END), 0) AS billable_count
             FROM job_listings j
-            LEFT JOIN applications a ON a.job_id = j.id
+            LEFT JOIN applications a ON a.job_id = j.id AND a.deleted_at IS NULL
             WHERE j.email_verified_at IS NOT NULL
               AND j.deleted_at IS NULL
             GROUP BY j.contact_email
@@ -147,30 +147,7 @@ class JobController extends Controller
         return redirect()->route('admin.jobs.index')->with('success', '求人を削除しました。');
     }
 
-    public function destroyCompany(Request $request): \Illuminate\Http\RedirectResponse
-    {
-        $email = $request->input('email');
-        if (!is_string($email) || $email === '') {
-            return back()->withErrors(['email' => '対象の企業メールが不正です。']);
-        }
 
-        DB::transaction(function () use ($email) {
-            $jobIds = DB::table('job_listings')->where('contact_email', $email)->pluck('id');
-            if ($jobIds->isEmpty()) {
-                return;
-            }
-            $appIds = DB::table('applications')->whereIn('job_id', $jobIds)->pluck('id');
-            if ($appIds->isNotEmpty()) {
-                DB::table('billings')->whereIn('application_id', $appIds)->delete();
-                DB::table('application_notifications')->whereIn('application_id', $appIds)->delete();
-            }
-            DB::table('billings')->whereIn('job_id', $jobIds)->delete();
-            DB::table('applications')->whereIn('job_id', $jobIds)->delete();
-            DB::table('job_listings')->whereIn('id', $jobIds)->delete();
-        });
-
-        return redirect()->route('admin.jobs.index')->with('success', "「{$email}」の企業データと関連求人を削除しました。");
-    }
 
     private function companyTrialStatus(object $c): string
     {

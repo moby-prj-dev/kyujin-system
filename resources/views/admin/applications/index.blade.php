@@ -3,7 +3,23 @@
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="page-title mb-0"><i class="bi bi-people me-2"></i>応募一覧</h1>
+    <h1 class="page-title mb-0">
+        <i class="bi bi-people me-2"></i>{{ ($trashedMode ?? 'none') === 'only' ? 'ゴミ箱（削除済み応募）' : '応募一覧' }}
+    </h1>
+    <div>
+        @if(($trashedMode ?? 'none') === 'only')
+            <a href="{{ route('admin.applications.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>応募一覧に戻る
+            </a>
+        @else
+            <a href="{{ route('admin.applications.index', ['trashed' => 1]) }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-trash me-1"></i>ゴミ箱
+                @if(($trashedCount ?? 0) > 0)
+                    <span class="badge bg-secondary ms-1">{{ $trashedCount }}</span>
+                @endif
+            </a>
+        @endif
+    </div>
 </div>
 
 {{-- 求人絞り込み中バナー --}}
@@ -130,34 +146,62 @@
                         @endif
                     </td>
                     <td class="text-center">
-                        <form method="POST" action="{{ route('admin.applications.update', $app) }}" class="d-inline">
-                            @csrf @method('PATCH')
-                            @if($app->is_valid)
-                                <input type="hidden" name="action" value="invalidate">
-                                <button type="submit" class="btn btn-xs btn-outline-danger"
-                                        onclick="return confirm('この応募を無効にしますか？')">無効化</button>
-                            @else
-                                <input type="hidden" name="action" value="validate">
+                        @if(($trashedMode ?? 'none') === 'only')
+                            {{-- ゴミ箱モード: 復元 / 完全削除 --}}
+                            <form method="POST" action="{{ route('admin.applications.restore', $app->id) }}" class="d-inline">
+                                @csrf @method('PATCH')
                                 <button type="submit" class="btn btn-xs btn-outline-success"
-                                        onclick="return confirm('この応募を有効にしますか？')">有効化</button>
-                            @endif
-                        </form>
-                        <div class="dropdown d-inline ms-1">
-                            <button type="button" class="btn btn-xs btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <form method="POST" action="{{ route('admin.applications.destroy', $app) }}"
-                                          onsubmit="return prompt('削除する場合は「削除」と入力してください') === '削除';">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-trash me-1"></i>完全削除
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                                        onclick="return confirm('この応募データを復元しますか？')">
+                                    <i class="bi bi-arrow-counterclockwise"></i>復元
+                                </button>
+                            </form>
+                            <div class="dropdown d-inline ms-1">
+                                <button type="button" class="btn btn-xs btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form method="POST" action="{{ route('admin.applications.force_destroy', $app->id) }}"
+                                              onsubmit="return prompt('完全削除する場合は「削除」と入力してください（取り消し不能）') === '削除';">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-trash-fill me-1"></i>完全削除（取り消し不能）
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        @else
+                            {{-- 通常モード: 有効化/無効化 / ゴミ箱へ --}}
+                            <form method="POST" action="{{ route('admin.applications.update', $app) }}" class="d-inline">
+                                @csrf @method('PATCH')
+                                @if($app->is_valid)
+                                    <input type="hidden" name="action" value="invalidate">
+                                    <button type="submit" class="btn btn-xs btn-outline-danger"
+                                            onclick="return confirm('この応募を無効にしますか？')">無効化</button>
+                                @else
+                                    <input type="hidden" name="action" value="validate">
+                                    <button type="submit" class="btn btn-xs btn-outline-success"
+                                            onclick="return confirm('この応募を有効にしますか？')">有効化</button>
+                                @endif
+                            </form>
+                            <div class="dropdown d-inline ms-1">
+                                <button type="button" class="btn btn-xs btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form method="POST" action="{{ route('admin.applications.destroy', $app) }}"
+                                              onsubmit="return confirm('この応募データをゴミ箱に移動しますか？（30日以内なら復元できます）');">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="dropdown-item text-warning">
+                                                <i class="bi bi-trash me-1"></i>ゴミ箱に移動
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        @endif
                     </td>
                 </tr>
                 @empty

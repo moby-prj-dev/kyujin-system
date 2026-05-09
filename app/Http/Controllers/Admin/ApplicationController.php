@@ -13,8 +13,14 @@ class ApplicationController extends Controller
 {
     public function index(Request $request)
     {
+        $trashedMode = $request->input('trashed') === '1' ? 'only' : 'none';
+
         $query = Application::with(['job:id,company_name,contact_email,token,title'])
             ->orderByDesc('applied_at');
+
+        if ($trashedMode === 'only') {
+            $query->onlyTrashed();
+        }
 
         if ($request->filled('job_id')) {
             $query->where('job_id', $request->job_id);
@@ -42,6 +48,7 @@ class ApplicationController extends Controller
             : null;
 
         $summaryQuery = Application::query();
+        if ($trashedMode === 'only')      { $summaryQuery->onlyTrashed(); }
         if ($request->filled('job_id'))   { $summaryQuery->where('job_id', $request->job_id); }
         if ($request->filled('email'))    { $summaryQuery->where(fn($q) => $q->where('email', 'like', '%'.$request->email.'%')->orWhereHas('job', fn($q2) => $q2->where('contact_email', 'like', '%'.$request->email.'%'))); }
         if ($request->filled('validity')) { $summaryQuery->where('is_valid', $request->validity === 'valid'); }
@@ -54,7 +61,9 @@ class ApplicationController extends Controller
             SUM(is_billable = 1) AS billable_count
         ')->first();
 
-        return view('admin.applications.index', compact('applications', 'filterJob', 'summaryCounts'));
+        $trashedCount = Application::onlyTrashed()->count();
+
+        return view('admin.applications.index', compact('applications', 'filterJob', 'summaryCounts', 'trashedMode', 'trashedCount'));
     }
 
     public function update(Request $request, Application $application, ApplicationValidationService $service)
@@ -85,12 +94,25 @@ class ApplicationController extends Controller
 
     public function destroy(Application $application)
     {
+        $application->delete();
+        return back()->with('success', '応募データをゴミ箱に移動しました。30日以内なら復元できます。');
+    }
+
+    public function restore(int $id)
+    {
+        $application = Application::onlyTrashed()->findOrFail($id);
+        $application->restore();
+        return back()->with('success', '応募データを復元しました。');
+    }
+
+    public function forceDestroy(int $id)
+    {
+        $application = Application::onlyTrashed()->findOrFail($id);
         DB::transaction(function () use ($application) {
             DB::table('billings')->where('application_id', $application->id)->delete();
             DB::table('application_notifications')->where('application_id', $application->id)->delete();
-            $application->delete();
+            $application->forceDelete();
         });
-
-        return back()->with('success', '応募データを削除しました。');
+        return back()->with('success', '応募データを完全に削除しました。');
     }
 }
