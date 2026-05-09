@@ -142,13 +142,22 @@
                                         onclick="return confirm('この応募を有効にしますか？')">有効化</button>
                             @endif
                         </form>
-                        <form method="POST" action="{{ route('admin.applications.destroy', $app) }}" class="d-inline ms-1">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-xs btn-outline-secondary"
-                                    onclick="return confirm('この応募データを完全に削除します。この操作は取り消せません。よろしいですか？')">
-                                <i class="bi bi-trash"></i>削除
+                        <div class="dropdown d-inline ms-1">
+                            <button type="button" class="btn btn-xs btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
                             </button>
-                        </form>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <form method="POST" action="{{ route('admin.applications.destroy', $app) }}"
+                                          onsubmit="return prompt('削除する場合は「削除」と入力してください') === '削除';">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-trash me-1"></i>完全削除
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </td>
                 </tr>
                 @empty
