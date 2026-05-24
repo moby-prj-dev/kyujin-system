@@ -235,8 +235,13 @@ PROMPT;
     private function matchConditions($conditions, array $data): array
     {
         $badges   = $data['こだわり条件'] ?? [];
-        $holiday  = $data['休日'] ?? '';
-        $workTime = $data['就業時間'] ?? '';
+        if (is_string($badges)) {
+            $badges = array_values(array_filter(array_map('trim', preg_split('/[\r\n,、]+/u', $badges))));
+        } elseif (!is_array($badges)) {
+            $badges = [];
+        }
+        $holiday  = is_string($data['休日'] ?? null) ? $data['休日'] : '';
+        $workTime = is_string($data['就業時間'] ?? null) ? $data['就業時間'] : '';
 
         // バッジ → MasterCondition名 のマッピング
         $badgeMap = [
