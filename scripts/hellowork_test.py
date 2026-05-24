@@ -10,13 +10,24 @@ from playwright.async_api import async_playwright
 OUTPUT_FILE = "scripts/hellowork_okinawa_kaigo.json"
 
 
+def _to_str(v) -> str:
+    """値が list / None / その他の型でも文字列化する(HTML構造変化への耐性)"""
+    if v is None:
+        return ""
+    if isinstance(v, list):
+        return "\n".join(_to_str(x) for x in v if x is not None and _to_str(x) != "")
+    if isinstance(v, dict):
+        return "\n".join(_to_str(x) for x in v.values())
+    return str(v)
+
+
 def clean_job(job: dict) -> dict:
     cleaned = {}
     for k, v in job.items():
         # キーの正規化
-        key = k.replace("\n（手当等を含む）", "").strip()
-        # 値のクリーニング
-        val = v.replace("\n職種解説", "").strip()
+        key = str(k).replace("\n（手当等を含む）", "").strip()
+        # 値のクリーニング(リスト等にも対応)
+        val = _to_str(v).replace("\n職種解説", "").strip()
         val = re.sub(r"\n二次元\nバーコード$", "", val).strip()
         val = val.replace("画像あり", "").strip()
         cleaned[key] = val

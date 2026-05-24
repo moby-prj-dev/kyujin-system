@@ -7,11 +7,16 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LOG_FILE="$SCRIPT_DIR/hellowork_cron.log"
 VENV_PYTHON="/home/moby0619/playwright-env/bin/python"
+PROJECT_DIR="$SCRIPT_DIR/.."
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] スクレイピング開始" >> "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] === スクレイピング開始 ===" >> "$LOG_FILE"
 
-cd "$SCRIPT_DIR/.."
+cd "$PROJECT_DIR"
 
 "$VENV_PYTHON" "$SCRIPT_DIR/hellowork_test.py" >> "$LOG_FILE" 2>&1
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] 完了" >> "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] === スクレイピング完了 → DBインポート開始 ===" >> "$LOG_FILE"
+
+docker exec kyujin-system-laravel.test-1 php artisan hellowork:import >> "$LOG_FILE" 2>&1
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] === DBインポート完了 ===" >> "$LOG_FILE"
