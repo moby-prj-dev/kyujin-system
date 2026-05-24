@@ -185,6 +185,32 @@
                     </div>
                 </div>
 
+                {{-- 記事直後のおすすめ求人(SEO in-content + モバイル可視性UP) --}}
+                @if(!empty($relatedJobs) && $relatedJobs->count() > 0)
+                <div style="margin-top:2rem;padding:1.25rem;background:#f0f7ff;border-left:4px solid var(--color-primary);border-radius:8px;">
+                    <p style="font-weight:800;font-size:1rem;color:#1a1a2e;margin-bottom:0.85rem;">
+                        <i class="bi bi-briefcase-fill text-success me-1"></i>
+                        この記事を読んだ方におすすめの求人
+                        @if($article->area)<span class="text-muted fw-normal" style="font-size:0.78rem;">({{ $article->area->name }})</span>@endif
+                    </p>
+                    <div class="d-flex flex-column gap-2">
+                        @foreach($relatedJobs->take(3) as $j)
+                            <a href="{{ route('lp.show', $j->token) }}"
+                               style="display:block;padding:12px 14px;background:#fff;border:1px solid #d6e4f7;border-radius:6px;text-decoration:none;color:#1a1a2e;transition:.15s;"
+                               onmouseover="this.style.borderColor='#1a73e8';this.style.boxShadow='0 2px 8px rgba(26,115,232,0.15)';"
+                               onmouseout="this.style.borderColor='#d6e4f7';this.style.boxShadow='none';">
+                                <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $j->seo_title ?: $j->title }}</div>
+                                <div style="font-size:0.78rem;color:#666;">
+                                    @foreach($j->jobAreas->take(1) as $ja)@if($ja->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}@endif @endforeach
+                                    @foreach($j->jobJobTypes->take(1) as $jt)@if($jt->jobType)・{{ $jt->jobType->name }}@endif @endforeach
+                                    @foreach($j->jobEmploymentTypes->take(1) as $et)@if($et->employmentType)・{{ $et->employmentType->name }}@endif @endforeach
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 {{-- CTA --}}
                 <div class="cta-box">
                     <h3>沖縄の介護・福祉求人を探してみませんか？</h3>
