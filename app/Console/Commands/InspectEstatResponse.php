@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class InspectEstatResponse extends Command
 {
-    protected $signature   = 'stats:inspect-estat {--stats-data-id= : 統計表ID (省略時は config 値)} {--samples=5 : VALUE要素のサンプル件数}';
+    protected $signature   = 'stats:inspect-estat {--stats-data-id= : 統計表ID (省略時は config 値)} {--samples=5 : VALUE要素のサンプル件数} {--search= : CLASS_INF の名前フィルタ(例: 介護)}';
     protected $description = 'e-Stat レスポンスの CLASS_INF と VALUE サンプルを表示してデータ構造を確認する';
 
     public function handle(): int
@@ -49,21 +49,37 @@ class InspectEstatResponse extends Command
         $this->info('CLASS_INF (分類軸の定義) - 各軸の意味とコード対応');
         $this->line(str_repeat('=', 60));
 
+        $search = (string) $this->option('search');
+
         foreach ($classInf as $obj) {
             $id   = $obj['@id'] ?? '?';
             $name = $obj['@name'] ?? '?';
-            $this->line("");
-            $this->line("● 軸 @{$id} ({$name})");
             $classes = $obj['CLASS'] ?? [];
             if (isset($classes['@code'])) $classes = [$classes];
-            $shown = 0;
-            foreach ($classes as $c) {
-                $code = $c['@code'] ?? '?';
-                $nm   = $c['@name'] ?? '?';
-                $this->line("   {$code} : {$nm}");
-                if (++$shown >= 10) {
-                    $this->line('   ... (合計 ' . count($classes) . ' 項目)');
-                    break;
+
+            if ($search !== '') {
+                // search指定: その軸の中で名前にキーワード含むものだけ表示(件数制限なし)
+                $matched = array_filter($classes, fn($c) => str_contains((string)($c['@name'] ?? ''), $search));
+                if (empty($matched)) continue;
+                $this->line('');
+                $this->line("● 軸 @{$id} ({$name}) - '{$search}' に一致: " . count($matched) . '件');
+                foreach ($matched as $c) {
+                    $code = $c['@code'] ?? '?';
+                    $nm   = $c['@name'] ?? '?';
+                    $this->line("   {$code} : {$nm}");
+                }
+            } else {
+                $this->line('');
+                $this->line("● 軸 @{$id} ({$name})");
+                $shown = 0;
+                foreach ($classes as $c) {
+                    $code = $c['@code'] ?? '?';
+                    $nm   = $c['@name'] ?? '?';
+                    $this->line("   {$code} : {$nm}");
+                    if (++$shown >= 10) {
+                        $this->line('   ... (合計 ' . count($classes) . ' 項目, 全件は --search=キーワード で絞れる)');
+                        break;
+                    }
                 }
             }
         }
