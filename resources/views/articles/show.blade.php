@@ -264,15 +264,16 @@
                         <div class="col-md-4">
                             <div style="color:#666;font-size:0.78rem;">統計年</div>
                             <div style="font-size:1.1rem;font-weight:700;color:#5d4037;">
-                                {{ $publicStat->year }}年
+                                {{ $publicStat->year }}年<span style="font-size:0.72rem;font-weight:400;color:#888;margin-left:4px;">(直近公表値)</span>
                             </div>
                             @if($publicStat->sample_size)
                             <div style="font-size:0.72rem;color:#888;">対象者数 {{ number_format($publicStat->sample_size) }}人</div>
                             @endif
                         </div>
                     </div>
-                    <div style="font-size:0.7rem;color:#888;margin-top:0.5rem;">
-                        出典: 厚生労働省「賃金構造基本統計調査」(e-Stat より取得)
+                    <div style="font-size:0.7rem;color:#888;margin-top:0.5rem;line-height:1.5;">
+                        出典: 厚生労働省「賃金構造基本統計調査」(e-Stat より取得)<br>
+                        ※都道府県×職種別の細かい統計はサンプル数の関係で、最新年でなく1〜2年前のデータが公表値となる場合があります。
                     </div>
                 </div>
                 @endif
