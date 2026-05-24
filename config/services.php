@@ -58,4 +58,12 @@ return [
     'pexels' => [
         'api_key' => env('PEXELS_API_KEY'),
     ],
+
+    'estat' => [
+        'app_id'                => env('ESTAT_APP_ID'),
+        // 賃金構造基本統計調査の最新統計表ID(都道府県・職種別賃金)
+        // 年次更新時は ESTAT_WAGE_STATS_DATA_ID を .env で上書き
+        'wage_stats_data_id'    => env('ESTAT_WAGE_STATS_DATA_ID', '0003443094'),
+        'base_url'              => env('ESTAT_BASE_URL', 'https://api.e-stat.go.jp/rest/3.0/app/json'),
+    ],
 ];

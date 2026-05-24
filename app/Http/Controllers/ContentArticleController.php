@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaStatistic;
 use App\Models\ContentArticle;
 use App\Models\Job;
 use Illuminate\Support\Facades\DB;
@@ -32,8 +33,17 @@ class ContentArticleController extends Controller
 
         $relatedJobs = $this->findRelatedJobs($article);
         $areaStats   = $this->fetchAreaStats($article);
+        $publicStat  = $this->fetchPublicStat($article);
 
-        return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats'));
+        return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats', 'publicStat'));
+    }
+
+    /**
+     * e-Stat 賃金センサスのキャッシュから記事の職種に最も合うレコードを返す
+     */
+    private function fetchPublicStat(ContentArticle $article): ?AreaStatistic
+    {
+        return AreaStatistic::findForJobTypeName('沖縄県', $article->jobType?->name);
     }
 
     /**

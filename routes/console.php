@@ -32,3 +32,6 @@ Schedule::call(function () {
 
 // 毎朝5時：Google Indexing API へ未送信URLを通知（クロール促進）
 Schedule::command('indexing:submit --type=all')->dailyAt('05:00');
+
+// 毎月15日朝4時：e-Stat 賃金センサスの最新データを取得（年1更新だが月1チェック）
+Schedule::command('stats:fetch-estat')->monthlyOn(15, '04:00');

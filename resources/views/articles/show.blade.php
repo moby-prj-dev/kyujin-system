@@ -237,6 +237,46 @@
                     </div>
                 </div>
 
+                {{-- 公的統計データ(e-Stat 賃金センサス)・SEO独自性 --}}
+                @if(!empty($publicStat))
+                <div style="margin-top:2rem;padding:1.25rem;background:#fff;border:2px solid #ffd54f;border-radius:10px;">
+                    <div style="font-weight:800;font-size:0.95rem;color:#5d4037;margin-bottom:0.75rem;">
+                        <i class="bi bi-graph-up-arrow me-1" style="color:#f9a825;"></i>
+                        公的統計データ - 沖縄県の{{ $publicStat->occupation }}平均賃金
+                    </div>
+                    <div class="row g-3" style="font-size:0.88rem;">
+                        @if($publicStat->monthly_wage)
+                        <div class="col-md-4">
+                            <div style="color:#666;font-size:0.78rem;">月給(所定内給与額)</div>
+                            <div style="font-size:1.4rem;font-weight:800;color:#f57c00;">
+                                {{ number_format($publicStat->monthly_wage) }}<span style="font-size:0.85rem;font-weight:600;">円</span>
+                            </div>
+                        </div>
+                        @endif
+                        @if($publicStat->annual_special_wage)
+                        <div class="col-md-4">
+                            <div style="color:#666;font-size:0.78rem;">年間賞与等</div>
+                            <div style="font-size:1.2rem;font-weight:700;color:#f57c00;">
+                                {{ number_format($publicStat->annual_special_wage) }}<span style="font-size:0.8rem;font-weight:600;">円</span>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="col-md-4">
+                            <div style="color:#666;font-size:0.78rem;">統計年</div>
+                            <div style="font-size:1.1rem;font-weight:700;color:#5d4037;">
+                                {{ $publicStat->year }}年
+                            </div>
+                            @if($publicStat->sample_size)
+                            <div style="font-size:0.72rem;color:#888;">対象者数 {{ number_format($publicStat->sample_size) }}人</div>
+                            @endif
+                        </div>
+                    </div>
+                    <div style="font-size:0.7rem;color:#888;margin-top:0.5rem;">
+                        出典: 厚生労働省「賃金構造基本統計調査」(e-Stat より取得)
+                    </div>
+                </div>
+                @endif
+
                 {{-- 記事直後のおすすめ求人(SEO in-content + モバイル可視性UP) --}}
                 @if(!empty($relatedJobs) && $relatedJobs->count() > 0)
                 <div style="margin-top:2rem;padding:1.25rem;background:#f0f7ff;border-left:4px solid var(--color-primary);border-radius:8px;">
