@@ -435,27 +435,33 @@ class ArticleGeneratorService
             'miyakojima'   => ['宮古島市', ['介護', '福祉', '求人', '宮古島']],
         ];
 
+        // 各職種に「カテゴリ視点」を付与: qualification=国家資格系 / job_type=その他
         $jobTypes = [
-            'care_staff_facility'      => ['介護職員（施設）',     ['介護職員', '施設', '仕事内容', '給与', '夜勤']],
-            'home_helper'              => ['ホームヘルパー',        ['訪問介護', 'ホームヘルパー', '仕事内容', '給与']],
-            'care_manager'             => ['ケアマネジャー',        ['ケアマネ', '介護支援専門員', '仕事内容', '給与']],
-            'care_welfare_worker'      => ['介護福祉士',            ['介護福祉士', '資格', '仕事内容', '給与']],
-            'service_provision_manager'=> ['サービス提供責任者',    ['サ責', 'サービス提供責任者', '仕事内容', '給与']],
-            'childcare_worker'         => ['保育士',                ['保育士', '児童福祉', '仕事内容', '給与']],
-            'life_support_worker'      => ['生活支援員',            ['生活支援員', '障害福祉', '仕事内容', '給与']],
-            'social_welfare_worker'    => ['社会福祉士',            ['社会福祉士', '相談支援', '仕事内容', '給与']],
+            'care_staff_facility'      => ['介護職員（施設）',     'job_type',      ['介護職員', '施設', '仕事内容', '給与', '夜勤']],
+            'home_helper'              => ['ホームヘルパー',        'job_type',      ['訪問介護', 'ホームヘルパー', '仕事内容', '給与']],
+            'care_manager'             => ['ケアマネジャー',        'qualification', ['ケアマネ', '介護支援専門員', '仕事内容', '給与']],
+            'care_welfare_worker'      => ['介護福祉士',            'qualification', ['介護福祉士', '資格', '仕事内容', '給与']],
+            'service_provision_manager'=> ['サービス提供責任者',    'qualification', ['サ責', 'サービス提供責任者', '仕事内容', '給与']],
+            'childcare_worker'         => ['保育士',                'qualification', ['保育士', '児童福祉', '仕事内容', '給与']],
+            'life_support_worker'      => ['生活支援員',            'job_type',      ['生活支援員', '障害福祉', '仕事内容', '給与']],
+            'social_welfare_worker'    => ['社会福祉士',            'qualification', ['社会福祉士', '相談支援', '仕事内容', '給与']],
         ];
 
         $definitions = [];
+        $idx = 0;
+        $jobTypeCount = count($jobTypes);
         foreach ($areas as $areaSlug => [$areaName, $areaKeywords]) {
-            foreach ($jobTypes as $jobTypeSlug => [$jobTypeName, $jobKeywords]) {
+            foreach ($jobTypes as $jobTypeSlug => [$jobTypeName, $jobTypeCategory, $jobKeywords]) {
+                // 各エリアの先頭1件は 'area' カテゴリにしてエリア記事も生成
+                $category = ($idx % $jobTypeCount === 0) ? 'area' : $jobTypeCategory;
                 $definitions[] = [
                     'slug'     => "{$areaSlug}-{$jobTypeSlug}-jobs",
-                    'category' => 'area',
+                    'category' => $category,
                     'area'     => $areaSlug,
                     'job_type' => $jobTypeSlug,
                     'keywords' => array_merge([$areaName, $jobTypeName], $areaKeywords, $jobKeywords),
                 ];
+                $idx++;
             }
         }
 
