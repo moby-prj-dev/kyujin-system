@@ -188,14 +188,10 @@
                 {{-- CTA --}}
                 <div class="cta-box">
                     <h3>沖縄の介護・福祉求人を探してみませんか？</h3>
-                    <p>Care Entry（ケアエントリー）では沖縄の介護・福祉求人を掲載しています。<br>登録不要でLINEからそのまま応募できます。</p>
+                    <p>Care Entry（ケアエントリー）では沖縄の介護・福祉求人を掲載しています。</p>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
                         <a href="{{ route('seo.jobs.okinawa') }}" class="btn-cta-search">
                             <i class="bi bi-search"></i>求人を探す
-                        </a>
-                        <a href="https://lin.ee/" class="btn-cta-line">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                            LINEで相談する
                         </a>
                     </div>
                 </div>
