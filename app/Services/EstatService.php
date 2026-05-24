@@ -109,6 +109,9 @@ class EstatService
     {
         $client = new Client(['timeout' => 30]);
 
+        // 直近5年分のうち最新を狙う(該当年がなければAPI側で空応答)
+        $cdTimeFrom = (string) (((int) date('Y')) - 5) . '000000';
+
         try {
             $response = $client->get($this->baseUrl . '/getStatsData', [
                 'query' => [
@@ -118,6 +121,7 @@ class EstatService
                     'cdCat01'     => self::CODE_CAT01_TOTAL,
                     'cdCat02'     => $cat02,
                     'cdArea'      => self::CODE_AREA_OKINAWA,
+                    'cdTimeFrom'  => $cdTimeFrom,
                     'lang'        => 'J',
                 ],
             ]);
