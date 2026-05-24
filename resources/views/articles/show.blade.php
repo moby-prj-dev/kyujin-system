@@ -203,9 +203,28 @@
             </div>
             <div class="col-lg-4">
 
+                {{-- 関連求人 --}}
+                @if(!empty($relatedJobs) && $relatedJobs->count() > 0)
+                    <p style="font-size:0.9rem;font-weight:800;color:#1a1a2e;margin-bottom:12px;">
+                        <i class="bi bi-briefcase-fill text-success me-1"></i>関連する求人
+                        @if($article->area)<span class="text-muted fw-normal" style="font-size:0.78rem;">({{ $article->area->name }})</span>@endif
+                        @if($article->jobType)<span class="text-muted fw-normal" style="font-size:0.78rem;">({{ $article->jobType->name }})</span>@endif
+                    </p>
+                    @foreach($relatedJobs as $j)
+                        <a href="{{ route('lp.show', $j->token) }}" class="related-card mb-3" style="border-left:3px solid #06C755;">
+                            <p class="related-card__title">{{ $j->seo_title ?: $j->title }}</p>
+                            <p class="related-card__meta mb-0">
+                                @foreach($j->jobAreas->take(1) as $ja)@if($ja->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}@endif @endforeach
+                                @foreach($j->jobJobTypes->take(1) as $jt)@if($jt->jobType)・{{ $jt->jobType->name }}@endif @endforeach
+                                @foreach($j->jobEmploymentTypes->take(1) as $et)@if($et->employmentType)・{{ $et->employmentType->name }}@endif @endforeach
+                            </p>
+                        </a>
+                    @endforeach
+                @endif
+
                 {{-- 関連記事 --}}
                 @if($related->isNotEmpty())
-                    <p style="font-size:0.9rem;font-weight:800;color:#1a1a2e;margin-bottom:12px;">
+                    <p style="font-size:0.9rem;font-weight:800;color:#1a1a2e;margin-bottom:12px;margin-top:1.5rem;">
                         <i class="bi bi-file-text-fill text-primary me-1"></i>関連記事
                     </p>
                     @foreach($related as $r)
