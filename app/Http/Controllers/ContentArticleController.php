@@ -57,29 +57,31 @@ class ContentArticleController extends Controller
             return null;
         }
 
+        // OR 条件: エリアまたは職種のどちらかが一致(両方一致は重複カウントされない、distinct で結合)
         $jobsQuery = Job::active()
             ->whereNotNull('email_verified_at')
             ->where('is_admin_hidden', false)
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->where(function ($q) use ($article) {
+                if (!empty($article->area_id)) {
+                    $q->orWhereHas('jobAreas', fn($q2) => $q2->where('area_id', $article->area_id));
+                }
+                if (!empty($article->job_type_id)) {
+                    $q->orWhereHas('jobJobTypes', fn($q2) => $q2->where('job_type_id', $article->job_type_id));
+                }
             });
 
-        if (!empty($article->area_id)) {
-            $jobsQuery->whereHas('jobAreas', fn($q) => $q->where('area_id', $article->area_id));
-        }
-        if (!empty($article->job_type_id)) {
-            $jobsQuery->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $article->job_type_id));
-        }
-
-        $jobs = $jobsQuery->get(['id', 'salary_min', 'salary_max', 'salary_type']);
+        $jobs = $jobsQuery->get(['id', 'salary_min', 'salary_max', 'salary_type', 'source']);
         $total = $jobs->count();
 
         if ($total === 0) {
             return null;
         }
 
-        // 自社/ハローワーク内訳
-        $ownCount = $jobsQuery->whereRaw("(source IS NULL OR source <> 'hellowork')")->count();
+        // 自社/ハローワーク内訳(取得済みコレクションから集計)
+        $ownCount = $jobs->filter(fn($j) => $j->source !== 'hellowork')->count();
         $hwCount  = $total - $ownCount;
 
         // 職種別件数 トップ3
