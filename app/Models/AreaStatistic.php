@@ -17,20 +17,22 @@ class AreaStatistic extends Model
         'fetched_at'  => 'datetime',
     ];
 
-    const SOURCE_ESTAT_WAGE_CENSUS = 'estat_chingin_census';
+    public const SOURCE_ESTAT_WAGE_CENSUS = 'estat_chingin_census';
 
     /**
-     * 沖縄県の代表的な介護関連職種マッピング
-     * (key: master_job_types.name の prefix にマッチするキーワード, value: e-Stat の職業分類名)
+     * 求人/記事の職種名 → area_statistics.occupation のマッピング
+     * (key: master_job_types.name に含まれるキーワード, value: 保存されている職種名)
+     * EstatService::OCCUPATION_CAT02 のキー名と揃える。
      */
     public static function occupationKeywordMap(): array
     {
         return [
+            '介護福祉士'       => '介護職員',           // 介護職員カテゴリで代用
             '介護職員'         => '介護職員',
-            'ホームヘルパー'   => 'ホームヘルパー',
-            '介護福祉士'       => '介護職員', // 介護職員カテゴリで代用
+            'ホームヘルパー'   => '訪問介護員(ヘルパー)',
+            '訪問介護'         => '訪問介護員(ヘルパー)',
             'ケアマネ'         => '介護支援専門員',
-            '社会福祉士'       => '社会福祉士',
+            '介護支援専門員'   => '介護支援専門員',
             '保育士'           => '保育士',
         ];
     }

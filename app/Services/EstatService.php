@@ -10,13 +10,37 @@ use Illuminate\Support\Facades\Log;
  * e-Stat API クライアント
  * 賃金構造基本統計調査(賃金センサス)から都道府県×職種別の平均賃金を取得。
  *
- * 参考: https://www.e-stat.go.jp/api/api-info/e-stat-manual
+ * @cat02 (職種小分類2020〜) の介護関連コード:
+ *   1168 : 介護支援専門員(ケアマネージャー)
+ *   1361 : 介護職員(医療・福祉施設等)
+ *   1362 : 訪問介護従事者
+ *   1163 : 保育士
+ * @tab (表章項目):
+ *   10 : 所定内給与額(月給)
+ *   12 : 年間賞与その他特別給与額
+ * @cat01 (性別):
+ *   01 : 男女計
+ * @area (地域):
+ *   47000 : 沖縄県
  */
 class EstatService
 {
     private string $appId;
     private string $baseUrl;
     private string $wageStatsDataId;
+
+    /** 職種名 => e-Stat @cat02 コード */
+    private const OCCUPATION_CAT02 = [
+        '介護職員'             => '1361',
+        '訪問介護員(ヘルパー)' => '1362',
+        '介護支援専門員'       => '1168',
+        '保育士'               => '1163',
+    ];
+
+    private const CODE_AREA_OKINAWA = '47000';
+    private const CODE_CAT01_TOTAL  = '01';  // 男女計
+    private const CODE_TAB_MONTHLY  = '10';  // 所定内給与額
+    private const CODE_TAB_BONUS    = '12';  // 年間賞与
 
     public function __construct()
     {
@@ -31,111 +55,107 @@ class EstatService
     }
 
     /**
-     * 賃金センサスから指定都道府県の全職種データを取得し、area_statistics にキャッシュ。
-     * 戻り値: 保存した件数
+     * 指定都道府県(現状は沖縄県のみ対応)の各職種について月給・年間賞与を取得し area_statistics に保存。
      */
     public function fetchAndCachePrefectureWages(string $prefecture = '沖縄県'): int
     {
         if (!$this->isConfigured()) {
             throw new \RuntimeException('ESTAT_APP_ID または ESTAT_WAGE_STATS_DATA_ID が未設定です。');
         }
-
-        $client = new Client(['timeout' => 30]);
-        $response = $client->get($this->baseUrl . '/getStatsData', [
-            'query' => [
-                'appId'       => $this->appId,
-                'statsDataId' => $this->wageStatsDataId,
-                'lang'        => 'J',
-                // 都道府県絞り込み(コード指定が理想だが、後段でフィルタする実装にする)
-            ],
-        ]);
-
-        $json = json_decode($response->getBody()->getContents(), true);
-        if (!is_array($json)) {
-            throw new \RuntimeException('e-Stat 応答のパースに失敗');
+        if ($prefecture !== '沖縄県') {
+            throw new \RuntimeException("対応外の都道府県: {$prefecture}(現状は沖縄県のみ)");
         }
-
-        $result = $json['GET_STATS_DATA']['RESULT'] ?? null;
-        if (!$result || (int) ($result['STATUS'] ?? 1) !== 0) {
-            $err = $result['ERROR_MSG'] ?? '不明なエラー';
-            throw new \RuntimeException('e-Stat API エラー: ' . $err);
-        }
-
-        $statsData = $json['GET_STATS_DATA']['STATISTICAL_DATA'] ?? [];
-        $year = $this->extractYear($statsData);
-
-        // VALUE 配列を取得し、都道府県・職種でフィルタしてキャッシュ
-        $values = $statsData['DATA_INF']['VALUE'] ?? [];
-        if (empty($values)) {
-            Log::warning('e-Stat: VALUEデータが空');
-            return 0;
-        }
-
-        // 職種名マッピング(e-Stat側の表記)
-        // 実際の表記は統計表によって異なるため、運用しながら調整する
-        $occupations = ['介護職員', 'ホームヘルパー', '介護支援専門員', '社会福祉士', '保育士'];
 
         $saved = 0;
-        foreach ($occupations as $occupation) {
-            // VALUE配列から該当する値を探す(都道府県と職種の組み合わせ)
-            // VALUE構造: @属性で軸を識別する必要があり、データソース次第
-            // ここでは raw_payload としてレスポンス全体を保存し、後で正規化できるようにする
-            $wage = $this->extractMonthlyWage($values, $prefecture, $occupation);
-            if ($wage === null) continue;
+        foreach (self::OCCUPATION_CAT02 as $occupationName => $cat02Code) {
+            $monthly = $this->fetchMetric($cat02Code, self::CODE_TAB_MONTHLY);
+            $bonus   = $this->fetchMetric($cat02Code, self::CODE_TAB_BONUS);
+
+            if ($monthly === null && $bonus === null) {
+                Log::info("e-Stat: {$occupationName} はデータ無し");
+                continue;
+            }
+
+            $year = $monthly['year'] ?? $bonus['year'] ?? (int) date('Y');
 
             AreaStatistic::updateOrCreate(
                 [
                     'prefecture' => $prefecture,
-                    'occupation' => $occupation,
+                    'occupation' => $occupationName,
                     'year'       => $year,
                     'source'     => AreaStatistic::SOURCE_ESTAT_WAGE_CENSUS,
                 ],
                 [
-                    'monthly_wage' => $wage,
-                    'raw_payload'  => ['occupation' => $occupation, 'note' => 'auto-fetched'],
-                    'fetched_at'   => now(),
+                    'monthly_wage'        => $monthly['value'] ?? null,
+                    'annual_special_wage' => $bonus['value']   ?? null,
+                    'raw_payload'         => [
+                        'cat02_code'   => $cat02Code,
+                        'monthly_unit' => $monthly['unit'] ?? null,
+                        'bonus_unit'   => $bonus['unit']   ?? null,
+                    ],
+                    'fetched_at'          => now(),
                 ]
             );
             $saved++;
         }
-
         return $saved;
     }
 
-    private function extractYear(array $statsData): int
-    {
-        // TABLE_INF.SURVEY_DATE 例: "202401" / "2023"
-        $date = $statsData['TABLE_INF']['SURVEY_DATE'] ?? null;
-        if (is_string($date) && strlen($date) >= 4) {
-            return (int) substr($date, 0, 4);
-        }
-        return (int) date('Y');
-    }
-
     /**
-     * VALUE配列から指定都道府県・職種の月給を抽出
-     * 構造はAPIレスポンスのCLASS定義に依存するため、暫定実装。
-     * 実データを見て調整する。
+     * 1組み合わせ(職種×表章項目)のデータをAPIから取得し、最新年の値を返す。
+     * @return array{value:int, year:int, unit:string}|null
      */
-    private function extractMonthlyWage(array $values, string $prefecture, string $occupation): ?int
+    private function fetchMetric(string $cat02, string $tab): ?array
     {
-        // VALUE要素は通常 @cat01, @area, @time, @unit, $ などの属性を持つ
-        // 単位が 千円 の場合 *1000、円ならそのまま
-        foreach ($values as $v) {
-            $area = $v['@area'] ?? '';
-            $cat  = $v['@cat01'] ?? '';
-            $val  = $v['$'] ?? null;
-            $unit = $v['@unit'] ?? '';
+        $client = new Client(['timeout' => 30]);
 
-            if (!is_string($area) || !str_contains($area, $prefecture)) continue;
-            if (!is_string($cat)  || !str_contains($cat, $occupation))  continue;
-            if (!is_numeric($val)) continue;
-
-            $intVal = (int) $val;
-            if ($unit === '千円') $intVal *= 1000;
-
-            return $intVal;
+        try {
+            $response = $client->get($this->baseUrl . '/getStatsData', [
+                'query' => [
+                    'appId'       => $this->appId,
+                    'statsDataId' => $this->wageStatsDataId,
+                    'cdTab'       => $tab,
+                    'cdCat01'     => self::CODE_CAT01_TOTAL,
+                    'cdCat02'     => $cat02,
+                    'cdArea'      => self::CODE_AREA_OKINAWA,
+                    'lang'        => 'J',
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning("e-Stat fetchMetric 失敗 (cat02={$cat02}, tab={$tab}): " . $e->getMessage());
+            return null;
         }
-        return null;
+
+        $json = json_decode($response->getBody()->getContents(), true);
+        if (!is_array($json)) return null;
+
+        $result = $json['GET_STATS_DATA']['RESULT'] ?? null;
+        if (!$result || (int) ($result['STATUS'] ?? 1) !== 0) {
+            Log::warning('e-Stat API エラー: ' . ($result['ERROR_MSG'] ?? '不明'));
+            return null;
+        }
+
+        $values = $json['GET_STATS_DATA']['STATISTICAL_DATA']['DATA_INF']['VALUE'] ?? [];
+        // 単一要素は配列にラップされない場合がある
+        if (isset($values['@time'])) $values = [$values];
+        if (empty($values)) return null;
+
+        // 最新年を選択(@time が大きい順)
+        usort($values, fn($a, $b) => strcmp((string)($b['@time'] ?? ''), (string)($a['@time'] ?? '')));
+        $latest = $values[0];
+
+        $raw = $latest['$'] ?? null;
+        if (!is_numeric($raw)) return null;
+
+        $unit = (string) ($latest['@unit'] ?? '');
+        $year = (int) substr((string)($latest['@time'] ?? ''), 0, 4) ?: (int) date('Y');
+
+        $value = (int) round((float) $raw);
+        // 単位変換(千円 → 円)
+        if ($unit === '千円') {
+            $value *= 1000;
+        }
+
+        return ['value' => $value, 'year' => $year, 'unit' => $unit];
     }
 }
