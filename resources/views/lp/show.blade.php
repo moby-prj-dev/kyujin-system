@@ -199,6 +199,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         @endif
 
+        {{-- 関連記事(SEO内部リンク+滞在時間UP) --}}
+        @if(!empty($relatedArticles) && $relatedArticles->count() > 0)
+        <div class="section-card">
+            <div class="section-title"><i class="bi bi-book-fill"></i> この求人に関連する情報記事</div>
+            <div class="d-flex flex-column gap-2 mt-2">
+                @foreach($relatedArticles as $art)
+                    <a href="{{ route('articles.show', $art->slug) }}"
+                       style="display:flex;align-items:center;gap:0.6rem;padding:10px 12px;background:#fff;border:1px solid #e5e9f0;border-radius:8px;text-decoration:none;color:#1a1a2e;transition:.15s;"
+                       onmouseover="this.style.background='#f0f7ff';this.style.borderColor='#1a73e8';"
+                       onmouseout="this.style.background='#fff';this.style.borderColor='#e5e9f0';">
+                        <i class="bi bi-file-text-fill text-primary" style="flex-shrink:0;"></i>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-weight:700;font-size:0.88rem;line-height:1.35;">{{ $art->h1 ?: $art->title }}</div>
+                            @if($art->area || $art->jobType)
+                            <div style="font-size:0.72rem;color:#888;margin-top:2px;">
+                                @if($art->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $art->area->name }}@endif
+                                @if($art->jobType)・{{ $art->jobType->name }}@endif
+                            </div>
+                            @endif
+                        </div>
+                        <i class="bi bi-chevron-right text-muted" style="flex-shrink:0;font-size:0.78rem;"></i>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
     </div>
 </div>
 
