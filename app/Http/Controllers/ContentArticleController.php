@@ -39,9 +39,13 @@ class ContentArticleController extends Controller
      * - area_id と job_type_id 両方ある → 両方一致を優先
      * - どちらか一方なら一方一致
      * - 不足する場合は他方の一致のみでも補完
+     * - 自社(Care Entry)登録求人 を ハローワーク求人 より上に表示
      */
     private function findRelatedJobs(ContentArticle $article)
     {
+        // 自社求人(source != 'hellowork')→ HW求人(source = 'hellowork') の順
+        $priorityOrder = "CASE WHEN source = 'hellowork' THEN 1 ELSE 0 END ASC";
+
         $jobsBase = Job::active()
             ->whereNotNull('email_verified_at')
             ->where('is_admin_hidden', false)
@@ -58,6 +62,7 @@ class ContentArticleController extends Controller
             $both = (clone $jobsBase)
                 ->whereHas('jobAreas', fn($q) => $q->where('area_id', $article->area_id))
                 ->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $article->job_type_id))
+                ->orderByRaw($priorityOrder)
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get();
@@ -71,6 +76,7 @@ class ContentArticleController extends Controller
                     $q->whereHas('jobAreas', fn($q2) => $q2->where('area_id', $article->area_id))
                       ->orWhereHas('jobJobTypes', fn($q2) => $q2->where('job_type_id', $article->job_type_id));
                 })
+                ->orderByRaw($priorityOrder)
                 ->orderByDesc('created_at')
                 ->limit(6 - $both->count())
                 ->get();
@@ -80,6 +86,7 @@ class ContentArticleController extends Controller
         if ($hasArea) {
             return (clone $jobsBase)
                 ->whereHas('jobAreas', fn($q) => $q->where('area_id', $article->area_id))
+                ->orderByRaw($priorityOrder)
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get();
@@ -88,6 +95,7 @@ class ContentArticleController extends Controller
         if ($hasJobType) {
             return (clone $jobsBase)
                 ->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $article->job_type_id))
+                ->orderByRaw($priorityOrder)
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get();
