@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContentArticle;
 use App\Models\Job;
+use Illuminate\Support\Facades\DB;
 
 class ContentArticleController extends Controller
 {
@@ -30,8 +31,84 @@ class ContentArticleController extends Controller
             ->get();
 
         $relatedJobs = $this->findRelatedJobs($article);
+        $areaStats   = $this->fetchAreaStats($article);
 
-        return view('articles.show', compact('article', 'related', 'relatedJobs'));
+        return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats'));
+    }
+
+    /**
+     * 記事のエリア(または職種)に紐づく自社DBの統計情報を集計
+     * Care Entry独自の「ライブデータ」として記事ページに表示し、
+     * SEO上の独自性とユーザーへの訴求力を高める。
+     */
+    private function fetchAreaStats(ContentArticle $article): ?array
+    {
+        if (empty($article->area_id) && empty($article->job_type_id)) {
+            return null;
+        }
+
+        $jobsQuery = Job::active()
+            ->whereNotNull('email_verified_at')
+            ->where('is_admin_hidden', false)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            });
+
+        if (!empty($article->area_id)) {
+            $jobsQuery->whereHas('jobAreas', fn($q) => $q->where('area_id', $article->area_id));
+        }
+        if (!empty($article->job_type_id)) {
+            $jobsQuery->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $article->job_type_id));
+        }
+
+        $jobs = $jobsQuery->get(['id', 'salary_min', 'salary_max', 'salary_type']);
+        $total = $jobs->count();
+
+        if ($total === 0) {
+            return null;
+        }
+
+        // 自社/ハローワーク内訳
+        $ownCount = $jobsQuery->whereRaw("(source IS NULL OR source <> 'hellowork')")->count();
+        $hwCount  = $total - $ownCount;
+
+        // 職種別件数 トップ3
+        $jobIds = $jobs->pluck('id');
+        $byJobType = DB::table('job_job_types')
+            ->join('master_job_types', 'job_job_types.job_type_id', '=', 'master_job_types.id')
+            ->whereIn('job_job_types.job_id', $jobIds)
+            ->groupBy('master_job_types.id', 'master_job_types.name')
+            ->orderByDesc(DB::raw('COUNT(*)'))
+            ->limit(3)
+            ->select('master_job_types.name', DB::raw('COUNT(*) as count'))
+            ->get();
+
+        // 給与レンジ(月給のみ・有効値のみ)
+        $monthlySalaries = $jobs
+            ->where('salary_type', 'monthly')
+            ->pluck('salary_min')
+            ->filter(fn($s) => $s > 0)
+            ->values();
+
+        $salaryStats = null;
+        if ($monthlySalaries->count() >= 3) {
+            $salaryStats = [
+                'min'    => (int) $monthlySalaries->min(),
+                'max'    => (int) $monthlySalaries->max(),
+                'median' => (int) $monthlySalaries->median(),
+                'count'  => $monthlySalaries->count(),
+            ];
+        }
+
+        return [
+            'total'        => $total,
+            'own_count'    => $ownCount,
+            'hw_count'     => $hwCount,
+            'by_job_type'  => $byJobType,
+            'salary'       => $salaryStats,
+            'area_name'    => $article->area?->name,
+            'job_type_name'=> $article->jobType?->name,
+        ];
     }
 
     /**

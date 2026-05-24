@@ -176,6 +176,58 @@
                         @endif
                     </div>
 
+                    {{-- 自社DBによるライブ統計(Care Entry独自データ・SEO独自性) --}}
+                    @if(!empty($areaStats))
+                    <div style="margin:1.5rem 0;padding:1.25rem;background:linear-gradient(135deg,#f0f7ff 0%,#e8f0fe 100%);border-radius:10px;border:1px solid #d6e4f7;">
+                        <div style="font-weight:800;font-size:0.95rem;color:#0d47a1;margin-bottom:0.75rem;">
+                            <i class="bi bi-bar-chart-fill me-1"></i>
+                            @if($areaStats['area_name'] && $areaStats['job_type_name'])
+                                {{ $areaStats['area_name'] }}の{{ $areaStats['job_type_name'] }}求人マーケット
+                            @elseif($areaStats['area_name'])
+                                {{ $areaStats['area_name'] }}の介護・福祉求人マーケット
+                            @elseif($areaStats['job_type_name'])
+                                沖縄県の{{ $areaStats['job_type_name'] }}求人マーケット
+                            @endif
+                            <span style="font-size:0.72rem;color:#666;font-weight:400;margin-left:0.5rem;">Care Entry調べ ({{ now()->format('Y年m月d日') }}時点)</span>
+                        </div>
+                        <div class="row g-3" style="font-size:0.88rem;">
+                            <div class="col-md-4">
+                                <div style="color:#666;font-size:0.78rem;">掲載求人数</div>
+                                <div style="font-size:1.4rem;font-weight:800;color:#1a73e8;">
+                                    {{ number_format($areaStats['total']) }}<span style="font-size:0.85rem;font-weight:600;">件</span>
+                                </div>
+                                <div style="font-size:0.72rem;color:#888;">
+                                    @if($areaStats['own_count'] > 0)
+                                        自社登録 {{ $areaStats['own_count'] }}件
+                                    @endif
+                                    @if($areaStats['hw_count'] > 0)
+                                        @if($areaStats['own_count'] > 0) / @endif ハローワーク {{ $areaStats['hw_count'] }}件
+                                    @endif
+                                </div>
+                            </div>
+                            @if($areaStats['by_job_type']->isNotEmpty())
+                            <div class="col-md-4">
+                                <div style="color:#666;font-size:0.78rem;">主な職種</div>
+                                <div style="font-size:0.85rem;line-height:1.5;">
+                                    @foreach($areaStats['by_job_type'] as $idx => $jt)
+                                        <span>{{ $jt->name }}<span style="color:#888;font-size:0.75rem;">({{ $jt->count }})</span></span>@if(!$loop->last) <span style="color:#ccc;">/</span> @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+                            @if(!empty($areaStats['salary']))
+                            <div class="col-md-4">
+                                <div style="color:#666;font-size:0.78rem;">月給レンジ ({{ $areaStats['salary']['count'] }}件集計)</div>
+                                <div style="font-size:1.0rem;font-weight:700;color:#1a73e8;">
+                                    {{ number_format($areaStats['salary']['min']) }}〜{{ number_format($areaStats['salary']['max']) }}円
+                                </div>
+                                <div style="font-size:0.72rem;color:#888;">中央値 {{ number_format($areaStats['salary']['median']) }}円</div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="article-body">
                         @foreach(explode("\n\n", $article->body) as $paragraph)
                             @if(trim($paragraph))
