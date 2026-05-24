@@ -35,7 +35,13 @@ class GenerateHelloworkLps extends Command
         $jobTypes   = MasterJobType::all();
         $conditions = MasterCondition::all();
 
-        // JSON読み込み・期限内のみ・受付年月日降順で上位N件
+        // 既にDBに存在するHW求人番号(これらはスキップ)
+        $existingNos = Job::where('source', 'hellowork')
+            ->whereNotNull('hw_job_no')
+            ->pluck('hw_job_no')
+            ->all();
+
+        // JSON読み込み: 期限内・未取込み・受付年月日降順で上位N件
         $all = collect(json_decode(file_get_contents($path), true))
             ->filter(function ($j) use ($today) {
                 if (empty($j['紹介期限日'])) return false;
@@ -44,6 +50,10 @@ class GenerateHelloworkLps extends Command
                 } catch (\Exception $e) {
                     return false;
                 }
+            })
+            ->reject(function ($j) use ($existingNos) {
+                $no = $j['求人番号'] ?? null;
+                return $no !== null && in_array($no, $existingNos, true);
             })
             ->sortByDesc(function ($j) {
                 try {
@@ -55,18 +65,12 @@ class GenerateHelloworkLps extends Command
             ->take($limit)
             ->values();
 
-        $this->info("対象: {$all->count()}件 → AI生成開始");
+        $this->info("既存HW求人: " . count($existingNos) . "件 / 今回追加: {$all->count()}件");
 
-        $targetNos = $all->pluck('求人番号')->filter()->values()->toArray();
-
-        // 今回の対象外HW求人を削除
-        $deleted = Job::where('source', 'hellowork')
-            ->whereNotIn('hw_job_no', $targetNos)
-            ->count();
-        Job::where('source', 'hellowork')
-            ->whereNotIn('hw_job_no', $targetNos)
-            ->delete();
-        if ($deleted > 0) $this->line("古いHW求人を{$deleted}件削除");
+        if ($all->isEmpty()) {
+            $this->info('新規に追加すべきHW求人がありませんでした(期限切れ削除はcleanup-expiredが行います)。');
+            return self::SUCCESS;
+        }
 
         $created = $updated = $failed = 0;
 
