@@ -468,6 +468,53 @@ class ArticleGeneratorService
         return $definitions;
     }
 
+    /**
+     * Phase 3: 「条件 × 職種」軸の動的記事定義
+     * 夜勤あり/日勤のみ/扶養内/土日休み等の働き方条件と職種の組み合わせ。
+     * Phase 1/2 が枯れた後に GenerateContentArticles から呼ばれる。
+     */
+    public static function conditionDefinitions(): array
+    {
+        $conditions = [
+            'night-shift'         => ['夜勤あり',           ['夜勤', '夜間勤務', '夜勤手当']],
+            'day-shift-only'      => ['日勤のみ',           ['日勤', '日中勤務', '主婦', '主夫']],
+            'night-shift-only'    => ['夜勤専従',           ['夜勤専従', '高給', '夜間専従']],
+            'no-overtime'         => ['残業ほぼなし',       ['ワークライフバランス', '定時上がり', '残業なし']],
+            'weekend-off'         => ['土日休み',           ['土日祝休み', '家庭優先', '週末休み']],
+            'within-dependent'    => ['扶養内勤務OK',       ['扶養内', 'パート', '103万円']],
+            'short-hours'         => ['短時間勤務OK',       ['短時間', '時短', '4時間']],
+            'license-support'     => ['資格取得支援あり',   ['資格取得', 'キャリアアップ', '研修支援']],
+        ];
+
+        $jobTypes = [
+            'care-staff'      => ['介護職員',         ['介護職員', '介護スタッフ']],
+            'home-helper'     => ['ホームヘルパー',   ['訪問介護', 'ヘルパー']],
+            'care-manager'    => ['ケアマネジャー',   ['ケアマネ', '介護支援専門員']],
+            'care-fukushishi' => ['介護福祉士',       ['介護福祉士', '国家資格']],
+            'life-support'    => ['生活支援員',       ['生活支援員', '障害福祉']],
+            'childcare'       => ['保育士',           ['保育士', '児童福祉']],
+        ];
+
+        // 資格取得支援系のみ 'qualification' カテゴリ・残りは 'job_type'
+        $defs = [];
+        foreach ($conditions as $condSlug => [$condName, $condKw]) {
+            foreach ($jobTypes as $jtSlug => [$jtName, $jtKw]) {
+                $defs[] = [
+                    'slug'     => "{$condSlug}-{$jtSlug}-okinawa",
+                    'category' => $condSlug === 'license-support' ? 'qualification' : 'job_type',
+                    'area'     => null,   // 沖縄県全体(エリア限定無し)
+                    'job_type' => $jtSlug,
+                    'keywords' => array_merge(
+                        ['沖縄', $jtName, $condName, '求人', '仕事'],
+                        $jtKw,
+                        $condKw
+                    ),
+                ];
+            }
+        }
+        return $defs;
+    }
+
     // 管理画面からの手動生成
     public function generateFromInput(string $slug, array $keywords, string $category, ?int $areaId = null, ?int $jobTypeId = null): ContentArticle
     {

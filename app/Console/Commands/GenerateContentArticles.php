@@ -32,8 +32,14 @@ class GenerateContentArticles extends Command
                 $definitions = array_values(array_filter($dynamic, fn($d) => !in_array($d['slug'], $existingSlugs)));
             }
 
+            // フェーズ2が尽きたらフェーズ3(条件×職種)へ
             if (empty($definitions)) {
-                $this->info('新規生成する記事はありません（フェーズ1・2ともに完了）。');
+                $condBased   = ArticleGeneratorService::conditionDefinitions();
+                $definitions = array_values(array_filter($condBased, fn($d) => !in_array($d['slug'], $existingSlugs)));
+            }
+
+            if (empty($definitions)) {
+                $this->info('新規生成する記事はありません（フェーズ1・2・3ともに完了）。');
                 return self::SUCCESS;
             }
 
