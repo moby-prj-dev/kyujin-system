@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaStatistic;
 use App\Models\ContentArticle;
 use App\Models\Job;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ContentArticleController extends Controller
@@ -52,6 +53,14 @@ class ContentArticleController extends Controller
      * SEO上の独自性とユーザーへの訴求力を高める。
      */
     private function fetchAreaStats(ContentArticle $article): ?array
+    {
+        $cacheKey = "article_stats:v1:{$article->id}";
+        return Cache::remember($cacheKey, now()->addHour(), function () use ($article) {
+            return $this->computeAreaStats($article);
+        });
+    }
+
+    private function computeAreaStats(ContentArticle $article): ?array
     {
         $hasArea    = !empty($article->area_id);
         $hasJobType = !empty($article->job_type_id);
