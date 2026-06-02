@@ -46,7 +46,7 @@ body{font-family:'Hiragino Kaku Gothic ProN',sans-serif;background:#f5f7fa;margi
         </p>
     </div>
     <div class="footer">
-        Care Entry（ケアエントリー）｜沖縄の介護・福祉専門求人サービス
+        Care Entry（ケアエントリー）｜介護・福祉専門求人サービス【対応エリア:沖縄県】
     </div>
 </div>
 </body>

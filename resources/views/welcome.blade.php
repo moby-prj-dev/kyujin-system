@@ -22,10 +22,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沖縄の介護・福祉求人｜Care Entry（ケアエントリー）</title>
-    <meta name="description" content="沖縄の介護・福祉に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
-    <meta property="og:title" content="沖縄の介護・福祉求人｜Care Entry（ケアエントリー）">
-    <meta property="og:description" content="沖縄の介護・福祉に特化した求人サービス。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
+    <title>【沖縄エリア対応】介護・福祉求人｜Care Entry(ケアエントリー)</title>
+    <meta name="description" content="介護・福祉求人サイト Care Entry(ケアエントリー)。現在の対応エリアは沖縄県。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
+    <meta property="og:title" content="【沖縄エリア対応】介護・福祉求人｜Care Entry(ケアエントリー)">
+    <meta property="og:description" content="介護・福祉求人サイト Care Entry(ケアエントリー)。現在の対応エリアは沖縄県。地域・職種から自分に合う職場を探せます。会員登録不要、LINEでそのまま応募できます。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:image" content="{{ url('/images/ogp.png') }}">
@@ -67,13 +67,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
                 <div class="hero__badge">
-                    <i class="bi bi-geo-alt-fill"></i>沖縄の介護・福祉求人
+                    <i class="bi bi-geo-alt-fill"></i>対応エリア:沖縄県
                 </div>
                 <h1 class="hero__title">
-                    沖縄での介護・福祉の仕事探しを、<br>もっとシンプルに。
+                    介護・福祉の仕事探しを、<br>もっとシンプルに。
                 </h1>
                 <p class="hero__sub">
-                    ケアエントリーは、沖縄の介護・福祉に特化した求人サービスです。<br>
+                    ケアエントリーは、介護・福祉求人サイトです(現在の対応エリアは沖縄県)。<br>
                     地域・職種から、自分に合う職場を探せます。
                 </p>
                 <div class="hero__features">
@@ -135,7 +135,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="search" id="search">
     <div class="container">
         <p class="search__heading">
-            沖縄の求人を探す
+            求人を探す(対応エリア:沖縄県)
             <span class="search__count-badge">
                 <i class="bi bi-briefcase-fill me-1"></i>現在 {{ number_format(\App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden', false)->count()) }} 件掲載中
             </span>
@@ -360,7 +360,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row align-items-center g-5">
             <div class="col-lg-5">
                 <p class="points__eyebrow">WHY CARE ENTRY</p>
-                <h2 class="points__heading">沖縄での介護・福祉の仕事探しを、<br>もっとシンプルにするために</h2>
+                <h2 class="points__heading">介護・福祉の仕事探しを、<br>もっとシンプルにするために</h2>
 <div class="points__cta-group">
                     <a href="#search" class="points__cta-primary">
                         <i class="bi bi-search"></i>求人を探す
@@ -372,7 +372,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <li class="points__item">
                         <span class="points__item-icon"><i class="bi bi-geo-alt-fill"></i></span>
                         <div>
-                            <p class="points__item-title">沖縄の介護・福祉求人に特化しています</p>
+                            <p class="points__item-title">介護・福祉求人に特化【対応エリア:沖縄県】</p>
                             <p class="points__item-body">那覇・南部・中部・北部・離島と、沖縄全域の求人を掲載。エリアから絞り込んで探せます。</p>
                         </div>
                     </li>
@@ -449,7 +449,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="mb-3">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">沖縄の介護・福祉専門の求人サービス</span>
+            <span class="ms-2">介護・福祉専門の求人サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="footer__links">
             <a href="{{ route('client') }}">求人掲載をお考えの方</a>

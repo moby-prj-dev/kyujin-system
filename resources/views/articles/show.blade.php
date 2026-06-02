@@ -306,8 +306,8 @@
 
                 {{-- CTA --}}
                 <div class="cta-box">
-                    <h3>沖縄の介護・福祉求人を探してみませんか？</h3>
-                    <p>Care Entry（ケアエントリー）では沖縄の介護・福祉求人を掲載しています。</p>
+                    <h3>介護・福祉の求人を探してみませんか?</h3>
+                    <p>Care Entry(ケアエントリー)は介護・福祉専門の求人サイトです(現在の対応エリアは沖縄県)。</p>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
                         <a href="{{ route('seo.jobs.okinawa') }}" class="btn-cta-search">
                             <i class="bi bi-search"></i>求人を探す
@@ -359,7 +359,7 @@
                     </p>
                     <a href="{{ route('seo.jobs.okinawa') }}"
                        style="display:block;background:var(--color-primary);color:#fff;border-radius:8px;padding:10px 16px;text-align:center;font-size:0.88rem;font-weight:800;text-decoration:none;">
-                        沖縄の介護・福祉求人一覧
+                        介護・福祉求人一覧(沖縄エリア)
                     </a>
                 </div>
 
@@ -372,7 +372,7 @@
     <div class="container">
         <div class="mb-2">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">沖縄の介護・福祉専門の求人サービス</span>
+            <span class="ms-2">介護・福祉専門の求人サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="art-footer__links">
             <a href="{{ route('home') }}">求人を探す</a>

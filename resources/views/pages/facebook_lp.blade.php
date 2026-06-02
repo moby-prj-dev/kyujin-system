@@ -29,11 +29,11 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>求人を出しても応募が来ない方へ｜ケアエントリー【沖縄の介護・福祉向け】</title>
-    <meta name="description" content="沖縄の介護・福祉事業者向け求人掲載サービス「ケアエントリー」。応募前に条件を確認する仕組みでミスマッチを防ぎます。現在モニター募集中・無料でお試しいただけます。">
+    <title>求人を出しても応募が来ない方へ｜ケアエントリー【介護・福祉向け・沖縄エリア対応】</title>
+    <meta name="description" content="介護・福祉事業者向け求人掲載サービス「ケアエントリー」(対応エリア:沖縄県)。応募前に条件を確認する仕組みでミスマッチを防ぎます。現在モニター募集中・無料でお試しいただけます。">
     <meta name="robots" content="noindex">
     <meta property="og:title" content="求人を出しても応募が来ない方へ｜ケアエントリー">
-    <meta property="og:description" content="沖縄の介護・福祉事業者向け求人掲載サービス。現在モニター募集中・無料でお試しいただけます。">
+    <meta property="og:description" content="介護・福祉事業者向け求人掲載サービス(対応エリア:沖縄県)。現在モニター募集中・無料でお試しいただけます。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://care-entry.net/fb">
     <meta property="og:image" content="https://care-entry.net/images/ogp.png">
@@ -459,7 +459,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 {{-- ① ファーストビュー --}}
 <section class="hero">
     <div class="hero__tag">
-        <i class="bi bi-building me-1"></i>沖縄の介護・福祉事業者向け 求人掲載サービス
+        <i class="bi bi-building me-1"></i>介護・福祉事業者向け 求人掲載サービス【対応エリア:沖縄県】
     </div>
     <h1 class="hero__title">
         求人を出しても<br>応募が来ない…<br>
@@ -538,9 +538,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="merit-item">
                 <div class="merit-icon"><i class="bi bi-geo-alt-fill"></i></div>
                 <div>
-                    <p class="merit-title">沖縄×介護・福祉に特化</p>
+                    <p class="merit-title">介護・福祉×地域特化(対応エリア:沖縄県)</p>
                     <p class="merit-arrow">→ 必要な人材に届きやすい設計</p>
-                    <p class="merit-body">総合求人サイトと違い、沖縄の介護・福祉分野を探している求職者に絞って届けます。</p>
+                    <p class="merit-body">総合求人サイトと違い、介護・福祉分野を探している求職者に絞って届けます(現在は沖縄エリアの掲載)。</p>
                 </div>
             </div>
         </div>
@@ -649,7 +649,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="mb-2">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">沖縄の介護・福祉専門 求人掲載サービス</span>
+            <span class="ms-2">介護・福祉専門 求人掲載サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="footer__links">
             <a href="{{ route('home') }}">お仕事を探している方</a>

@@ -54,7 +54,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="seo-header__breadcrumb">
             <a href="{{ route('home') }}">ホーム</a>
             <span class="mx-1">›</span>
-            <a href="{{ route('seo.jobs.okinawa') }}">沖縄の介護・福祉求人</a>
+            <a href="{{ route('seo.jobs.okinawa') }}">介護・福祉求人(沖縄エリア)</a>
             @if($currentArea)
                 <span class="mx-1">›</span>{{ $currentArea->name }}
             @endif
@@ -164,7 +164,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="seo-supplement">
                     <h3>
                         <i class="bi bi-info-circle-fill text-primary me-1"></i>
-                        {{ $currentArea ? "{$currentArea->name}の介護・福祉の仕事" : '沖縄の介護・福祉の仕事' }}
+                        {{ $currentArea ? "{$currentArea->name}の介護・福祉の仕事" : '介護・福祉の仕事【沖縄エリア対応】' }}
                     </h3>
                     @if($currentArea)
                         <p>{{ $currentArea->name }}は沖縄県{{ $currentArea->region }}エリアに位置し、介護・福祉施設の求人が多く掲載されています。地域に根ざした職場で働きたい方に向けた求人を探せます。</p>
@@ -183,7 +183,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="mb-2">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">沖縄の介護・福祉専門の求人サービス</span>
+            <span class="ms-2">介護・福祉専門の求人サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="seo-footer__links">
             <a href="{{ route('home') }}">求人を探す</a>

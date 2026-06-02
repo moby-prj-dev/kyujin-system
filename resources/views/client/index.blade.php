@@ -20,8 +20,8 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沖縄の介護・福祉 求人掲載｜Care Entry（ケアエントリー）</title>
-    <meta name="description" content="沖縄の介護・福祉事業者向け求人掲載サービス。求職者が動きやすい仕組みにこだわっています。掲載費0円スタート、成果型課金で始めやすい。">
+    <title>介護・福祉 求人掲載【沖縄エリア対応】｜Care Entry(ケアエントリー)</title>
+    <meta name="description" content="介護・福祉事業者向け求人掲載サービス(対応エリア:沖縄県)。求職者が動きやすい仕組みにこだわっています。掲載費0円スタート、成果型課金で始めやすい。">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -477,7 +477,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
                 <div class="hero__badge">
-                    <i class="bi bi-building"></i>沖縄の介護・福祉専門 求人掲載サービス
+                    <i class="bi bi-building"></i>介護・福祉専門 求人掲載サービス【対応エリア:沖縄県】
                 </div>
                 <h1 class="hero__title">
                     沖縄での介護・福祉人材の<br>採用を、もっとシンプルに。
@@ -593,7 +593,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="strip">
     <div class="container">
         <div class="strip__items">
-            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>沖縄の介護・福祉業界向け</span>
+            <span class="strip__item"><i class="bi bi-check-circle-fill"></i>介護・福祉業界向け(沖縄エリア)</span>
             <span class="strip__item"><i class="bi bi-check-circle-fill"></i>LINEでかんたん応募対応</span>
             <span class="strip__item"><i class="bi bi-check-circle-fill"></i>掲載から応募まで、シンプルに</span>
         </div>
@@ -743,7 +743,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="mb-3">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">沖縄の介護・福祉専門 求人掲載サービス</span>
+            <span class="ms-2">介護・福祉専門 求人掲載サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="footer__links">
             <a href="{{ route('home') }}">お仕事を探している方</a>

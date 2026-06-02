@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沖縄の介護・福祉お役立ち情報｜Care Entry</title>
-    <meta name="description" content="沖縄の介護・福祉業界の仕事情報。職種別の仕事内容・給与相場、介護資格の取り方、未経験からの就職など、求職者向けの情報をまとめています。">
+    <title>介護・福祉お役立ち情報【沖縄エリア対応】｜Care Entry</title>
+    <meta name="description" content="介護・福祉業界の仕事情報。職種別の仕事内容・給与相場、介護資格の取り方、未経験からの就職など、求職者向けの情報をまとめています(対応エリア:沖縄県)。">
     <link rel="canonical" href="{{ url()->current() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -104,7 +104,7 @@
             <a href="{{ route('home') }}" style="color:rgba(255,255,255,.8);text-decoration:none;">ホーム</a>
             <span class="mx-1">›</span>お役立ち情報
         </p>
-        <h1 class="art-header__title">沖縄の介護・福祉お役立ち情報</h1>
+        <h1 class="art-header__title">介護・福祉お役立ち情報【沖縄エリア対応】</h1>
         <p class="art-header__desc">職種別の仕事内容・給与相場、資格取得、未経験からの就職など、求職者向けの情報をまとめています。</p>
     </div>
 </div>
@@ -157,7 +157,7 @@
     <div class="container">
         <div class="mb-2">
             <strong style="color:#fff;">Care Entry（ケアエントリー）</strong>
-            <span class="ms-2">沖縄の介護・福祉専門の求人サービス</span>
+            <span class="ms-2">介護・福祉専門の求人サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="art-footer__links">
             <a href="{{ route('home') }}">求人を探す</a>

@@ -17,10 +17,10 @@
     <div class="form-section text-center py-4 mb-4" style="background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);">
         <div style="font-size:2.5rem; margin-bottom:0.75rem;">🌺</div>
         <h2 style="font-size:1.3rem; font-weight:800; color:#1a73e8; margin-bottom:0.75rem;">
-            沖縄の介護現場と、<br>働きたい人をつなぐ。
+            介護現場と、<br>働きたい人をつなぐ。
         </h2>
         <p class="text-muted mb-0" style="font-size:0.93rem; line-height:1.9; max-width:480px; margin:0 auto;">
-            Care Entry（ケア・エントリー）は、沖縄の介護・福祉分野に特化した求人プラットフォームです。<br>
+            Care Entry(ケア・エントリー)は、介護・福祉分野に特化した求人プラットフォームです(現在の対応エリアは沖縄県)。<br>
             掲載無料・AIによる求人文章の自動生成など、事業者様の採用活動をシンプルにサポートします。
         </p>
     </div>
@@ -97,7 +97,7 @@
             Laravel / PHP を中心としたWebシステム開発を行っています。
         </p>
         <p class="mb-3" style="font-size:0.93rem; line-height:1.9;">
-            ケアエントリーは、沖縄の介護・福祉現場と求職者をつなぐ仕組みとして、
+            ケアエントリーは、介護・福祉現場と求職者をつなぐ仕組み(沖縄エリア対応)として、
             「会員登録不要」「LINEで応募完結」「条件マッチで無駄な応募を減らす」
             という設計思想のもと開発・運営しています。
         </p>

@@ -490,7 +490,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container">
         <div class="mb-2">
             <strong style="color:#fff;">Care Entry</strong>
-            <span class="ms-2">沖縄の介護・福祉専門の求人サービス</span>
+            <span class="ms-2">介護・福祉専門の求人サービス【対応エリア:沖縄県】</span>
         </div>
         <div class="mb-3 d-flex justify-content-center gap-3 flex-wrap" style="font-size:0.8rem;">
             <a href="/company">運営者情報</a>
