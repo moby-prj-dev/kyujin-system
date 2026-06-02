@@ -207,12 +207,12 @@
                                     @endif
                                 </div>
                             </div>
-                            @if($areaStats['by_job_type']->isNotEmpty())
+                            @if(!empty($areaStats['by_job_type']))
                             <div class="col-md-4">
                                 <div style="color:#666;font-size:0.78rem;">主な職種</div>
                                 <div style="font-size:0.85rem;line-height:1.5;">
                                     @foreach($areaStats['by_job_type'] as $idx => $jt)
-                                        <span>{{ $jt->name }}<span style="color:#888;font-size:0.75rem;">({{ $jt->count }})</span></span>@if(!$loop->last) <span style="color:#ccc;">/</span> @endif
+                                        <span>{{ $jt['name'] }}<span style="color:#888;font-size:0.75rem;">({{ $jt['count'] }})</span></span>@if(!$loop->last) <span style="color:#ccc;">/</span> @endif
                                     @endforeach
                                 </div>
                             </div>

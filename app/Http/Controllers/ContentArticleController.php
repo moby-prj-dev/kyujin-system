@@ -104,7 +104,7 @@ class ContentArticleController extends Controller
         $ownCount = $jobs->filter(fn($j) => $j->source !== 'hellowork')->count();
         $hwCount  = $total - $ownCount;
 
-        // 職種別件数 トップ3
+        // 職種別件数 トップ3(キャッシュデシリアライズ事故を避けるため Collection ではなく配列で保存)
         $jobIds = $jobs->pluck('id');
         $byJobType = DB::table('job_job_types')
             ->join('master_job_types', 'job_job_types.job_type_id', '=', 'master_job_types.id')
@@ -113,7 +113,10 @@ class ContentArticleController extends Controller
             ->orderByDesc(DB::raw('COUNT(*)'))
             ->limit(3)
             ->select('master_job_types.name', DB::raw('COUNT(*) as count'))
-            ->get();
+            ->get()
+            ->map(fn($row) => ['name' => $row->name, 'count' => (int) $row->count])
+            ->values()
+            ->all();
 
         // 給与レンジ(月給のみ・有効値のみ)
         $monthlySalaries = $jobs
