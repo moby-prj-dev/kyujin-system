@@ -56,14 +56,16 @@ class ContentArticleController extends Controller
         $hasArea    = !empty($article->area_id);
         $hasJobType = !empty($article->job_type_id);
 
-        $jobsQuery = Job::active()
+        $baseQuery = fn() => Job::active()
             ->whereNotNull('email_verified_at')
             ->where('is_admin_hidden', false)
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             });
 
-        // エリア/職種の片方以上が紐付いていれば絞り込み、両方無い汎用記事は沖縄全体で集計
+        $jobsQuery = $baseQuery();
+
+        // エリア/職種で絞り込み(片方以上ある場合)
         if ($hasArea || $hasJobType) {
             $jobsQuery->where(function ($q) use ($article, $hasArea, $hasJobType) {
                 if ($hasArea) {
@@ -73,6 +75,13 @@ class ContentArticleController extends Controller
                     $q->orWhereHas('jobJobTypes', fn($q2) => $q2->where('job_type_id', $article->job_type_id));
                 }
             });
+
+            // 絞り込みで0件ならフォールバック: 沖縄全体で集計
+            if ($jobsQuery->count() === 0) {
+                $jobsQuery = $baseQuery();
+                $hasArea = false;
+                $hasJobType = false;
+            }
         }
 
         $jobs = $jobsQuery->get(['id', 'salary_min', 'salary_max', 'salary_type', 'source']);
@@ -148,14 +157,15 @@ class ContentArticleController extends Controller
         $hasArea    = !empty($article->area_id);
         $hasJobType = !empty($article->job_type_id);
 
-        // エリア・職種が紐付いていない汎用記事(業界情報など)は
-        // 沖縄全体のおすすめ求人を最新順で表示する
+        $fallbackLatest = fn() => (clone $jobsBase)
+            ->orderByRaw($priorityOrder)
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+
+        // エリア・職種が紐付いていない汎用記事(業界情報など)は沖縄全体のおすすめ求人
         if (!$hasArea && !$hasJobType) {
-            return (clone $jobsBase)
-                ->orderByRaw($priorityOrder)
-                ->orderByDesc('created_at')
-                ->limit(6)
-                ->get();
+            return $fallbackLatest();
         }
 
         // 両方一致を優先
@@ -181,27 +191,30 @@ class ContentArticleController extends Controller
                 ->orderByDesc('created_at')
                 ->limit(6 - $both->count())
                 ->get();
-            return $both->merge($either);
+            $merged = $both->merge($either);
+            return $merged->isNotEmpty() ? $merged : $fallbackLatest();
         }
 
         if ($hasArea) {
-            return (clone $jobsBase)
+            $result = (clone $jobsBase)
                 ->whereHas('jobAreas', fn($q) => $q->where('area_id', $article->area_id))
                 ->orderByRaw($priorityOrder)
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get();
+            return $result->isNotEmpty() ? $result : $fallbackLatest();
         }
 
         if ($hasJobType) {
-            return (clone $jobsBase)
+            $result = (clone $jobsBase)
                 ->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $article->job_type_id))
                 ->orderByRaw($priorityOrder)
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get();
+            return $result->isNotEmpty() ? $result : $fallbackLatest();
         }
 
-        return collect();
+        return $fallbackLatest();
     }
 }
