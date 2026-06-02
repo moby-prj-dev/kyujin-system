@@ -53,25 +53,27 @@ class ContentArticleController extends Controller
      */
     private function fetchAreaStats(ContentArticle $article): ?array
     {
-        if (empty($article->area_id) && empty($article->job_type_id)) {
-            return null;
-        }
+        $hasArea    = !empty($article->area_id);
+        $hasJobType = !empty($article->job_type_id);
 
-        // OR 条件: エリアまたは職種のどちらかが一致(両方一致は重複カウントされない、distinct で結合)
         $jobsQuery = Job::active()
             ->whereNotNull('email_verified_at')
             ->where('is_admin_hidden', false)
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->where(function ($q) use ($article) {
-                if (!empty($article->area_id)) {
+            });
+
+        // エリア/職種の片方以上が紐付いていれば絞り込み、両方無い汎用記事は沖縄全体で集計
+        if ($hasArea || $hasJobType) {
+            $jobsQuery->where(function ($q) use ($article, $hasArea, $hasJobType) {
+                if ($hasArea) {
                     $q->orWhereHas('jobAreas', fn($q2) => $q2->where('area_id', $article->area_id));
                 }
-                if (!empty($article->job_type_id)) {
+                if ($hasJobType) {
                     $q->orWhereHas('jobJobTypes', fn($q2) => $q2->where('job_type_id', $article->job_type_id));
                 }
             });
+        }
 
         $jobs = $jobsQuery->get(['id', 'salary_min', 'salary_max', 'salary_type', 'source']);
         $total = $jobs->count();
@@ -145,6 +147,16 @@ class ContentArticleController extends Controller
 
         $hasArea    = !empty($article->area_id);
         $hasJobType = !empty($article->job_type_id);
+
+        // エリア・職種が紐付いていない汎用記事(業界情報など)は
+        // 沖縄全体のおすすめ求人を最新順で表示する
+        if (!$hasArea && !$hasJobType) {
+            return (clone $jobsBase)
+                ->orderByRaw($priorityOrder)
+                ->orderByDesc('created_at')
+                ->limit(6)
+                ->get();
+        }
 
         // 両方一致を優先
         if ($hasArea && $hasJobType) {

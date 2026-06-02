@@ -187,6 +187,8 @@
                                 {{ $areaStats['area_name'] }}の介護・福祉求人マーケット
                             @elseif($areaStats['job_type_name'])
                                 沖縄県の{{ $areaStats['job_type_name'] }}求人マーケット
+                            @else
+                                沖縄県の介護・福祉求人マーケット
                             @endif
                             <span style="font-size:0.72rem;color:#666;font-weight:400;margin-left:0.5rem;">Care Entry調べ ({{ now()->format('Y年m月d日') }}時点)</span>
                         </div>
