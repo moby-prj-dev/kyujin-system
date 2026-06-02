@@ -486,24 +486,25 @@ class ArticleGeneratorService
             'license-support'     => ['資格取得支援あり',   ['資格取得', 'キャリアアップ', '研修支援']],
         ];
 
+        // [URLフレンドリーなarticle slug] => [master_job_types.slug, 表示名, キーワード]
         $jobTypes = [
-            'care-staff'      => ['介護職員',         ['介護職員', '介護スタッフ']],
-            'home-helper'     => ['ホームヘルパー',   ['訪問介護', 'ヘルパー']],
-            'care-manager'    => ['ケアマネジャー',   ['ケアマネ', '介護支援専門員']],
-            'care-fukushishi' => ['介護福祉士',       ['介護福祉士', '国家資格']],
-            'life-support'    => ['生活支援員',       ['生活支援員', '障害福祉']],
-            'childcare'       => ['保育士',           ['保育士', '児童福祉']],
+            'care-staff'      => ['care_staff_facility', '介護職員',         ['介護職員', '介護スタッフ']],
+            'home-helper'     => ['home_helper',         'ホームヘルパー',   ['訪問介護', 'ヘルパー']],
+            'care-manager'    => ['care_manager',        'ケアマネジャー',   ['ケアマネ', '介護支援専門員']],
+            'care-fukushishi' => ['care_welfare_worker', '介護福祉士',       ['介護福祉士', '国家資格']],
+            'life-support'    => ['life_support_worker', '生活支援員',       ['生活支援員', '障害福祉']],
+            'childcare'       => ['childcare_worker',    '保育士',           ['保育士', '児童福祉']],
         ];
 
         // 資格取得支援系のみ 'qualification' カテゴリ・残りは 'job_type'
         $defs = [];
         foreach ($conditions as $condSlug => [$condName, $condKw]) {
-            foreach ($jobTypes as $jtSlug => [$jtName, $jtKw]) {
+            foreach ($jobTypes as $jtArticleSlug => [$jtMasterSlug, $jtName, $jtKw]) {
                 $defs[] = [
-                    'slug'     => "{$condSlug}-{$jtSlug}-okinawa",
+                    'slug'     => "{$condSlug}-{$jtArticleSlug}-okinawa",  // 記事URL用
                     'category' => $condSlug === 'license-support' ? 'qualification' : 'job_type',
-                    'area'     => null,   // 沖縄県全体(エリア限定無し)
-                    'job_type' => $jtSlug,
+                    'area'     => null,           // 沖縄県全体(エリア限定無し)
+                    'job_type' => $jtMasterSlug,  // master_job_types.slug にマッチさせる
                     'keywords' => array_merge(
                         ['沖縄', $jtName, $condName, '求人', '仕事'],
                         $jtKw,
