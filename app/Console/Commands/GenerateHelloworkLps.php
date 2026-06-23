@@ -75,10 +75,13 @@ class GenerateHelloworkLps extends Command
         $created = $updated = $failed = 0;
 
         foreach ($all as $data) {
+            try {
             $hwJobNo = $data['求人番号'] ?? null;
             if (! $hwJobNo) { $failed++; continue; }
 
-            $this->line("生成中: {$data['職種']} / {$data['事業所名']}");
+            $jobTitle = $data['職種']   ?? '(職種不明)';
+            $jobComp  = $data['事業所名'] ?? '(事業所不明)';
+            $this->line("生成中: {$jobTitle} / {$jobComp}");
 
             // Gemini でコンテンツ生成（失敗時はスクレイピングデータでフォールバック）
             $generated = $this->generateContent($data);
@@ -149,6 +152,11 @@ class GenerateHelloworkLps extends Command
             $this->line("  → 完了: {$generated['seo_title']}");
 
             sleep(1); // Gemini APIレート制限対策
+            } catch (\Throwable $e) {
+                $failed++;
+                $this->warn("  ✗ 失敗: " . ($data['求人番号'] ?? '?') . " - " . $e->getMessage());
+                continue;
+            }
         }
 
         $this->newLine();
@@ -159,19 +167,29 @@ class GenerateHelloworkLps extends Command
 
     private function generateContent(array $data): ?array
     {
+        // HEREDOC内で ?? は使えないので事前に変数化(キー欠落への防御)
+        $f_company  = $data['事業所名']   ?? '';
+        $f_job      = $data['職種']       ?? '';
+        $f_place    = $data['就業場所']   ?? '';
+        $f_salary   = $data['賃金']       ?? '';
+        $f_employ   = $data['雇用形態']   ?? '';
+        $f_hours    = $data['就業時間']   ?? '';
+        $f_holiday  = $data['休日']       ?? '';
+        $f_content  = $data['仕事の内容'] ?? '';
+
         $prompt = <<<PROMPT
 あなたは介護・福祉求人サイト「Care Entry（ケアエントリー）」のコピーライターです。
 以下のハローワーク求人情報をもとに、求職者に魅力的に伝えるランディングページのコンテンツをJSONで生成してください。
 
 【求人情報】
-事業所名: {$data['事業所名']}
-職種: {$data['職種']}
-就業場所: {$data['就業場所']}
-賃金: {$data['賃金']}
-雇用形態: {$data['雇用形態']}
-就業時間: {$data['就業時間']}
-休日: {$data['休日']}
-仕事の内容: {$data['仕事の内容']}
+事業所名: {$f_company}
+職種: {$f_job}
+就業場所: {$f_place}
+賃金: {$f_salary}
+雇用形態: {$f_employ}
+就業時間: {$f_hours}
+休日: {$f_holiday}
+仕事の内容: {$f_content}
 
 【出力形式】
 以下のキーを持つJSONのみを返してください（説明文不要）:
