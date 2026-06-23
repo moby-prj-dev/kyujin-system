@@ -23,8 +23,20 @@
     <title>{{ $pageTitle }}｜Care Entry（ケアエントリー）</title>
     <meta name="description" content="{{ $pageDesc }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    @if($jobs->filter(fn($j) => $j->source === 'care_entry')->isEmpty())
-        <meta name="robots" content="noindex,follow">
+    {{-- ItemList JSON-LD: 求人カルーセル候補 --}}
+    @if($jobs->isNotEmpty())
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type'    => 'ItemList',
+        'itemListElement' => $jobs->take(10)->values()->map(fn($j, $i) => [
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'url'      => route('lp.show', $j->token),
+            'name'     => $j->seo_title ?: $j->title,
+        ])->all(),
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    </script>
     @endif
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -165,6 +177,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 {{-- ページネーション --}}
                 @if($jobs->hasPages())
                     {{ $jobs->links() }}
+                @endif
+
+                {{-- エリアページなら職種別リンク網を表示(内部リンク強化) --}}
+                @if($currentArea && !($currentJobType ?? null))
+                    @php
+                        $popularJobTypes = \App\Models\MasterJobType::active()
+                            ->whereIn('slug', ['care_staff_facility','home_helper','care_manager','care_welfare_worker','life_support_worker','childcare_worker','social_welfare_worker','service_provision_manager'])
+                            ->orderBy('sort_order')
+                            ->get();
+                    @endphp
+                    <div class="seo-supplement mt-4">
+                        <h3><i class="bi bi-tags-fill text-primary me-1"></i>{{ $currentArea->name }}の職種から求人を探す</h3>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            @foreach($popularJobTypes as $jt)
+                                <a href="{{ route('seo.jobs.area_jobtype', [$currentArea->slug, $jt->slug]) }}"
+                                   style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff;border:1px solid #d6e4f7;border-radius:20px;text-decoration:none;color:#1a1a2e;font-size:0.85rem;">
+                                    <i class="bi bi-briefcase"></i>{{ $currentArea->name }}の{{ $jt->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- 職種×エリアページなら他エリアの同職種リンクを表示 --}}
+                @if(($currentJobType ?? null) && $currentArea)
+                    @php
+                        $otherAreas = \App\Models\MasterArea::active()
+                            ->where('prefecture', '沖縄県')
+                            ->where('id', '!=', $currentArea->id)
+                            ->orderBy('sort_order')
+                            ->get();
+                    @endphp
+                    <div class="seo-supplement mt-4">
+                        <h3><i class="bi bi-geo-alt-fill text-primary me-1"></i>他のエリアの{{ $currentJobType->name }}求人</h3>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            @foreach($otherAreas as $ar)
+                                <a href="{{ route('seo.jobs.area_jobtype', [$ar->slug, $currentJobType->slug]) }}"
+                                   style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff;border:1px solid #d6e4f7;border-radius:20px;text-decoration:none;color:#1a1a2e;font-size:0.85rem;">
+                                    <i class="bi bi-geo-alt"></i>{{ $ar->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
             </div>
 
