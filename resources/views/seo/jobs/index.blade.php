@@ -56,14 +56,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span class="mx-1">›</span>
             <a href="{{ route('seo.jobs.okinawa') }}">介護・福祉求人(沖縄エリア)</a>
             @if($currentArea)
-                <span class="mx-1">›</span>{{ $currentArea->name }}
+                <span class="mx-1">›</span>
+                @if(($currentJobType ?? null))
+                    <a href="{{ route('seo.jobs.area', $currentArea->slug) }}">{{ $currentArea->name }}</a>
+                    <span class="mx-1">›</span>{{ $currentJobType->name }}
+                @else
+                    {{ $currentArea->name }}
+                @endif
             @endif
         </p>
         <h1 class="seo-header__title">{{ $pageTitle }}</h1>
         <p class="seo-header__desc">{{ $pageDesc }}</p>
+        @if(!empty($stats))
+        <p style="font-size:1rem;font-weight:700;opacity:.95;margin-bottom:8px;">
+            <i class="bi bi-briefcase-fill me-1"></i>現在 <span style="font-size:1.3rem;">{{ number_format($stats['total']) }}</span> 件掲載中
+            @if($stats['own_count'] > 0)
+                <span style="font-size:0.78rem;opacity:0.85;margin-left:0.5rem;">(自社 {{ $stats['own_count'] }}件 / ハローワーク {{ $stats['hw_count'] }}件)</span>
+            @endif
+        </p>
+        @if(!empty($stats['salary_median']))
+        <p style="font-size:0.88rem;opacity:0.92;margin-bottom:20px;">
+            <i class="bi bi-currency-yen me-1"></i>月給レンジ {{ number_format($stats['salary_min']) }}〜{{ number_format($stats['salary_max']) }}円(中央値 {{ number_format($stats['salary_median']) }}円)
+        </p>
+        @else
+        <p style="margin-bottom:20px;"></p>
+        @endif
+        @else
         <p style="font-size:1rem;font-weight:700;opacity:.95;margin-bottom:20px;">
             <i class="bi bi-briefcase-fill me-1"></i>現在 <span style="font-size:1.3rem;">{{ number_format(\App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden',false)->whereHas('jobAreas.area',fn($q)=>$q->where('prefecture','沖縄県'))->count()) }}</span> 件の求人を掲載中
         </p>
+        @endif
         <div class="seo-header__cta-group">
             <a href="{{ route('home') }}#search" class="btn-seo-search">
                 <i class="bi bi-search"></i>求人を検索する

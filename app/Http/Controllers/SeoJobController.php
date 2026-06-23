@@ -7,6 +7,7 @@ use App\Models\MasterArea;
 use App\Models\MasterEmploymentType;
 use App\Models\MasterJobType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SeoJobController extends Controller
 {
@@ -98,8 +99,12 @@ class SeoJobController extends Controller
             ? "{$currentArea->name}で介護・福祉の仕事を探している方向けの求人一覧です。地域の特性に合った求人を掲載しています。"
             : '沖縄で介護・福祉の仕事を探している方向けの求人一覧です。エリアや職種から自分に合う求人を探せます。';
 
+        $currentJobType = null;
+        $stats          = $currentArea ? $this->statsFor($currentArea, null) : null;
+
         return view('seo.jobs.index', compact(
-            'jobs', 'currentArea', 'areas', 'pageTitle', 'pageDesc', 'searchConditionIds'
+            'jobs', 'currentArea', 'currentJobType', 'areas', 'stats',
+            'pageTitle', 'pageDesc', 'searchConditionIds'
         ));
     }
 
@@ -124,13 +129,129 @@ class SeoJobController extends Controller
             ->get()
             ->groupBy('region');
 
+        $stats = $this->statsFor($currentArea, null);
+
         return view('seo.jobs.index', [
             'jobs'               => $jobs,
             'currentArea'        => $currentArea,
+            'currentJobType'     => null,
             'areas'              => $areas,
+            'stats'              => $stats,
             'pageTitle'          => "{$currentArea->name}の介護・福祉求人一覧",
-            'pageDesc'           => "{$currentArea->name}で介護・福祉の仕事を探している方向けの求人一覧です。地域の特性に合った求人を掲載しています。",
+            'pageDesc'           => "{$currentArea->name}で介護・福祉の仕事を探している方向けの求人一覧です。現在{$stats['total']}件掲載中。",
             'searchConditionIds' => $searchConditionIds,
         ]);
+    }
+
+    public function areaJobType(Request $request, string $areaSlug, string $jobTypeSlug)
+    {
+        $currentArea    = MasterArea::active()->where('slug', $areaSlug)->firstOrFail();
+        $currentJobType = MasterJobType::active()->where('slug', $jobTypeSlug)->firstOrFail();
+
+        $query = $this->visibleJobs()
+            ->whereHas('jobAreas',    fn($q) => $q->where('area_id', $currentArea->id))
+            ->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $currentJobType->id));
+
+        $filterIds = $this->applyFilters($query, $request);
+        $searchConditionIds = [
+            'area_ids'     => [$currentArea->id],
+            'job_type_ids' => [$currentJobType->id],
+            ...$filterIds,
+        ];
+
+        $jobs = $query
+            ->orderByRaw("CASE WHEN source = 'care_entry' THEN 0 ELSE 1 END")
+            ->latest()
+            ->paginate(20)->withQueryString();
+
+        $areas = MasterArea::active()
+            ->where('prefecture', '沖縄県')
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('region');
+
+        $stats = $this->statsFor($currentArea, $currentJobType);
+
+        return view('seo.jobs.index', [
+            'jobs'               => $jobs,
+            'currentArea'        => $currentArea,
+            'currentJobType'     => $currentJobType,
+            'areas'              => $areas,
+            'stats'              => $stats,
+            'pageTitle'          => "{$currentArea->name}の{$currentJobType->name}求人一覧",
+            'pageDesc'           => "{$currentArea->name}で{$currentJobType->name}の仕事を探している方向けの求人一覧。現在{$stats['total']}件掲載中。給与・雇用形態など条件で絞り込めます。",
+            'searchConditionIds' => $searchConditionIds,
+        ]);
+    }
+
+    /**
+     * エリア(+職種)に対する独自統計を1時間キャッシュ。プリミティブのみ返す。
+     */
+    private function statsFor(MasterArea $area, ?MasterJobType $jobType): array
+    {
+        $key = "seo_jobs_stats:v1:a{$area->id}:" . ($jobType ? "j{$jobType->id}" : 'jall');
+        return Cache::remember($key, now()->addHour(), function () use ($area, $jobType) {
+            $base = Job::active()
+                ->whereNotNull('email_verified_at')
+                ->where('is_admin_hidden', false)
+                ->where(function ($q) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                })
+                ->whereHas('jobAreas', fn($q) => $q->where('area_id', $area->id));
+
+            if ($jobType) {
+                $base->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $jobType->id));
+            }
+
+            $total    = (clone $base)->count();
+            $hwCount  = (clone $base)->where('source', 'hellowork')->count();
+            $ownCount = $total - $hwCount;
+
+            // 月給統計
+            $salaries = (clone $base)
+                ->where('salary_type', 'monthly')
+                ->whereNotNull('salary_min')
+                ->where('salary_min', '>', 0)
+                ->pluck('salary_min')
+                ->map(fn($v) => (int) $v)
+                ->sort()
+                ->values();
+
+            $salaryMin = $salaryMax = $salaryMedian = null;
+            if ($salaries->count() >= 3) {
+                $salaryMin    = (int) $salaries->min();
+                $salaryMax    = (int) $salaries->max();
+                $n = $salaries->count();
+                $salaryMedian = $n % 2 === 0
+                    ? (int) (($salaries[(int) ($n/2) - 1] + $salaries[(int) ($n/2)]) / 2)
+                    : (int) $salaries[(int) ($n/2)];
+            }
+
+            // 雇用形態内訳(プリミティブ配列)
+            $empBreakdown = [];
+            if ($total > 0) {
+                $jobIds = (clone $base)->pluck('job_listings.id');
+                $rows = \DB::table('job_employment_types')
+                    ->join('master_employment_types', 'job_employment_types.employment_type_id', '=', 'master_employment_types.id')
+                    ->whereIn('job_employment_types.job_id', $jobIds)
+                    ->groupBy('master_employment_types.id', 'master_employment_types.name')
+                    ->orderByDesc(\DB::raw('COUNT(*)'))
+                    ->select('master_employment_types.name', \DB::raw('COUNT(*) as count'))
+                    ->get();
+                foreach ($rows as $r) {
+                    $empBreakdown[] = ['name' => $r->name, 'count' => (int) $r->count];
+                }
+            }
+
+            return [
+                'total'         => $total,
+                'own_count'     => $ownCount,
+                'hw_count'      => $hwCount,
+                'salary_min'    => $salaryMin,
+                'salary_max'    => $salaryMax,
+                'salary_median' => $salaryMedian,
+                'emp_breakdown' => $empBreakdown,
+            ];
+        });
     }
 }

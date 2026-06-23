@@ -23,6 +23,7 @@ Route::post('/jobs/resend', [\App\Http\Controllers\JobResendController::class, '
 // -----------------------------------------------
 Route::get('/jobs/okinawa', [\App\Http\Controllers\SeoJobController::class, 'index'])->name('seo.jobs.okinawa');
 Route::get('/jobs/okinawa/{slug}', [\App\Http\Controllers\SeoJobController::class, 'area'])->name('seo.jobs.area');
+Route::get('/jobs/okinawa/{areaSlug}/{jobTypeSlug}', [\App\Http\Controllers\SeoJobController::class, 'areaJobType'])->name('seo.jobs.area_jobtype');
 
 // -----------------------------------------------
 // ハローワーク求人ページ
