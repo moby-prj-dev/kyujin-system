@@ -516,6 +516,73 @@ class ArticleGeneratorService
         return $defs;
     }
 
+    /**
+     * Phase 4: 資格取得系記事(qualification カテゴリ)
+     * 介護福祉士・ケアマネ・保育士などの資格取得に関する体系的解説。
+     */
+    public static function qualificationDefinitions(): array
+    {
+        return [
+            ['slug' => 'kaigo-fukushishi-shikaku-okinawa',  'category' => 'qualification', 'area' => null, 'job_type' => 'care_welfare_worker',     'keywords' => ['介護福祉士', '資格', '取り方', '受験資格', '実務経験', '沖縄', '国家資格']],
+            ['slug' => 'kaigo-fukushishi-shiken-okinawa',   'category' => 'qualification', 'area' => null, 'job_type' => 'care_welfare_worker',     'keywords' => ['介護福祉士', '試験', '対策', '合格率', '勉強法', '沖縄', '過去問']],
+            ['slug' => 'care-manager-shikaku-okinawa',      'category' => 'qualification', 'area' => null, 'job_type' => 'care_manager',            'keywords' => ['ケアマネ', '介護支援専門員', '資格', '取り方', '受験資格', '沖縄']],
+            ['slug' => 'care-manager-shiken-okinawa',       'category' => 'qualification', 'area' => null, 'job_type' => 'care_manager',            'keywords' => ['ケアマネ', '試験', '対策', '合格率', '沖縄', '勉強法']],
+            ['slug' => 'shakaifukushishi-shikaku-okinawa',  'category' => 'qualification', 'area' => null, 'job_type' => 'social_welfare_worker',   'keywords' => ['社会福祉士', '資格', '取り方', '受験資格', '沖縄', '国家試験']],
+            ['slug' => 'hoikushi-shikaku-okinawa',          'category' => 'qualification', 'area' => null, 'job_type' => 'childcare_worker',        'keywords' => ['保育士', '資格', '取り方', '国家試験', '保育士養成校', '沖縄']],
+            ['slug' => 'shoninsha-kenshu-okinawa',          'category' => 'qualification', 'area' => null, 'job_type' => 'care_staff_facility',     'keywords' => ['介護職員初任者研修', 'ヘルパー2級', '取り方', '費用', '沖縄', '入門']],
+            ['slug' => 'jitsumusha-kenshu-okinawa',         'category' => 'qualification', 'area' => null, 'job_type' => 'care_staff_facility',     'keywords' => ['実務者研修', '介護福祉士', '受験資格', 'ステップアップ', '沖縄']],
+            ['slug' => 'shoninsha-vs-jitsumusha-okinawa',   'category' => 'qualification', 'area' => null, 'job_type' => 'care_staff_facility',     'keywords' => ['初任者研修', '実務者研修', '違い', '比較', '介護資格', '沖縄']],
+            ['slug' => 'kakutan-kyuin-okinawa',             'category' => 'qualification', 'area' => null, 'job_type' => 'care_staff_facility',     'keywords' => ['喀痰吸引', '研修', '介護職員', '医療的ケア', '沖縄', '取り方']],
+            ['slug' => 'nintei-kaigo-fukushishi-okinawa',   'category' => 'qualification', 'area' => null, 'job_type' => 'care_welfare_worker',     'keywords' => ['認定介護福祉士', '上位資格', 'キャリアアップ', '介護福祉士', '沖縄']],
+            ['slug' => 'service-teikyo-sekinin-okinawa',    'category' => 'qualification', 'area' => null, 'job_type' => 'service_provision_manager','keywords' => ['サービス提供責任者', 'サ責', '資格', '要件', '訪問介護', '沖縄']],
+            ['slug' => 'jido-shidoin-shikaku-okinawa',      'category' => 'qualification', 'area' => null, 'job_type' => 'child_guidance_worker',   'keywords' => ['児童指導員', '任用資格', '取り方', '児童福祉', '放課後等デイ', '沖縄']],
+            ['slug' => 'psw-shikaku-okinawa',               'category' => 'qualification', 'area' => null, 'job_type' => 'psychiatric_social_worker','keywords' => ['精神保健福祉士', 'PSW', '資格', '取り方', '受験資格', '沖縄']],
+            ['slug' => 'sodanshien-senmonin-okinawa',       'category' => 'qualification', 'area' => null, 'job_type' => 'consultation_support_specialist', 'keywords' => ['相談支援専門員', '資格', '取り方', '障害福祉', '研修', '沖縄']],
+            ['slug' => 'kaigo-shikaku-roadmap-okinawa',     'category' => 'qualification', 'area' => null, 'job_type' => null,                       'keywords' => ['介護資格', 'ロードマップ', 'キャリアパス', '初任者研修', '介護福祉士', 'ケアマネ', '沖縄']],
+            ['slug' => 'shikaku-shienseido-okinawa',        'category' => 'qualification', 'area' => null, 'job_type' => null,                       'keywords' => ['資格取得支援', '介護職', '会社負担', '受講料', '沖縄', '研修制度']],
+        ];
+    }
+
+    /**
+     * Phase 5: 業界動向・コラム系記事(industry カテゴリ)
+     * 介護報酬・トレンド・市場動向など時事性のある記事。
+     */
+    public static function columnDefinitions(): array
+    {
+        return [
+            ['slug' => 'kaigo-hosyu-kaitei-2024-okinawa',   'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護報酬改定', '2024年', '介護事業所', '影響', '加算', '沖縄']],
+            ['slug' => 'kaigo-jinzai-fusoku-okinawa',       'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護人材不足', '現状', '原因', '沖縄', '対策', '採用']],
+            ['slug' => 'kaigo-trend-2026-okinawa',          'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護業界', '2026年', 'トレンド', '最新動向', '沖縄', '未来']],
+            ['slug' => 'kaigo-shisetsu-suii-okinawa',       'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護施設数', '推移', '沖縄県', '事業所統計', '増加', '高齢化']],
+            ['slug' => 'kaigo-dx-ict-okinawa',              'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護DX', 'ICT活用', '見守りセンサー', '介護記録', '沖縄', '効率化']],
+            ['slug' => 'gaikokujin-kaigo-jinzai-okinawa',   'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['外国人介護人材', 'EPA', '技能実習', '特定技能', '沖縄', '受け入れ']],
+            ['slug' => 'ninchisho-care-okinawa',            'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['認知症ケア', '最前線', 'ユマニチュード', '研修', '沖縄', '事例']],
+            ['slug' => 'mitori-care-okinawa',               'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['看取りケア', 'ターミナルケア', '介護施設', '沖縄', '現状', '加算']],
+            ['slug' => 'okinawa-koreika-koreisya',          'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['沖縄県', '高齢化率', '統計', '65歳以上人口', '介護需要', '未来予測']],
+            ['slug' => 'kaigo-yarigai-okinawa',             'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', 'やりがい', '魅力', 'リアル', '本音', '沖縄']],
+            ['slug' => 'kaigo-rishoku-boshi-okinawa',       'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '離職', '原因', '対策', '定着', '沖縄', '職場環境']],
+            ['slug' => 'kaigo-kyuyo-suii-okinawa',          'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '給料', '上昇', '処遇改善加算', '沖縄', '相場推移']],
+        ];
+    }
+
+    /**
+     * Phase 6: 初心者向け記事(beginner カテゴリ)
+     * 未経験から介護業界へ転職を考える人向けの入門記事。
+     */
+    public static function beginnerDefinitions(): array
+    {
+        return [
+            ['slug' => 'mikei-kara-kaigo-okinawa',          'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['未経験', '介護職', '転職', '始め方', '沖縄', '無資格', '入門']],
+            ['slug' => 'kaigo-1day-schedule-okinawa',       'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '1日', 'スケジュール', '仕事内容', 'リアル', '沖縄']],
+            ['slug' => 'kaigo-muiteru-hito-okinawa',        'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '向いてる人', '適性', '性格', '沖縄', 'チェック']],
+            ['slug' => 'kaigo-ningenkankei-okinawa',        'category' => 'beginner', 'area' => null, 'job_type' => null,                   'keywords' => ['介護現場', '人間関係', '対処法', '職場選び', '沖縄']],
+            ['slug' => 'kaigo-tenshoku-mensetsu-okinawa',   'category' => 'beginner', 'area' => null, 'job_type' => null,                   'keywords' => ['介護職', '転職', '面接', '志望動機', '質問', '沖縄', '対策']],
+            ['slug' => 'kaigo-rirekisyo-okinawa',           'category' => 'beginner', 'area' => null, 'job_type' => null,                   'keywords' => ['介護職', '履歴書', '書き方', '志望動機', '自己PR', '沖縄']],
+            ['slug' => 'kaigo-shisetsu-shurui-okinawa',     'category' => 'beginner', 'area' => null, 'job_type' => null,                   'keywords' => ['介護施設', '種類', '違い', '特養', '老健', 'デイサービス', '沖縄']],
+            ['slug' => 'kaigo-yakin-syosinsya-okinawa',     'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '夜勤', '初心者', '不安', '対策', '沖縄']],
+        ];
+    }
+
     // 管理画面からの手動生成
     public function generateFromInput(string $slug, array $keywords, string $category, ?int $areaId = null, ?int $jobTypeId = null): ContentArticle
     {

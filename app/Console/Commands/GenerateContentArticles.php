@@ -23,23 +23,24 @@ class GenerateContentArticles extends Command
         } elseif ($limit = $this->option('limit')) {
             $existingSlugs = \App\Models\ContentArticle::pluck('slug')->all();
 
-            // フェーズ1: 定義済み未生成
+            // フェーズ1(定義済みコア)未生成
             $definitions = array_values(array_filter($definitions, fn($d) => !in_array($d['slug'], $existingSlugs)));
 
-            // フェーズ1が尽きたらフェーズ2（エリア×職種）へ
+            // フェーズ1が尽きたら、フェーズ2〜6を全部まとめてラウンドロビン対象にする
+            // (カテゴリ偏りを防ぐため、Phase 3完了待ちにせず常に全カテゴリから選ぶ)
             if (empty($definitions)) {
-                $dynamic     = ArticleGeneratorService::dynamicDefinitions();
-                $definitions = array_values(array_filter($dynamic, fn($d) => !in_array($d['slug'], $existingSlugs)));
+                $merged = array_merge(
+                    ArticleGeneratorService::dynamicDefinitions(),      // Phase 2: area×job_type
+                    ArticleGeneratorService::conditionDefinitions(),    // Phase 3: 条件×職種
+                    ArticleGeneratorService::qualificationDefinitions(),// Phase 4: 資格取得系
+                    ArticleGeneratorService::columnDefinitions(),       // Phase 5: 業界動向
+                    ArticleGeneratorService::beginnerDefinitions(),     // Phase 6: 初心者向け
+                );
+                $definitions = array_values(array_filter($merged, fn($d) => !in_array($d['slug'], $existingSlugs)));
             }
 
-            // フェーズ2が尽きたらフェーズ3(条件×職種)へ
             if (empty($definitions)) {
-                $condBased   = ArticleGeneratorService::conditionDefinitions();
-                $definitions = array_values(array_filter($condBased, fn($d) => !in_array($d['slug'], $existingSlugs)));
-            }
-
-            if (empty($definitions)) {
-                $this->info('新規生成する記事はありません（フェーズ1・2・3ともに完了）。');
+                $this->info('新規生成する記事はありません(全フェーズ完了)。');
                 return self::SUCCESS;
             }
 
