@@ -12,7 +12,7 @@ class Job extends Model
 {
     use SoftDeletes;
     protected $table = 'job_listings';
-    protected $fillable = ['source','hw_job_no','hw_job_url','company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','salary_type','salary_min','salary_max','salary_note','photo_path','status','is_admin_hidden','is_monitor','is_permanently_free','monitor_ends_at','admin_memo','admin_memo_updated_at','token','contact_email','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at'];
+    protected $fillable = ['source','hw_job_no','hw_job_url','company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','salary_type','salary_min','salary_max','salary_note','photo_path','status','is_admin_hidden','is_monitor','is_permanently_free','plan','monitor_ends_at','admin_memo','admin_memo_updated_at','token','contact_email','secondary_emails','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at'];
 
     const SALARY_TYPES = [
         'monthly' => '月給',
@@ -29,6 +29,7 @@ class Job extends Model
         'continued_at'          => 'datetime',
         'continue_notified_at'  => 'datetime',
         'lp_tags'               => 'array',
+        'secondary_emails'      => 'array',
         'is_monitor'            => 'boolean',
         'is_permanently_free'   => 'boolean',
         'monitor_ends_at'       => 'datetime',
@@ -40,6 +41,18 @@ class Job extends Model
     const STATUS_PAUSED  = 'paused';
     const STATUS_CLOSED  = 'closed';
     const STATUS_EXPIRED = 'expired';
+
+    const PLAN_BASIC    = 'basic';
+    const PLAN_STANDARD = 'standard';
+    const STANDARD_MAX_JOBS = 3;
+
+    public function isStandard(): bool { return $this->plan === self::PLAN_STANDARD; }
+    public function notificationEmails(): array
+    {
+        $primary = $this->contact_email ? [$this->contact_email] : [];
+        $extras  = is_array($this->secondary_emails) ? $this->secondary_emails : [];
+        return array_values(array_unique(array_filter(array_merge($primary, $extras))));
+    }
 
     protected static function boot(): void
     {

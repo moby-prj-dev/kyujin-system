@@ -276,7 +276,8 @@ class ApplyController extends Controller
 
     private function notifyEmployer(Job $job, Application $application, array $conditions): void
     {
-        if (empty($job->contact_email)) return;
+        $recipients = $job->notificationEmails();
+        if (empty($recipients)) return;
 
         $areaName    = !empty($conditions['area_ids'])
             ? MasterArea::whereIn('id', $conditions['area_ids'])->pluck('name')->implode('・')
@@ -321,7 +322,7 @@ class ApplyController extends Controller
                     url('/jobs/' . $job->token),
                 ])),
                 fn($message) => $message
-                    ->to($job->contact_email)
+                    ->to($recipients)
                     ->subject('【求人応募通知】新しいWeb応募が届きました')
             );
         } catch (\Exception $e) {

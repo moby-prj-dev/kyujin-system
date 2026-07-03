@@ -177,6 +177,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         @if($job->source !== 'hellowork')
         <div class="section-card">
             <div class="section-title"><i class="bi bi-send-fill"></i> 応募方法</div>
+            @if($job->isStandard())
             <div class="apply-method-item">
                 <div class="apply-icon apply-icon-line">
                     <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
@@ -186,6 +187,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="apply-method-desc">LINEアプリを使って簡単に応募できます。担当者と直接やり取りが可能です。</div>
                 </div>
             </div>
+            @endif
             <div class="apply-method-item">
                 <div class="apply-icon apply-icon-form"><i class="bi bi-pencil-square"></i></div>
                 <div>
@@ -258,13 +260,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </a>
             <p class="cta-note"><i class="bi bi-info-circle me-1"></i>ハローワークインターネットサービスのページに移動します</p>
         @else
-            <p style="color:#137333;background:#e8faf0;padding:6px 10px;border-radius:6px;margin:0 0 8px;font-size:0.72rem;text-align:center;line-height:1.4;">
-                <i class="bi bi-info-circle-fill me-1"></i>LINE応募はトーク画面で<strong>送信ボタンをタップ</strong>すると開始します
-            </p>
-            <a href="{{ route('line.entry', $job->token) }}{{ $qs }}" class="btn-line-apply">
-                <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
-                LINEで応募する
-            </a>
+            @if($job->isStandard())
+                <p style="color:#137333;background:#e8faf0;padding:6px 10px;border-radius:6px;margin:0 0 8px;font-size:0.72rem;text-align:center;line-height:1.4;">
+                    <i class="bi bi-info-circle-fill me-1"></i>LINE応募はトーク画面で<strong>送信ボタンをタップ</strong>すると開始します
+                </p>
+                <a href="{{ route('line.entry', $job->token) }}{{ $qs }}" class="btn-line-apply">
+                    <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
+                    LINEで応募する
+                </a>
+            @endif
             <a href="{{ route('lp.apply', $job->token) }}{{ $qs }}" class="btn-form-apply">
                 <i class="bi bi-pencil-square"></i>フォームで応募する
             </a>

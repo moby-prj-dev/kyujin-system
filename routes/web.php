@@ -41,6 +41,7 @@ Route::put('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'update
 Route::post('/jobs/{token}/continue', [\App\Http\Controllers\JobController::class, 'continue'])->name('jobs.continue');
 Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class, 'close'])->name('jobs.close');
 Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class, 'reopen'])->name('jobs.reopen');
+Route::patch('/jobs/{token}/notifications', [\App\Http\Controllers\JobController::class, 'updateNotifications'])->name('jobs.notifications');
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');
 Route::get('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'create'])->name('disputes.create');
 Route::post('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'store'])->name('disputes.store')->middleware('throttle:10,60');

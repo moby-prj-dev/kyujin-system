@@ -23,6 +23,10 @@ class LiffController extends Controller
         if ($job->is_admin_hidden) {
             abort(404);
         }
+        // LINE応募機能はスタンダードプラン限定
+        if (!$job->isStandard()) {
+            abort(404);
+        }
         return $job;
     }
 
@@ -202,7 +206,8 @@ class LiffController extends Controller
 
     private function notifyEmployer(Job $job, Application $application): void
     {
-        if (empty($job->contact_email)) {
+        $recipients = $job->notificationEmails();
+        if (empty($recipients)) {
             return;
         }
 
@@ -220,7 +225,7 @@ class LiffController extends Controller
                     url('/jobs/' . $job->token),
                 ]),
                 fn($message) => $message
-                    ->to($job->contact_email)
+                    ->to($recipients)
                     ->subject('【求人応募通知】LINEから新しい応募が届きました')
             );
         } catch (\Exception $e) {

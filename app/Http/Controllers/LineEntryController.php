@@ -16,6 +16,11 @@ class LineEntryController extends Controller
             ->where('is_admin_hidden', false)
             ->firstOrFail();
 
+        // LINE応募機能はスタンダードプラン限定。ベーシック契約者の求人はWebフォーム応募のみ
+        if (!$job->isStandard()) {
+            return redirect()->route('lp.apply', ['token' => $job->token]);
+        }
+
         $searchConditions = [
             'area_ids'            => array_values(array_filter(array_map('intval', (array) $request->input('area_ids', [])))),
             'job_type_ids'        => array_values(array_filter(array_map('intval', (array) $request->input('job_type_ids', [])))),

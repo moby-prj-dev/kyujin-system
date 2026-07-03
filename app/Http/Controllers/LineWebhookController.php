@@ -111,6 +111,13 @@ class LineWebhookController extends Controller
         }
 
         $job = $entryToken->job;
+
+        // LINE応募機能はスタンダードプラン限定
+        if (!$job || !$job->isStandard()) {
+            $this->reply($api, $replyToken, LineMessageBuilder::expiredToken());
+            return;
+        }
+
         $job->load(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition']);
 
         LineChatSession::where('line_user_id', $lineUserId)->delete();
@@ -263,7 +270,8 @@ class LineWebhookController extends Controller
 
     private function notifyEmployer(\App\Models\Job $job, Application $application, array $searchConditions): void
     {
-        if (empty($job->contact_email)) {
+        $recipients = $job->notificationEmails();
+        if (empty($recipients)) {
             return;
         }
 
@@ -287,7 +295,7 @@ class LineWebhookController extends Controller
             \Illuminate\Support\Facades\Mail::raw(
                 $body,
                 fn($message) => $message
-                    ->to($job->contact_email)
+                    ->to($recipients)
                     ->subject('【求人応募通知】LINEから新しい応募が届きました')
             );
         } catch (\Exception $e) {

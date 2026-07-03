@@ -57,11 +57,31 @@ class JobController extends Controller
 
         $activeStatuses = [Job::STATUS_PENDING, Job::STATUS_DRAFT, Job::STATUS_ACTIVE, Job::STATUS_PAUSED];
 
-        $emailMatch = Job::where('contact_email', $email)->whereIn('status', $activeStatuses)->exists();
-        $phoneMatch = Job::where('contact_phone', $phone)->whereIn('status', $activeStatuses)->exists();
+        // 同じメール or 電話番号の既存求人を取得(スタンダードプランなら最大3件まで許可)
+        $existingJobs = Job::where(function ($q) use ($email, $phone) {
+                $q->where('contact_email', $email)->orWhere('contact_phone', $phone);
+            })
+            ->whereIn('status', $activeStatuses)
+            ->get();
 
-        if ($emailMatch || $phoneMatch) {
+        $existingCount = $existingJobs->count();
+        $isStandardAccount = $existingJobs->contains(fn($j) => $j->isStandard());
+        $inheritPlan = $isStandardAccount ? Job::PLAN_STANDARD : Job::PLAN_BASIC;
+        $maxAllowed  = $isStandardAccount ? Job::STANDARD_MAX_JOBS : 1;
+
+        if ($existingCount >= $maxAllowed) {
+            // ベーシック: 1件以上 → 従来通り重複エラーページへ
+            // スタンダード: 3件を超えている → 上限メッセージ
+            $emailMatch = $existingJobs->contains(fn($j) => $j->contact_email === $email);
+            $phoneMatch = $existingJobs->contains(fn($j) => $j->contact_phone === $phone);
             $pattern = ($emailMatch && $phoneMatch) ? 'both' : ($emailMatch ? 'email' : 'phone');
+
+            if ($isStandardAccount) {
+                return back()->withInput()->withErrors([
+                    'contact_email' => 'スタンダードプランの掲載上限(3件)に達しています。既存の求人を停止するか、サポートまでお問い合わせください。',
+                ]);
+            }
+
             return redirect()->route('jobs.duplicate')
                 ->with('duplicate_pattern', $pattern)
                 ->with('duplicate_email', $emailMatch ? $email : null);
@@ -85,7 +105,7 @@ class JobController extends Controller
             ]);
         }
 
-        DB::transaction(function () use ($request, $email, &$job) {
+        DB::transaction(function () use ($request, $email, $inheritPlan, &$job) {
             $photoPath = $request->hasFile('photo')
                 ? $request->file('photo')->store('job_photos', 'public')
                 : null;
@@ -93,6 +113,7 @@ class JobController extends Controller
             $job = Job::create([
                 'company_name'             => $request->company_name,
                 'status'                   => Job::STATUS_PENDING,
+                'plan'                     => $inheritPlan,
                 'contact_email'            => $email,
                 'contact_phone'            => $request->contact_phone,
                 'free_text'                => $request->free_text,
@@ -201,6 +222,12 @@ class JobController extends Controller
 
         $monitorCutoff = \App\Models\Setting::monitorCutoffDate();
 
+        // スタンダードプラン向け 応募データ分析(直近6ヶ月)
+        $analytics = null;
+        if ($job->isStandard()) {
+            $analytics = $this->buildJobAnalytics($job);
+        }
+
         return view('jobs.manage', compact(
             'job', 'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
             'selectedAreas', 'selectedJobTypes', 'selectedEmploymentTypes',
@@ -208,8 +235,36 @@ class JobController extends Controller
             'billingSummaries', 'trialEnded', 'hasUnpaid', 'hasOverdue',
             'companyValidCount', 'companyBillableCount', 'freeQuotaRemaining',
             'jobValidCount', 'jobInvalidCount', 'jobBillableCount',
-            'monitorCutoff'
+            'monitorCutoff', 'analytics'
         ));
+    }
+
+    private function buildJobAnalytics(Job $job): array
+    {
+        $months = collect();
+        $labels = [];
+        $counts = [];
+        $validCounts = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $start = now()->startOfMonth()->subMonths($i);
+            $end   = (clone $start)->endOfMonth();
+            $labels[] = $start->format('Y/n月');
+            $counts[]      = $job->applications()->whereBetween('applied_at', [$start, $end])->count();
+            $validCounts[] = $job->applications()->whereBetween('applied_at', [$start, $end])->where('is_valid', true)->count();
+        }
+
+        $lineCount = $job->applications()->where('application_type', \App\Models\Application::TYPE_LINE)->count();
+        $webCount  = $job->applications()->where('application_type', \App\Models\Application::TYPE_FORM)->count();
+
+        return [
+            'labels'       => $labels,
+            'counts'       => $counts,
+            'valid_counts' => $validCounts,
+            'total'        => array_sum($counts),
+            'valid_total'  => array_sum($validCounts),
+            'line_count'   => $lineCount,
+            'web_count'    => $webCount,
+        ];
     }
 
     public function update(Request $request, string $token)
@@ -296,6 +351,32 @@ class JobController extends Controller
 
         AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CLOSED, AuditLog::ACTOR_SYSTEM, [
             'paused_at' => now()->toDateTimeString(),
+        ]);
+
+        return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function updateNotifications(Request $request, string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+
+        if (!$job->isStandard()) {
+            return redirect()->route('jobs.manage', ['token' => $token])
+                ->withErrors(['secondary_emails' => '応募通知の追加宛先はスタンダードプラン限定機能です。']);
+        }
+
+        $request->validate([
+            'secondary_emails'   => ['nullable', 'array', 'max:5'],
+            'secondary_emails.*' => ['nullable', 'email', 'max:200'],
+        ]);
+
+        $emails = array_values(array_unique(array_filter(
+            array_map('trim', (array) $request->input('secondary_emails', [])),
+            fn($e) => $e !== '' && $e !== $job->contact_email
+        )));
+
+        $job->update([
+            'secondary_emails' => empty($emails) ? null : $emails,
         ]);
 
         return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);

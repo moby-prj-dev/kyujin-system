@@ -177,6 +177,77 @@
     </div>
 </div>
 
+{{-- 応募データ分析(スタンダードプラン限定) --}}
+@if($analytics)
+<div class="form-section mb-4">
+    <h5><i class="bi bi-bar-chart-line me-1"></i> 応募データ分析 <span class="badge bg-primary ms-1">スタンダード</span></h5>
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+            <div class="p-3 rounded" style="background:#f0f7ff;border:1px solid #cfe0f5;">
+                <div class="text-muted small">直近6ヶ月 応募数</div>
+                <div class="fs-4 fw-bold">{{ $analytics['total'] }}<span class="small text-muted ms-1">件</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="p-3 rounded" style="background:#e6f4ea;border:1px solid #b7dfc1;">
+                <div class="text-muted small">有効応募</div>
+                <div class="fs-4 fw-bold" style="color:#137333;">{{ $analytics['valid_total'] }}<span class="small text-muted ms-1">件</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="p-3 rounded" style="background:#fef7e0;border:1px solid #f6d97a;">
+                <div class="text-muted small">LINE応募</div>
+                <div class="fs-4 fw-bold" style="color:#8a6d00;">{{ $analytics['line_count'] }}<span class="small text-muted ms-1">件</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="p-3 rounded" style="background:#f3e8fd;border:1px solid #d5b3f5;">
+                <div class="text-muted small">フォーム応募</div>
+                <div class="fs-4 fw-bold" style="color:#5b2d95;">{{ $analytics['web_count'] }}<span class="small text-muted ms-1">件</span></div>
+            </div>
+        </div>
+    </div>
+    <div style="height:220px;">
+        <canvas id="applicationsChart"></canvas>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+    var ctx = document.getElementById('applicationsChart');
+    if (!ctx) return;
+    new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($analytics['labels']) !!},
+            datasets: [
+                {
+                    label: '全応募',
+                    data: {!! json_encode($analytics['counts']) !!},
+                    backgroundColor: '#a3c3ec',
+                    borderColor: '#1a73e8',
+                    borderWidth: 1,
+                },
+                {
+                    label: '有効応募',
+                    data: {!! json_encode($analytics['valid_counts']) !!},
+                    backgroundColor: '#8ecfa2',
+                    borderColor: '#137333',
+                    borderWidth: 1,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+})();
+</script>
+@endif
+
 {{-- 応募者一覧 --}}
 <div class="form-section mb-4 p-0 overflow-hidden">
     <button class="btn w-100 text-start px-4 py-3 d-flex justify-content-between align-items-center"
@@ -440,6 +511,33 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
         </form>
     </div>
 </div>
+
+{{-- 応募通知の追加宛先(スタンダードプラン限定) --}}
+@if($job->isStandard())
+<div class="form-section">
+    <h5><i class="bi bi-envelope-plus me-1"></i> 応募通知の追加宛先 <span class="badge bg-primary ms-1">スタンダード</span></h5>
+    <p class="text-muted small mb-3">
+        応募通知を採用担当者複数名に届けたい場合は、追加のメールアドレスを登録できます(最大5件)。<br>
+        主連絡先 <strong>{{ $job->contact_email }}</strong> にも引き続き通知が届きます。
+    </p>
+    <form method="POST" action="{{ route('jobs.notifications', ['token' => $job->token]) }}">
+        @csrf
+        @method('PATCH')
+        @php $secondaryEmails = $job->secondary_emails ?? []; @endphp
+        @for($i = 0; $i < 5; $i++)
+            <div class="mb-2">
+                <input type="email" name="secondary_emails[]" class="form-control"
+                       value="{{ old('secondary_emails.' . $i, $secondaryEmails[$i] ?? '') }}"
+                       placeholder="追加宛先 {{ $i + 1 }} (任意)" maxlength="200">
+            </div>
+        @endfor
+        @error('secondary_emails.*') <div class="text-danger small mb-2">{{ $message }}</div> @enderror
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-save me-1"></i>通知宛先を保存
+        </button>
+    </form>
+</div>
+@endif
 
 {{-- 求人編集フォーム --}}
 <div class="form-section">
