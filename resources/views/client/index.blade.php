@@ -485,7 +485,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <p class="hero__sub">
                     応募前に条件を確認する仕組みにより、ミスマッチを減らす設計です。<br>
                     求職者と企業の条件を事前にすり合わせることで、無駄な応募を減らします。<br>
-                    <span style="font-size:0.85em;color:#888;">（フォームまたはLINEから応募可能）</span>
+                    <span style="font-size:0.85em;color:#888;">（Webフォーム応募/スタンダードプランではLINE応募にも対応）</span>
                 </p>
                 <div class="hero__features">
                     <span class="hero__feature-item">
@@ -551,31 +551,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-{{-- 料金 --}}
+{{-- 料金プラン --}}
 <section style="background:#f8faff;border-top:1px solid #e3eaf8;border-bottom:1px solid #e3eaf8;padding:36px 0;">
     <div class="container">
-        <p style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--color-primary);letter-spacing:.08em;margin-bottom:20px;">PRICING</p>
+        <p style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--color-primary);letter-spacing:.08em;margin-bottom:8px;">PRICING</p>
+        <h2 style="text-align:center;font-size:1.4rem;font-weight:800;color:#1a1a2e;margin-bottom:24px;">掲載プラン(2種類)</h2>
         <div class="row justify-content-center g-3">
-            <div class="col-6 col-md-3">
-                <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #f57c00;border-radius:12px;padding:20px 16px;text-align:center;">
-                    <p style="font-size:0.75rem;color:#e65100;font-weight:700;margin-bottom:6px;">掲載費</p>
-                    <p style="font-size:2.2rem;font-weight:900;color:#e65100;margin:0;">¥0</p>
-                    <p style="font-size:0.72rem;color:#e65100;opacity:.7;margin-top:4px;">初期費用なし</p>
+            {{-- ベーシック --}}
+            <div class="col-md-5">
+                <div style="background:#fff;border:2px solid #f57c00;border-radius:12px;padding:24px 20px;height:100%;">
+                    <p style="font-size:0.78rem;color:#e65100;font-weight:800;margin-bottom:4px;letter-spacing:.06em;">BASIC PLAN</p>
+                    <h3 style="font-size:1.35rem;font-weight:900;color:#1a1a2e;margin:0 0 12px;">ベーシック</h3>
+                    <p style="font-size:2.2rem;font-weight:900;color:#e65100;margin:0;line-height:1;">¥0<span style="font-size:1rem;color:#888;font-weight:600;">/月</span></p>
+                    <p style="font-size:0.85rem;color:#666;margin-top:8px;margin-bottom:16px;">+ 有効応募 <strong style="color:#1a1a2e;">¥3,000/件</strong> (税別)</p>
+                    <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 掲載無料(初期費用0円)</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 1事業所につき 1求人</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> Webフォーム応募</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知メール(1宛先)</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 管理URLでセルフ編集・停止</li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
-                <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #f57c00;border-radius:12px;padding:20px 16px;text-align:center;">
-                    <p style="font-size:0.75rem;color:#e65100;font-weight:700;margin-bottom:6px;">月額費用</p>
-                    <p style="font-size:2.2rem;font-weight:900;color:#e65100;margin:0;">¥0</p>
-                    <p style="font-size:0.72rem;color:#e65100;opacity:.7;margin-top:4px;">固定費なし</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div style="background:#fff;border:1.5px solid var(--color-primary);border-radius:12px;padding:20px 16px;text-align:center;">
-                    <p style="font-size:0.75rem;color:var(--color-primary);font-weight:700;margin-bottom:6px;">成果報酬（応募1件）</p>
-                    <p style="font-size:1.7rem;font-weight:900;color:#1a1a2e;margin:0;">¥3,000</p>
-                    <p style="font-size:0.72rem;color:#aaa;margin-top:4px;margin-bottom:0;"><strong>有効応募のみ課金</strong>・税別</p>
-                    <p style="font-size:0.68rem;color:#bbb;margin-top:1px;">※有効応募とは、重複・スパムを除いた応募のことです</p>
+            {{-- スタンダード --}}
+            <div class="col-md-5">
+                <div style="background:linear-gradient(135deg,#e3f2fd,#f0f7ff);border:2px solid #1a73e8;border-radius:12px;padding:24px 20px;height:100%;position:relative;">
+                    <span style="position:absolute;top:-12px;right:16px;background:#1a73e8;color:#fff;font-size:0.72rem;font-weight:800;padding:4px 10px;border-radius:4px;">おすすめ</span>
+                    <p style="font-size:0.78rem;color:#1a73e8;font-weight:800;margin-bottom:4px;letter-spacing:.06em;">STANDARD PLAN</p>
+                    <h3 style="font-size:1.35rem;font-weight:900;color:#1a1a2e;margin:0 0 12px;">スタンダード</h3>
+                    <p style="font-size:2.2rem;font-weight:900;color:#1a73e8;margin:0;line-height:1;">¥5,000<span style="font-size:1rem;color:#888;font-weight:600;">/月</span></p>
+                    <p style="font-size:0.85rem;color:#666;margin-top:8px;margin-bottom:16px;">+ 有効応募 <strong style="color:#1a1a2e;">¥3,000/件</strong> (税別)</p>
+                    <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
+                        <li><i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>ベーシックの内容に加えて</strong></li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 複数求人掲載(最大3件)</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 一覧ページで優先上位表示</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>LINE応募機能</strong>(独自機能)</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知の追加宛先(複数名同時通知)</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募データ分析画面</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -584,7 +597,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             （{{ $monitorCutoff->format('Y年m月d日') }}までの登録・<strong style="color:#e65100;">有効応募3件まで無料</strong>）
         </p>
         <p style="text-align:center;font-size:0.75rem;color:#aaa;margin-top:6px;margin-bottom:0;">
-            ※ 振込手数料はご負担ください　※ 掲載の継続・停止はいつでも管理ページから操作できます
+            ※ 有効応募 = 重複・スパムを除いた応募 ／ 振込手数料はご負担ください ／ 掲載の継続・停止はいつでも管理ページから操作できます
         </p>
     </div>
 </section>
@@ -639,8 +652,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="col-md-4">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
-                    <p class="merit-card__title">LINE応募で応募率アップ</p>
-                    <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで、応募へのハードルを下げます。フォーム応募にも対応しています。</p>
+                    <p class="merit-card__title">LINE応募で応募率アップ<span style="font-size:0.7rem;background:#1a73e8;color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;">スタンダード</span></p>
+                    <p class="merit-card__body">スタンダードプランでは、求職者が使い慣れたLINEから応募できる仕組みで応募へのハードルを下げます。ベーシックプランはWebフォーム応募に対応しています。</p>
                 </div>
             </div>
         </div>
