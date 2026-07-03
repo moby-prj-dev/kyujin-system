@@ -86,6 +86,7 @@ class StoreJobRequest extends FormRequest
             'salary_note'         => ['nullable', 'string', 'max:500'],
             'contact_email'       => ['required', 'email', 'max:255'],
             'contact_phone'       => ['required', 'regex:/^[0-9]{10,11}$/'],
+            'plan'                => ['required', 'in:basic,standard'],
             'agreement_flag'      => ['required', 'accepted'],
             'terms_agreed'        => ['required', 'accepted'],
         ];

@@ -177,6 +177,71 @@
     </div>
 </div>
 
+{{-- 現在のプラン & プラン変更 --}}
+<div class="form-section mb-4">
+    <h5><i class="bi bi-award me-1"></i> ご契約プラン</h5>
+    @if(session('plan_updated'))
+    <div class="alert alert-success py-2 mb-3" style="font-size:0.9rem;">
+        <i class="bi bi-check-circle-fill me-1"></i>{{ session('plan_updated') }}
+    </div>
+    @endif
+    <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+        <div>
+            <span class="text-muted small">現在のプラン</span><br>
+            @if($job->isStandard())
+                <span class="badge bg-primary fs-6"><i class="bi bi-star-fill me-1"></i>スタンダード</span>
+                <span class="text-muted small ms-2">月額 3,000円 + 応募 3,000円/件(税別)</span>
+            @else
+                <span class="badge bg-secondary fs-6">ベーシック</span>
+                <span class="text-muted small ms-2">月額 0円 + 応募 3,000円/件(税別)</span>
+            @endif
+        </div>
+    </div>
+
+    @if(!$job->isStandard())
+    {{-- ベーシック → スタンダード アップグレード --}}
+    <div class="p-3 rounded" style="background:#f0f7ff;border:1px solid #cfe0f5;">
+        <div class="fw-bold mb-2" style="color:#1a73e8;"><i class="bi bi-arrow-up-circle me-1"></i>スタンダードプランにアップグレード</div>
+        <p class="small text-muted mb-3">月額 3,000円で以下の機能が使えます:</p>
+        <ul class="small mb-3" style="line-height:1.8;">
+            <li>複数求人掲載(最大3件)</li>
+            <li>求人一覧での<strong>優先上位表示</strong></li>
+            <li><strong>LINE応募機能</strong>(他社にない独自機能・応募ハードルが下がります)</li>
+            <li>応募通知の追加宛先(採用担当複数へ)</li>
+            <li>応募データ分析画面</li>
+        </ul>
+        <p class="small text-muted mb-3">
+            <i class="bi bi-info-circle me-1"></i>月3,000円は応募課金1件と同じ額です。応募が1件でも多く発生すれば元が取れる計算になります。
+        </p>
+        <form method="POST" action="{{ route('jobs.plan', ['token' => $job->token]) }}"
+              onsubmit="return confirm('スタンダードプランに切替します。よろしいですか?(月額 3,000円が翌月分より請求対象になります)')">
+            @csrf @method('PATCH')
+            <input type="hidden" name="plan" value="standard">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-star-fill me-1"></i>スタンダードプランに切替する
+            </button>
+        </form>
+    </div>
+    @else
+    {{-- スタンダード → ベーシック ダウングレード --}}
+    <div class="p-3 rounded" style="background:#fff5f5;border:1px solid #f5c6cb;">
+        <div class="fw-bold mb-2" style="color:#8a3a3a;"><i class="bi bi-arrow-down-circle me-1"></i>ベーシックプランに変更</div>
+        <p class="small text-muted mb-3">
+            LINE応募機能・優先上位表示・分析画面などが使えなくなります。<br>
+            複数求人掲載中の場合、2件目以降は自動的に掲載停止となります。
+        </p>
+        <form method="POST" action="{{ route('jobs.plan', ['token' => $job->token]) }}"
+              onsubmit="return confirm('ベーシックプランに変更します。スタンダード限定機能が使えなくなります。よろしいですか?')">
+            @csrf @method('PATCH')
+            <input type="hidden" name="plan" value="basic">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-down me-1"></i>ベーシックに戻す
+            </button>
+        </form>
+    </div>
+    @endif
+</div>
+
 {{-- 応募データ分析(スタンダードプラン限定) --}}
 @if($analytics)
 <div class="form-section mb-4">

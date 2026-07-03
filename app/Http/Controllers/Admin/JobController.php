@@ -92,6 +92,22 @@ class JobController extends Controller
         return back()->with('success', $msg);
     }
 
+    public function togglePlan(Job $job)
+    {
+        $newPlan = $job->isStandard() ? Job::PLAN_BASIC : Job::PLAN_STANDARD;
+
+        // スタンダードに切替時、同じ掲載主の他求人も同期
+        // (プランは契約単位=事業所単位のため)
+        $companyJobs = Job::where('contact_email', $job->contact_email)->orWhere('contact_phone', $job->contact_phone);
+        $companyJobs->update(['plan' => $newPlan]);
+
+        $msg = $newPlan === Job::PLAN_STANDARD
+            ? 'スタンダードプランに切替しました。(同一連絡先の求人 ' . $companyJobs->count() . '件を同期)'
+            : 'ベーシックプランに戻しました。(同一連絡先の求人 ' . $companyJobs->count() . '件を同期)';
+
+        return back()->with('success', $msg);
+    }
+
     public function updateMemo(Request $request, Job $job)
     {
         $request->validate(['admin_memo' => ['nullable', 'string', 'max:2000']]);

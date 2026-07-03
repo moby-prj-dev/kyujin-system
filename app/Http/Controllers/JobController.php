@@ -66,7 +66,15 @@ class JobController extends Controller
 
         $existingCount = $existingJobs->count();
         $isStandardAccount = $existingJobs->contains(fn($j) => $j->isStandard());
-        $inheritPlan = $isStandardAccount ? Job::PLAN_STANDARD : Job::PLAN_BASIC;
+        // プラン決定順:
+        // 1. 既存の求人がスタンダード → 新規求人もスタンダードに揃える(アカウント=事業所単位で管理)
+        // 2. 既存がなくフォームで選択されたプラン → 選択プランを尊重
+        // 3. デフォルト → basic
+        $selectedPlan = $request->input('plan', 'basic') === 'standard' ? Job::PLAN_STANDARD : Job::PLAN_BASIC;
+        $inheritPlan = $isStandardAccount ? Job::PLAN_STANDARD : $selectedPlan;
+        // ベーシック契約が既に存在する場合(=isStandardAccount=false かつ existingCount>0)は、
+        // 新規求人がスタンダード希望でも "同じ連絡先の全求人の同期更新" が必要になり複雑。
+        // シンプルに: 既存契約ありならプラン変更は管理URL経由でお願いする方針
         $maxAllowed  = $isStandardAccount ? Job::STANDARD_MAX_JOBS : 1;
 
         if ($existingCount >= $maxAllowed) {
@@ -354,6 +362,27 @@ class JobController extends Controller
         ]);
 
         return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
+    public function updatePlan(Request $request, string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+
+        $request->validate([
+            'plan' => ['required', 'in:basic,standard'],
+        ]);
+
+        $newPlan = $request->input('plan');
+        // 同じ連絡先の全求人のプランを同期(=事業所アカウント単位で管理)
+        Job::where(function ($q) use ($job) {
+            $q->where('contact_email', $job->contact_email)->orWhere('contact_phone', $job->contact_phone);
+        })->update(['plan' => $newPlan]);
+
+        $msg = $newPlan === Job::PLAN_STANDARD
+            ? 'スタンダードプランに切替しました。LINE応募・優先上位表示・分析画面がご利用いただけます。'
+            : 'ベーシックプランに戻しました。';
+
+        return redirect()->route('jobs.manage', ['token' => $token])->with('plan_updated', $msg);
     }
 
     public function updateNotifications(Request $request, string $token)

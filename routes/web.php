@@ -42,6 +42,7 @@ Route::post('/jobs/{token}/continue', [\App\Http\Controllers\JobController::clas
 Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class, 'close'])->name('jobs.close');
 Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class, 'reopen'])->name('jobs.reopen');
 Route::patch('/jobs/{token}/notifications', [\App\Http\Controllers\JobController::class, 'updateNotifications'])->name('jobs.notifications');
+Route::patch('/jobs/{token}/plan', [\App\Http\Controllers\JobController::class, 'updatePlan'])->name('jobs.plan');
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');
 Route::get('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'create'])->name('disputes.create');
 Route::post('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'store'])->name('disputes.store')->middleware('throttle:10,60');
@@ -90,6 +91,7 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::patch('/jobs/{job}/toggle-hidden', [\App\Http\Controllers\Admin\JobController::class, 'toggleHidden'])->name('jobs.toggle_hidden');
     Route::patch('/jobs/{job}/toggle-monitor', [\App\Http\Controllers\Admin\JobController::class, 'toggleMonitor'])->name('jobs.toggle_monitor');
     Route::patch('/jobs/{job}/toggle-permanently-free', [\App\Http\Controllers\Admin\JobController::class, 'togglePermanentlyFree'])->name('jobs.toggle_permanently_free');
+    Route::patch('/jobs/{job}/toggle-plan', [\App\Http\Controllers\Admin\JobController::class, 'togglePlan'])->name('jobs.toggle_plan');
     Route::patch('/jobs/{job}/memo', [\App\Http\Controllers\Admin\JobController::class, 'updateMemo'])->name('jobs.memo');
     Route::delete('/jobs/{job}', [\App\Http\Controllers\Admin\JobController::class, 'destroy'])->name('jobs.destroy');
 

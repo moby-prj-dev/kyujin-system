@@ -579,7 +579,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <span style="position:absolute;top:-12px;right:16px;background:#1a73e8;color:#fff;font-size:0.72rem;font-weight:800;padding:4px 10px;border-radius:4px;">おすすめ</span>
                     <p style="font-size:0.78rem;color:#1a73e8;font-weight:800;margin-bottom:4px;letter-spacing:.06em;">STANDARD PLAN</p>
                     <h3 style="font-size:1.35rem;font-weight:900;color:#1a1a2e;margin:0 0 12px;">スタンダード</h3>
-                    <p style="font-size:2.2rem;font-weight:900;color:#1a73e8;margin:0;line-height:1;">¥5,000<span style="font-size:1rem;color:#888;font-weight:600;">/月</span></p>
+                    <p style="font-size:2.2rem;font-weight:900;color:#1a73e8;margin:0;line-height:1;">¥3,000<span style="font-size:1rem;color:#888;font-weight:600;">/月</span></p>
                     <p style="font-size:0.85rem;color:#666;margin-top:8px;margin-bottom:16px;">+ 有効応募 <strong style="color:#1a1a2e;">¥3,000/件</strong> (税別)</p>
                     <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
                         <li><i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>ベーシックの内容に加えて</strong></li>

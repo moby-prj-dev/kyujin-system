@@ -292,6 +292,61 @@
     @error('photo') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
+{{-- 掲載プラン選択 --}}
+<div class="form-section">
+    <h5>掲載プラン <span class="text-danger">*</span></h5>
+    <p class="text-muted small mb-3">どちらのプランで掲載するかお選びください。掲載開始後もいつでも変更可能です。</p>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="d-block h-100" style="cursor:pointer;">
+                <input type="radio" name="plan" value="basic" class="btn-check"
+                       {{ old('plan', 'basic') === 'basic' ? 'checked' : '' }} required>
+                <div class="p-3 border rounded h-100 plan-card" style="border-color:#dee2e6;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong style="font-size:1.05rem;">ベーシック</strong>
+                        <span class="text-success fw-bold">¥0/月</span>
+                    </div>
+                    <ul class="small text-muted mb-0" style="padding-left:1.1rem;line-height:1.7;">
+                        <li>掲載無料 + 有効応募 3,000円/件</li>
+                        <li>1事業所につき1求人</li>
+                        <li>Webフォーム応募</li>
+                        <li>応募通知メール(1宛先)</li>
+                    </ul>
+                </div>
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label class="d-block h-100" style="cursor:pointer;">
+                <input type="radio" name="plan" value="standard" class="btn-check"
+                       {{ old('plan') === 'standard' ? 'checked' : '' }} required>
+                <div class="p-3 border rounded h-100 plan-card position-relative" style="border-color:#dee2e6;">
+                    <span class="position-absolute" style="top:-10px;right:12px;background:#1a73e8;color:#fff;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:3px;">おすすめ</span>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong style="font-size:1.05rem;">スタンダード</strong>
+                        <span class="text-primary fw-bold">¥3,000/月</span>
+                    </div>
+                    <ul class="small text-muted mb-0" style="padding-left:1.1rem;line-height:1.7;">
+                        <li>ベーシックの内容に加えて:</li>
+                        <li>複数求人掲載(最大3件)</li>
+                        <li>LINE応募機能・優先上位表示</li>
+                        <li>応募通知の追加宛先・分析画面</li>
+                    </ul>
+                </div>
+            </label>
+        </div>
+    </div>
+    @error('plan') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+    <style>
+        .btn-check:checked + .plan-card {
+            border-color: #1a73e8 !important;
+            background: #f0f7ff;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+        }
+        .plan-card { transition: all .15s; }
+        .plan-card:hover { border-color: #1a73e8 !important; }
+    </style>
+</div>
+
 {{-- 同意 --}}
 <div class="form-section">
     <h5>応募時課金への同意 <span class="text-danger">*</span></h5>

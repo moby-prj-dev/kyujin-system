@@ -155,6 +155,9 @@
                                 <span class="badge" style="background:#fff3e0;color:#e65100;font-size:0.72rem;">HW</span>
                             @else
                                 <span class="badge bg-primary" style="font-size:0.72rem;">CE</span>
+                                @if($job->isStandard())
+                                    <br><span class="badge bg-info text-dark mt-1" style="font-size:0.66rem;"><i class="bi bi-star-fill"></i> Std</span>
+                                @endif
                             @endif
                         </td>
                         <td class="text-center">
@@ -246,6 +249,24 @@
                                         </button>
                                     @endif
                                 </form>
+                                {{-- プラン切替 (basic <-> standard) --}}
+                                @if($job->source === 'care_entry')
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.toggle_plan', $job) }}">
+                                    @csrf @method('PATCH')
+                                    @if($job->isStandard())
+                                        <button type="submit" class="btn btn-xs btn-primary"
+                                                onclick="return confirm('スタンダードプランを解除してベーシックに戻しますか？(同じ連絡先の全求人が対象)')">
+                                            <i class="bi bi-star-fill me-1"></i>Std
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-xs btn-outline-primary"
+                                                onclick="return confirm('スタンダードプランに切替しますか?(同じ連絡先の全求人が対象・LINE応募と分析画面が有効になります)')">
+                                            <i class="bi bi-star me-1"></i>Std
+                                        </button>
+                                    @endif
+                                </form>
+                                @endif
                                 {{-- 編集 --}}
                                 <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
                                    class="btn btn-xs btn-outline-primary" target="_blank">

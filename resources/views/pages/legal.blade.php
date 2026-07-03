@@ -63,7 +63,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>スタンダード</strong></td>
-                                    <td><strong>5,000円(税別)/月</strong></td>
+                                    <td><strong>3,000円(税別)/月</strong></td>
                                     <td>有効応募1件につき<br><strong>3,000円(税別)</strong></td>
                                 </tr>
                             </tbody>
