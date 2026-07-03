@@ -165,19 +165,22 @@ class ApplyController extends Controller
         $request->validate([
             'applicant_name' => ['required', 'string', 'max:100'],
             'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
+            'email'          => ['nullable', 'email', 'max:200'],
         ], [
             'applicant_name.required' => 'お名前を入力してください。',
             'phone.required'          => '電話番号を入力してください。',
             'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
+            'email.email'             => 'メールアドレスの形式が正しくありません。',
         ]);
 
-        DB::transaction(function () use ($request, $job, $conditions, $validationService) {
+        $application = null;
+        DB::transaction(function () use ($request, $job, $conditions, $validationService, &$application) {
             $application = Application::create([
                 'job_id'           => $job->id,
                 'application_type' => Application::TYPE_FORM,
                 'applicant_name'   => $request->applicant_name,
                 'phone'            => $request->phone,
-                'email'            => null,
+                'email'            => $request->input('email') ?: null,
                 'status'           => Application::STATUS_RECEIVED,
                 'applied_at'       => now(),
             ]);
@@ -208,6 +211,16 @@ class ApplyController extends Controller
 
             $this->notifyEmployer($job, $application, $conditions);
         });
+
+        // 応募者に応募控えメール送信(任意入力・失敗しても応募自体は成立)
+        if ($application && $request->filled('email')) {
+            try {
+                Mail::to($request->input('email'))
+                    ->send(new \App\Mail\ApplicantConfirmationMail($job, $application));
+            } catch (\Throwable $e) {
+                Log::warning('応募者控えメール送信失敗: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('lp.apply.thanks', ['token' => $token]);
     }

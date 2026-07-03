@@ -411,13 +411,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 @error('applicant_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div class="mb-0">
+            <div class="mb-3">
                 <label class="form-label">電話番号<span class="required-badge">必須</span></label>
                 <input type="tel" name="phone"
                        class="form-control @error('phone') is-invalid @enderror"
                        value="{{ old('phone') }}" placeholder="09012345678">
                 <div class="form-text small text-muted">ハイフンなしで入力してください</div>
                 @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-0">
+                <label class="form-label">メールアドレス<span class="badge bg-secondary ms-1" style="font-size:0.68rem;">任意</span></label>
+                <input type="email" name="email"
+                       class="form-control @error('email') is-invalid @enderror"
+                       value="{{ old('email') }}" placeholder="you@example.com">
+                <div class="form-text small text-muted">
+                    <i class="bi bi-info-circle me-1"></i>ご入力いただくと、応募内容の控えメールをお送りします
+                </div>
+                @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
         </div>
 

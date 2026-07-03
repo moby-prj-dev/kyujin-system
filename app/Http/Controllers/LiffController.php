@@ -163,22 +163,25 @@ class LiffController extends Controller
         $request->validate([
             'applicant_name' => ['required', 'string', 'max:100'],
             'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
+            'email'          => ['nullable', 'email', 'max:200'],
             'line_user_id'   => ['required', 'string'],
             'line_display_name' => ['nullable', 'string'],
         ], [
             'applicant_name.required' => 'お名前を入力してください。',
             'phone.required'          => '電話番号を入力してください。',
             'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
+            'email.email'             => 'メールアドレスの形式が正しくありません。',
             'line_user_id.required'   => 'LINEログインが完了していません。',
         ]);
 
-        DB::transaction(function () use ($request, $job) {
+        $application = null;
+        DB::transaction(function () use ($request, $job, &$application) {
             $application = Application::create([
                 'job_id'           => $job->id,
                 'application_type' => Application::TYPE_LINE,
                 'applicant_name'   => $request->applicant_name,
                 'phone'            => $request->phone,
-                'email'            => null,
+                'email'            => $request->email ?: null,
                 'status'           => Application::STATUS_RECEIVED,
                 'applied_at'       => now(),
             ]);
@@ -194,6 +197,16 @@ class LiffController extends Controller
 
             $this->notifyEmployer($job, $application);
         });
+
+        // 応募者に応募控えメール送信(任意入力・失敗しても応募自体は成立)
+        if ($application && $request->filled('email')) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($request->email)
+                    ->send(new \App\Mail\ApplicantConfirmationMail($job, $application));
+            } catch (\Throwable $e) {
+                Log::warning('応募者控えメール送信失敗: ' . $e->getMessage());
+            }
+        }
 
         return response()->json(['redirect' => route('liff.thanks', ['token' => $token])]);
     }
