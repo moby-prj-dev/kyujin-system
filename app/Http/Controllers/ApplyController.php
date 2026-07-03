@@ -64,14 +64,14 @@ class ApplyController extends Controller
         $conditions = $this->parseConditions($request);
         $via        = $request->input('via') === 'line' ? 'line' : null;
 
-        if ($this->hasConditions($conditions)) {
+        // 完全な条件(エリア+職種)あり → 確認画面
+        if ($this->hasConditions($conditions) && !empty($conditions['job_type_ids'])) {
             if ($via === 'line') {
                 return redirect()->route('line.entry', array_merge(
                     ['token' => $job->token],
                     $this->conditionsToQuery($conditions),
                 ));
             }
-            // 検索条件あり → 確認画面
             return view('lp.apply', [
                 'job'        => $job,
                 'step'       => 'confirm',
@@ -81,7 +81,7 @@ class ApplyController extends Controller
             ]);
         }
 
-        // 検索条件なし → ミニフォーム（募集要項確認 + 条件選択）
+        // 条件不十分(エリアのみ等) → ミニフォーム(募集要項確認 + 条件選択)
         return view('lp.apply', [
             'job'             => $job,
             'step'            => 'select',
@@ -98,6 +98,13 @@ class ApplyController extends Controller
         $job        = $this->findActiveJob($token);
         $conditions = $this->parseConditions($request);
         $via        = $request->input('via') === 'line' ? 'line' : null;
+
+        // 希望職種は必須(エリアだけで「一致」判定されるのを防ぐ)
+        if (empty($conditions['job_type_ids'])) {
+            return redirect()->route('lp.apply', ['token' => $token, 'via' => $via])
+                ->withErrors(['job_type_ids' => '希望職種を1つ以上選択してください。'])
+                ->withInput();
+        }
 
         $mismatches = $matchService->getMismatches($job, $conditions);
 
@@ -142,6 +149,12 @@ class ApplyController extends Controller
     {
         $job        = $this->findActiveJob($token);
         $conditions = $this->parseConditions($request);
+
+        // 希望職種必須(judge()と同じ理由)
+        if (empty($conditions['job_type_ids'])) {
+            return redirect()->route('lp.apply', ['token' => $token])
+                ->withErrors(['job_type_ids' => '希望職種を1つ以上選択してください。']);
+        }
 
         // サーバーサイドでも判定（改ざん防止）
         if (!$matchService->isMatch($job, $conditions) && $this->hasConditions($conditions)) {

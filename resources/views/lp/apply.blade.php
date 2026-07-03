@@ -339,17 +339,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="card-section">
-            <div class="section-title"><i class="bi bi-briefcase-fill"></i> 希望職種</div>
-            <div>
+            <div class="section-title"><i class="bi bi-briefcase-fill"></i> 希望職種<span class="required-badge">必須</span></div>
+            <div class="form-text small text-muted mb-2" style="font-size:0.78rem;">
+                <i class="bi bi-info-circle me-1"></i>希望する職種を1つ以上選択してください(この求人と照合します)
+            </div>
+            <div id="jobTypeGroup">
                 @foreach($jobTypes as $category => $types)
                     <p class="text-muted fw-bold mb-1 mt-2" style="font-size:0.78rem;">{{ $category }}</p>
                     @foreach($types as $type)
                         <label class="check-tag">
-                            <input type="checkbox" name="job_type_ids[]" value="{{ $type->id }}">
+                            <input type="checkbox" name="job_type_ids[]" value="{{ $type->id }}" class="job-type-check">
                             {{ $type->name }}
                         </label>
                     @endforeach
                 @endforeach
+            </div>
+            <div id="jobTypeError" class="text-danger small mt-2" style="display:none;">
+                <i class="bi bi-exclamation-circle me-1"></i>希望職種を1つ以上選択してください
             </div>
         </div>
 
@@ -508,6 +514,23 @@ document.querySelectorAll('.check-tag').forEach(label => {
         setTimeout(() => label.classList.toggle('selected', cb.checked), 0);
     });
 });
+
+// select step: 希望職種を1つ以上選択させる
+(function() {
+    const jobTypeGroup = document.getElementById('jobTypeGroup');
+    if (!jobTypeGroup) return;
+    const form = jobTypeGroup.closest('form');
+    if (!form) return;
+    form.addEventListener('submit', function(e) {
+        const anyChecked = form.querySelectorAll('input.job-type-check:checked').length > 0;
+        if (!anyChecked) {
+            e.preventDefault();
+            const err = document.getElementById('jobTypeError');
+            if (err) err.style.display = 'block';
+            jobTypeGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
