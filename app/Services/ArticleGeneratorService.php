@@ -423,28 +423,45 @@ class ArticleGeneratorService
     public static function dynamicDefinitions(): array
     {
         $areas = [
-            'naha'         => ['那覇市',   ['介護', '福祉', '求人', '那覇']],
-            'urasoe'       => ['浦添市',   ['介護', '福祉', '求人', '浦添']],
-            'ginowan'      => ['宜野湾市', ['介護', '福祉', '求人', '宜野湾']],
-            'okinawa_city' => ['沖縄市',   ['介護', '福祉', '求人', '沖縄市']],
-            'uruma'        => ['うるま市', ['介護', '福祉', '求人', 'うるま']],
-            'tomigusuku'   => ['豊見城市', ['介護', '福祉', '求人', '豊見城']],
-            'nago'         => ['名護市',   ['介護', '福祉', '求人', '名護']],
-            'itoman'       => ['糸満市',   ['介護', '福祉', '求人', '糸満']],
-            'ishigaki'     => ['石垣市',   ['介護', '福祉', '求人', '石垣']],
-            'miyakojima'   => ['宮古島市', ['介護', '福祉', '求人', '宮古島']],
+            'naha'            => ['那覇市',    ['介護', '福祉', '求人', '那覇']],
+            'urasoe'          => ['浦添市',    ['介護', '福祉', '求人', '浦添']],
+            'ginowan'         => ['宜野湾市',  ['介護', '福祉', '求人', '宜野湾']],
+            'okinawa_city'    => ['沖縄市',    ['介護', '福祉', '求人', '沖縄市']],
+            'uruma'           => ['うるま市',  ['介護', '福祉', '求人', 'うるま']],
+            'tomigusuku'      => ['豊見城市',  ['介護', '福祉', '求人', '豊見城']],
+            'nago'            => ['名護市',    ['介護', '福祉', '求人', '名護']],
+            'itoman'          => ['糸満市',    ['介護', '福祉', '求人', '糸満']],
+            'ishigaki'        => ['石垣市',    ['介護', '福祉', '求人', '石垣']],
+            'miyakojima'      => ['宮古島市',  ['介護', '福祉', '求人', '宮古島']],
+            'nanjo'           => ['南城市',    ['介護', '福祉', '求人', '南城']],
+            'yonabaru'        => ['与那原町',  ['介護', '福祉', '求人', '与那原']],
+            'haebaru'         => ['南風原町',  ['介護', '福祉', '求人', '南風原']],
+            'nishihara'       => ['西原町',    ['介護', '福祉', '求人', '西原']],
+            'yaese'           => ['八重瀬町',  ['介護', '福祉', '求人', '八重瀬']],
+            'yomitan'         => ['読谷村',    ['介護', '福祉', '求人', '読谷']],
+            'chatan'          => ['北谷町',    ['介護', '福祉', '求人', '北谷']],
+            'kadena'          => ['嘉手納町',  ['介護', '福祉', '求人', '嘉手納']],
+            'kitanakagusuku'  => ['北中城村',  ['介護', '福祉', '求人', '北中城']],
+            'nakagusuku'      => ['中城村',    ['介護', '福祉', '求人', '中城']],
         ];
 
         // 各職種に「カテゴリ視点」を付与: qualification=国家資格系 / job_type=その他
         $jobTypes = [
-            'care_staff_facility'      => ['介護職員（施設）',     'job_type',      ['介護職員', '施設', '仕事内容', '給与', '夜勤']],
-            'home_helper'              => ['ホームヘルパー',        'job_type',      ['訪問介護', 'ホームヘルパー', '仕事内容', '給与']],
-            'care_manager'             => ['ケアマネジャー',        'qualification', ['ケアマネ', '介護支援専門員', '仕事内容', '給与']],
-            'care_welfare_worker'      => ['介護福祉士',            'qualification', ['介護福祉士', '資格', '仕事内容', '給与']],
-            'service_provision_manager'=> ['サービス提供責任者',    'qualification', ['サ責', 'サービス提供責任者', '仕事内容', '給与']],
-            'childcare_worker'         => ['保育士',                'qualification', ['保育士', '児童福祉', '仕事内容', '給与']],
-            'life_support_worker'      => ['生活支援員',            'job_type',      ['生活支援員', '障害福祉', '仕事内容', '給与']],
-            'social_welfare_worker'    => ['社会福祉士',            'qualification', ['社会福祉士', '相談支援', '仕事内容', '給与']],
+            'care_staff_facility'       => ['介護職員（施設）',      'job_type',      ['介護職員', '施設', '仕事内容', '給与', '夜勤']],
+            'home_helper'               => ['ホームヘルパー',        'job_type',      ['訪問介護', 'ホームヘルパー', '仕事内容', '給与']],
+            'care_manager'              => ['ケアマネジャー',        'qualification', ['ケアマネ', '介護支援専門員', '仕事内容', '給与']],
+            'care_welfare_worker'       => ['介護福祉士',            'qualification', ['介護福祉士', '資格', '仕事内容', '給与']],
+            'service_provision_manager' => ['サービス提供責任者',    'qualification', ['サ責', 'サービス提供責任者', '仕事内容', '給与']],
+            'childcare_worker'          => ['保育士',                'qualification', ['保育士', '児童福祉', '仕事内容', '給与']],
+            'life_support_worker'       => ['生活支援員',            'job_type',      ['生活支援員', '障害福祉', '仕事内容', '給与']],
+            'social_welfare_worker'     => ['社会福祉士',            'qualification', ['社会福祉士', '相談支援', '仕事内容', '給与']],
+            'nurse'                     => ['看護師',                'qualification', ['看護師', '施設看護', '仕事内容', '給与']],
+            'associate_nurse'           => ['准看護師',              'qualification', ['准看護師', '施設看護', '仕事内容', '給与']],
+            'nurse_assistant'           => ['看護助手',              'job_type',      ['看護助手', '医療事務補助', '未経験', '仕事内容']],
+            'physical_therapist'        => ['理学療法士',            'qualification', ['理学療法士', 'PT', 'リハビリ', '給与']],
+            'occupational_therapist'    => ['作業療法士',            'qualification', ['作業療法士', 'OT', 'リハビリ', '給与']],
+            'child_counselor'           => ['児童指導員',            'job_type',      ['児童指導員', '児童福祉', '放課後デイ', '仕事内容']],
+            'childcare_assistant'       => ['保育補助',              'job_type',      ['保育補助', '保育園', '未経験', '仕事内容']],
         ];
 
         $definitions = [];
@@ -580,6 +597,30 @@ class ArticleGeneratorService
             ['slug' => 'kaigo-rirekisyo-okinawa',           'category' => 'beginner', 'area' => null, 'job_type' => null,                   'keywords' => ['介護職', '履歴書', '書き方', '志望動機', '自己PR', '沖縄']],
             ['slug' => 'kaigo-shisetsu-shurui-okinawa',     'category' => 'beginner', 'area' => null, 'job_type' => null,                   'keywords' => ['介護施設', '種類', '違い', '特養', '老健', 'デイサービス', '沖縄']],
             ['slug' => 'kaigo-yakin-syosinsya-okinawa',     'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '夜勤', '初心者', '不安', '対策', '沖縄']],
+        ];
+    }
+
+    /**
+     * Phase 7: 実務・準備・面接・履歴書などの実用トピック
+     */
+    public static function practicalDefinitions(): array
+    {
+        return [
+            ['slug' => 'kaigo-mensetsu-shitsumon-okinawa',       'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '面接', 'よくある質問', '回答例', '沖縄', '対策']],
+            ['slug' => 'kaigo-jishoku-riyu-okinawa',             'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '志望動機', '例文', '書き方', '沖縄']],
+            ['slug' => 'kaigo-jikou-pr-okinawa',                 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '自己PR', '例文', '未経験', '経験者', '沖縄']],
+            ['slug' => 'kaigo-shokumu-keirekisho-okinawa',       'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '職務経歴書', '書き方', 'テンプレート', '沖縄']],
+            ['slug' => 'kaigo-tenshoku-jiki-okinawa',            'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '転職', '時期', 'ベストタイミング', '4月', '10月', '沖縄']],
+            ['slug' => 'kaigo-tenshoku-sagashikata-okinawa',     'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '転職サイト', '選び方', 'ハローワーク', '違い', '沖縄']],
+            ['slug' => 'kaigo-syakainhoken-okinawa',             'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '社会保険', '福利厚生', 'パート', '扶養', '沖縄']],
+            ['slug' => 'kaigo-shinjin-okinawa',                  'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '新人', '仕事', '覚え方', '心構え', '沖縄']],
+            ['slug' => 'kaigo-strees-taisaku-okinawa',           'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', 'ストレス', '対処法', 'メンタル', '長続き', '沖縄']],
+            ['slug' => 'kaigo-tenshoku-ideal-jobplace-okinawa',  'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '職場選び', 'ホワイト', '見分け方', 'ブラック', '沖縄']],
+            ['slug' => 'kaigo-shinsotsu-okinawa',                'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '新卒', '就職活動', '志望動機', '沖縄']],
+            ['slug' => 'kaigo-fukugyou-okinawa',                 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '副業', 'ダブルワーク', '注意点', '沖縄']],
+            ['slug' => 'kaigo-w-license-okinawa',                'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', 'ダブルライセンス', '介護福祉士', 'ケアマネ', '取得順', '沖縄']],
+            ['slug' => 'kaigo-yasumi-okinawa',                   'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '休み', '有給', '年間休日', '実態', '沖縄']],
+            ['slug' => 'kaigo-teacher-okinawa',                  'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '実務者研修', '教員', '講師', '沖縄']],
         ];
     }
 

@@ -35,6 +35,7 @@ class GenerateContentArticles extends Command
                     ArticleGeneratorService::qualificationDefinitions(),// Phase 4: 資格取得系
                     ArticleGeneratorService::columnDefinitions(),       // Phase 5: 業界動向
                     ArticleGeneratorService::beginnerDefinitions(),     // Phase 6: 初心者向け
+                    ArticleGeneratorService::practicalDefinitions(),    // Phase 7: 面接・履歴書等 実用トピック
                 );
                 $definitions = array_values(array_filter($merged, fn($d) => !in_array($d['slug'], $existingSlugs)));
             }
