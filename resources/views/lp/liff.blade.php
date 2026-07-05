@@ -60,12 +60,16 @@
         .job-card{max-width:88%;background:#fff;border-radius:12px;border-top-left-radius:4px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
         .job-card-title{font-weight:800;font-size:0.96rem;color:#1a1a2e;margin:0 0 4px;line-height:1.4;}
         .job-card-company{font-size:0.78rem;color:#666;margin:0 0 10px;}
-        .job-card-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+        .job-card-section{margin-top:8px;}
+        .job-card-section-label{font-size:0.68rem;font-weight:800;color:#888;letter-spacing:.04em;margin-bottom:4px;}
+        .job-card-badges{display:flex;flex-wrap:wrap;gap:5px;}
         .job-badge{font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:10px;}
         .badge-area{background:#e6f4ea;color:#137333;}
         .badge-type{background:#e8f0fe;color:#1967d2;}
         .badge-emp{background:#fef7e0;color:#8a6d00;}
-        .job-card-salary{font-weight:800;color:#e65100;font-size:0.95rem;margin-top:8px;}
+        .badge-cond{background:#f3e8fd;color:#5b2d95;}
+        .badge-appeal{background:#ffe5ec;color:#c2185b;}
+        .job-card-salary{font-weight:800;color:#e65100;font-size:0.95rem;margin-top:10px;padding-top:8px;border-top:1px solid #eef1f5;}
         .job-card-desc{font-size:0.78rem;color:#555;line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px solid #eef1f5;}
 
         /* Action buttons */
@@ -138,10 +142,13 @@
 <div class="error-toast" id="errorToast"></div>
 
 @php
-    $areaNames = $job->jobAreas->take(3)->map(fn($ja) => $ja->area?->name)->filter()->values();
-    $typeNames = $job->jobJobTypes->take(3)->map(fn($jt) => $jt->jobType?->name)->filter()->values();
-    $empNames  = $job->jobEmploymentTypes->take(3)->map(fn($et) => $et->employmentType?->name)->filter()->values();
-    $descShort = $job->free_text ? mb_strimwidth($job->free_text, 0, 160, '…') : null;
+    $job->loadMissing(['jobAreas.area', 'jobJobTypes.jobType', 'jobEmploymentTypes.employmentType', 'jobConditions.condition', 'jobAppeals.appeal']);
+    $areaNames   = $job->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->values();
+    $typeNames   = $job->jobJobTypes->map(fn($jt) => $jt->jobType?->name)->filter()->values();
+    $empNames    = $job->jobEmploymentTypes->map(fn($et) => $et->employmentType?->name)->filter()->values();
+    $condNames   = $job->jobConditions->map(fn($jc) => $jc->condition?->name)->filter()->values();
+    $appealNames = $job->jobAppeals->map(fn($ja) => $ja->appeal?->name)->filter()->values();
+    $descShort   = $job->free_text ? mb_strimwidth($job->free_text, 0, 160, '…') : null;
 @endphp
 
 <script>
@@ -156,6 +163,8 @@ const JOB = {
     areas:   @json($areaNames),
     types:   @json($typeNames),
     emps:    @json($empNames),
+    conds:   @json($condNames),
+    appeals: @json($appealNames),
     salary:  @json($job->salaryText()),
     desc:    @json($descShort),
 };
@@ -215,6 +224,17 @@ function addUserBubble(text) {
 }
 
 function addJobCard() {
+    const section = (label, items, badgeClass) => {
+        if (!items || items.length === 0) return '';
+        return `
+            <div class="job-card-section">
+                <div class="job-card-section-label">${escapeHtml(label)}</div>
+                <div class="job-card-badges">
+                    ${items.map(v => `<span class="job-badge ${badgeClass}">${escapeHtml(v)}</span>`).join('')}
+                </div>
+            </div>`;
+    };
+
     const el = document.createElement('div');
     el.className = 'row bot';
     el.innerHTML = `
@@ -222,11 +242,11 @@ function addJobCard() {
         <div class="job-card">
             <div class="job-card-title">${escapeHtml(JOB.title)}</div>
             <div class="job-card-company"><i class="bi bi-building"></i> ${escapeHtml(JOB.company || '')}</div>
-            <div class="job-card-badges">
-                ${JOB.areas.map(a => `<span class="job-badge badge-area"><i class="bi bi-geo-alt-fill"></i> ${escapeHtml(a)}</span>`).join('')}
-                ${JOB.types.map(t => `<span class="job-badge badge-type">${escapeHtml(t)}</span>`).join('')}
-                ${JOB.emps.map(e => `<span class="job-badge badge-emp">${escapeHtml(e)}</span>`).join('')}
-            </div>
+            ${section('勤務エリア', JOB.areas, 'badge-area')}
+            ${section('職種', JOB.types, 'badge-type')}
+            ${section('雇用形態', JOB.emps, 'badge-emp')}
+            ${section('勤務条件', JOB.conds, 'badge-cond')}
+            ${section('アピールポイント', JOB.appeals, 'badge-appeal')}
             ${JOB.salary ? `<div class="job-card-salary">${escapeHtml(JOB.salary)}</div>` : ''}
             ${JOB.desc ? `<div class="job-card-desc">${escapeHtml(JOB.desc)}</div>` : ''}
         </div>`;
