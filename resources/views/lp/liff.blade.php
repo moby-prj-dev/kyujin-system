@@ -257,14 +257,23 @@ document.getElementById('backBtn').addEventListener('click', () => {
     document.getElementById('step1').style.display = 'block';
 });
 
+function focusField(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.focus();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('is-invalid');
+    setTimeout(() => el.classList.remove('is-invalid'), 3000);
+}
+
 document.getElementById('submitBtn').addEventListener('click', async () => {
     const name  = document.getElementById('applicantName').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const email = document.getElementById('email').value.trim();
 
-    if (!name)  { showError('お名前を入力してください。'); return; }
-    if (!/^[0-9]{10,11}$/.test(phone)) { showError('電話番号はハイフンなしの数字10〜11桁で入力してください。'); return; }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('メールアドレスの形式が正しくありません。'); return; }
+    if (!name)  { showError('お名前を入力してください。'); focusField('applicantName'); return; }
+    if (!/^[0-9]{10,11}$/.test(phone)) { showError('電話番号はハイフンなしの数字10〜11桁で入力してください。'); focusField('phone'); return; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('メールアドレスの形式が正しくありません。'); focusField('email'); return; }
 
     document.getElementById('submitBtn').disabled = true;
     document.getElementById('loadingOverlay').classList.add('show');
