@@ -215,6 +215,15 @@
     </div>
     @endif
 
+    @if($job->isPlanLocked())
+    {{-- プラン変更ロック中 --}}
+    <div class="alert alert-warning mb-3" style="font-size:0.9rem;">
+        <i class="bi bi-lock-fill me-1"></i>
+        <strong>プラン変更ロック中</strong>({{ $job->plan_locked_until->format('Y年n月j日') }}まで)<br>
+        <span class="small">プラン変更後30日間は再変更いただけません。頻繁な切替による課金の混乱を防ぐための措置となります。</span>
+    </div>
+    @endif
+
     @if(!$job->isStandard())
     {{-- ベーシック → スタンダード アップグレード --}}
     <div class="p-3 rounded" style="background:#f0f7ff;border:1px solid #cfe0f5;">
@@ -228,13 +237,14 @@
             <li>応募データ分析画面</li>
         </ul>
         <p class="small text-muted mb-3">
-            <i class="bi bi-info-circle me-1"></i>月3,000円は応募課金1件と同じ額です。応募が1件でも多く発生すれば元が取れる計算になります。
+            <i class="bi bi-info-circle me-1"></i>月3,000円は応募課金1件と同じ額です。応募が1件でも多く発生すれば元が取れる計算になります。<br>
+            <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
         </p>
         <form method="POST" action="{{ route('jobs.plan', ['token' => $job->token]) }}"
-              onsubmit="return confirm('スタンダードプランに切替します。よろしいですか?(月額 3,000円が翌月分より請求対象になります)')">
+              onsubmit="return confirm('スタンダードプランに切替します。よろしいですか?\n\n・月額 3,000円が翌月1日から請求対象になります\n・プラン変更後30日間は再変更できません')">
             @csrf @method('PATCH')
             <input type="hidden" name="plan" value="standard">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" @if($job->isPlanLocked()) disabled @endif>
                 <i class="bi bi-star-fill me-1"></i>スタンダードプランに切替する
             </button>
         </form>
@@ -245,13 +255,14 @@
         <div class="fw-bold mb-2" style="color:#8a3a3a;"><i class="bi bi-arrow-down-circle me-1"></i>ベーシックプランに変更</div>
         <p class="small text-muted mb-3">
             LINE応募機能・優先上位表示・分析画面などが使えなくなります。<br>
-            複数求人掲載中の場合、2件目以降は自動的に掲載停止となります。
+            複数求人掲載中の場合、2件目以降は自動的に掲載停止となります。<br>
+            <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
         </p>
         <form method="POST" action="{{ route('jobs.plan', ['token' => $job->token]) }}"
-              onsubmit="return confirm('ベーシックプランに変更します。スタンダード限定機能が使えなくなります。よろしいですか?')">
+              onsubmit="return confirm('ベーシックプランに変更します。よろしいですか?\n\n・スタンダード限定機能が使えなくなります\n・プラン変更後30日間は再変更できません')">
             @csrf @method('PATCH')
             <input type="hidden" name="plan" value="basic">
-            <button type="submit" class="btn btn-outline-secondary btn-sm">
+            <button type="submit" class="btn btn-outline-secondary btn-sm" @if($job->isPlanLocked()) disabled @endif>
                 <i class="bi bi-arrow-down me-1"></i>ベーシックに戻す
             </button>
         </form>

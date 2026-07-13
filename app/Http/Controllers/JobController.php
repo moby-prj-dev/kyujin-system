@@ -387,12 +387,25 @@ class JobController extends Controller
         $newPlan = $request->input('plan');
         $oldPlan = $job->plan;
 
-        // 同じ連絡先の全求人のプランを同期(=事業所アカウント単位で管理)
-        $updates = ['plan' => $newPlan];
-        // プランが実際に変わる場合のみ plan_started_at を更新
-        if ($oldPlan !== $newPlan) {
-            $updates['plan_started_at'] = $newPlan === Job::PLAN_STANDARD ? now() : null;
+        // 何も変わらないなら早期リターン
+        if ($oldPlan === $newPlan) {
+            return redirect()->route('jobs.manage', ['token' => $token]);
         }
+
+        // ロック期間中は変更を弾く(悪用防止)
+        if ($job->isPlanLocked()) {
+            return redirect()->route('jobs.manage', ['token' => $token])
+                ->withErrors([
+                    'plan' => 'プラン変更後30日間は再変更いただけません(' . $job->plan_locked_until->format('Y年n月j日') . 'まで)。ご不便をおかけしますが、頻繁なプラン切替による課金の混乱を防ぐための措置となります。',
+                ]);
+        }
+
+        // 同じ連絡先の全求人のプランを同期(=事業所アカウント単位で管理)
+        $updates = [
+            'plan'              => $newPlan,
+            'plan_started_at'   => $newPlan === Job::PLAN_STANDARD ? now() : null,
+            'plan_locked_until' => now()->addDays(Job::PLAN_LOCK_DAYS),
+        ];
         Job::where(function ($q) use ($job) {
             $q->where('contact_email', $job->contact_email)->orWhere('contact_phone', $job->contact_phone);
         })->update($updates);
