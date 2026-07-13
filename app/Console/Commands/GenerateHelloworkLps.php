@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class GenerateHelloworkLps extends Command
 {
-    protected $signature   = 'hellowork:generate-lps {--limit=5 : 生成するLP件数}';
+    protected $signature   = 'hellowork:generate-lps {--limit=5 : 生成するLP件数} {--regenerate : 既存の全HW求人を再生成(--limitを無視して全件対象)}';
     protected $description = 'ハローワーク求人JSONからAI生成LPを作成する';
 
     private const JSON_PATH = 'scripts/hellowork_okinawa_kaigo.json';
@@ -28,20 +28,21 @@ class GenerateHelloworkLps extends Command
             return self::FAILURE;
         }
 
-        $limit      = (int) $this->option('limit');
-        $today      = now()->startOfDay();
-        $areas      = MasterArea::where('prefecture', '沖縄県')->get();
-        $empTypes   = MasterEmploymentType::all();
-        $jobTypes   = MasterJobType::all();
-        $conditions = MasterCondition::all();
+        $limit       = (int) $this->option('limit');
+        $regenerate  = (bool) $this->option('regenerate');
+        $today       = now()->startOfDay();
+        $areas       = MasterArea::where('prefecture', '沖縄県')->get();
+        $empTypes    = MasterEmploymentType::all();
+        $jobTypes    = MasterJobType::all();
+        $conditions  = MasterCondition::all();
 
-        // 既にDBに存在するHW求人番号(これらはスキップ)
+        // 既にDBに存在するHW求人番号(通常は「これらはスキップ」/再生成モードは対象)
         $existingNos = Job::where('source', 'hellowork')
             ->whereNotNull('hw_job_no')
             ->pluck('hw_job_no')
             ->all();
 
-        // JSON読み込み: 期限内・未取込み・受付年月日降順で上位N件
+        // JSON読み込み: 期限内・受付年月日降順
         $all = collect(json_decode(file_get_contents($path), true))
             ->filter(function ($j) use ($today) {
                 if (empty($j['紹介期限日'])) return false;
@@ -50,22 +51,37 @@ class GenerateHelloworkLps extends Command
                 } catch (\Exception $e) {
                     return false;
                 }
-            })
-            ->reject(function ($j) use ($existingNos) {
+            });
+
+        // 通常モードは既存をスキップ、再生成モードは全件対象
+        if (!$regenerate) {
+            $all = $all->reject(function ($j) use ($existingNos) {
                 $no = $j['求人番号'] ?? null;
                 return $no !== null && in_array($no, $existingNos, true);
-            })
+            });
+        }
+
+        $all = $all
             ->sortByDesc(function ($j) {
                 try {
                     return Carbon::createFromFormat('Y年n月j日', $j['受付年月日'] ?? '')->timestamp;
                 } catch (\Exception $e) {
                     return 0;
                 }
-            })
-            ->take($limit)
-            ->values();
+            });
 
-        $this->info("既存HW求人: " . count($existingNos) . "件 / 今回追加: {$all->count()}件");
+        // limit適用は通常モードのみ(再生成は全件)
+        if (!$regenerate) {
+            $all = $all->take($limit);
+        }
+
+        $all = $all->values();
+
+        if ($regenerate) {
+            $this->info("【再生成モード】全HW求人を対象: {$all->count()}件を処理します(所要3-4時間・Gemini API使用)");
+        } else {
+            $this->info("既存HW求人: " . count($existingNos) . "件 / 今回追加: {$all->count()}件");
+        }
 
         if ($all->isEmpty()) {
             $this->info('新規に追加すべきHW求人がありませんでした(期限切れ削除はcleanup-expiredが行います)。');
