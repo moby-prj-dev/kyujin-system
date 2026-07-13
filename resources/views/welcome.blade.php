@@ -104,27 +104,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </p>
             </div>
             <div class="col-lg-6">
-                <div class="hero__visual">
-                    <div class="hero__visual-card hero__visual-card--green">
-                        <span class="hero__visual-icon text-success"><i class="bi bi-geo-alt-fill"></i></span>
-                        <div class="hero__visual-label">那覇・南部</div>
-                        <div class="hero__visual-sub">那覇市・糸満市ほか</div>
-                    </div>
-                    <div class="hero__visual-card hero__visual-card--blue">
-                        <span class="hero__visual-icon text-primary"><i class="bi bi-geo-alt-fill"></i></span>
-                        <div class="hero__visual-label">中部エリア</div>
-                        <div class="hero__visual-sub">浦添市・沖縄市ほか</div>
-                    </div>
-                    <div class="hero__visual-card hero__visual-card--teal">
-                        <span class="hero__visual-icon" style="color:#00897b"><i class="bi bi-geo-alt-fill"></i></span>
-                        <div class="hero__visual-label">北部エリア</div>
-                        <div class="hero__visual-sub">名護市・恩納村ほか</div>
-                    </div>
-                    <div class="hero__visual-card hero__visual-card--orange">
-                        <span class="hero__visual-icon text-warning"><i class="bi bi-geo-alt-fill"></i></span>
-                        <div class="hero__visual-label">離島エリア</div>
-                        <div class="hero__visual-sub">石垣市・宮古島市ほか</div>
-                    </div>
+                <div class="hero__image">
+                    <picture>
+                        <source srcset="{{ asset('images/hero.webp') }}" type="image/webp">
+                        <img src="{{ asset('images/hero.jpg') }}"
+                             alt="沖縄の介護・福祉求人サイト Care Entry - 介護施設・福祉サービス・保育・看護の仕事情報"
+                             width="1248" height="832" fetchpriority="high"
+                             style="width:100%;height:auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.12);">
+                    </picture>
                 </div>
             </div>
         </div>
