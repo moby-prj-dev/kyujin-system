@@ -122,6 +122,8 @@ class JobController extends Controller
                 'company_name'             => $request->company_name,
                 'status'                   => Job::STATUS_PENDING,
                 'plan'                     => $inheritPlan,
+                // スタンダード契約時は plan_started_at を記録(翌月1日から月額請求)
+                'plan_started_at'          => $inheritPlan === Job::PLAN_STANDARD ? now() : null,
                 'contact_email'            => $email,
                 'contact_phone'            => $request->contact_phone,
                 'free_text'                => $request->free_text,
@@ -383,14 +385,25 @@ class JobController extends Controller
         ]);
 
         $newPlan = $request->input('plan');
+        $oldPlan = $job->plan;
+
         // 同じ連絡先の全求人のプランを同期(=事業所アカウント単位で管理)
+        $updates = ['plan' => $newPlan];
+        // プランが実際に変わる場合のみ plan_started_at を更新
+        if ($oldPlan !== $newPlan) {
+            $updates['plan_started_at'] = $newPlan === Job::PLAN_STANDARD ? now() : null;
+        }
         Job::where(function ($q) use ($job) {
             $q->where('contact_email', $job->contact_email)->orWhere('contact_phone', $job->contact_phone);
-        })->update(['plan' => $newPlan]);
+        })->update($updates);
 
-        $msg = $newPlan === Job::PLAN_STANDARD
-            ? 'スタンダードプランに切替しました。LINE応募・優先上位表示・分析画面がご利用いただけます。'
-            : 'ベーシックプランに戻しました。';
+        if ($newPlan === Job::PLAN_STANDARD) {
+            $nextBilling = now()->copy()->addMonthNoOverflow()->startOfMonth();
+            $msg = 'スタンダードプランに切替しました。LINE応募・優先上位表示・分析画面がご利用いただけます。'
+                . '月額 3,000円 の初回請求日は ' . $nextBilling->format('Y年n月j日') . ' となります(月中の切替は翌月起算)。';
+        } else {
+            $msg = 'ベーシックプランに戻しました。今月末までスタンダード機能は継続利用いただけます。翌月1日より月額料金は発生しません。';
+        }
 
         return redirect()->route('jobs.manage', ['token' => $token])->with('plan_updated', $msg);
     }

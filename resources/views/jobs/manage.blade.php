@@ -196,7 +196,24 @@
                 <span class="text-muted small ms-2">月額 0円 + 応募 3,000円/件(税別)</span>
             @endif
         </div>
+        @if($job->isStandard() && $job->nextBillingDate())
+        <div>
+            <span class="text-muted small">月額料金の初回請求日</span><br>
+            <span class="fw-bold" style="color:#1a73e8;">
+                <i class="bi bi-calendar-event me-1"></i>{{ $job->nextBillingDate()->format('Y年n月j日') }}
+            </span>
+            <span class="text-muted small ms-1" style="font-size:0.75rem;">
+                (スタンダード開始: {{ $job->plan_started_at->format('Y/n/j') }})
+            </span>
+        </div>
+        @endif
     </div>
+    @if($job->isStandard() && $job->nextBillingDate())
+    <div class="alert alert-info py-2 mb-3" style="font-size:0.85rem;">
+        <i class="bi bi-info-circle me-1"></i>
+        月額 3,000円 は<strong>{{ $job->nextBillingDate()->format('Y年n月j日') }}(翌月1日)から</strong>発生します。それまでは無料でスタンダード機能をご利用いただけます。
+    </div>
+    @endif
 
     @if(!$job->isStandard())
     {{-- ベーシック → スタンダード アップグレード --}}

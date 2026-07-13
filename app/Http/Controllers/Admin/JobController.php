@@ -99,11 +99,15 @@ class JobController extends Controller
         // スタンダードに切替時、同じ掲載主の他求人も同期
         // (プランは契約単位=事業所単位のため)
         $companyJobs = Job::where('contact_email', $job->contact_email)->orWhere('contact_phone', $job->contact_phone);
-        $companyJobs->update(['plan' => $newPlan]);
+        $companyJobs->update([
+            'plan' => $newPlan,
+            // plan_started_at はスタンダード時は現在時刻、ベーシック戻し時は null
+            'plan_started_at' => $newPlan === Job::PLAN_STANDARD ? now() : null,
+        ]);
 
         $msg = $newPlan === Job::PLAN_STANDARD
-            ? 'スタンダードプランに切替しました。(同一連絡先の求人 ' . $companyJobs->count() . '件を同期)'
-            : 'ベーシックプランに戻しました。(同一連絡先の求人 ' . $companyJobs->count() . '件を同期)';
+            ? 'スタンダードプランに切替しました。(同一連絡先 ' . $companyJobs->count() . '件を同期・初回月額請求日:' . now()->copy()->addMonthNoOverflow()->startOfMonth()->format('Y/n/j') . ')'
+            : 'ベーシックプランに戻しました。(同一連絡先 ' . $companyJobs->count() . '件を同期・翌月分より月額料金なし)';
 
         return back()->with('success', $msg);
     }
