@@ -175,13 +175,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     if ($jobTypeCount > 0) $activeTab = 'job-types';
                 @endphp
 
-                {{-- 必須項目 アコーディオン --}}
+                {{-- 絞り込み条件 アコーディオン --}}
                 <div class="search__acc-item">
                     <button class="search__acc-btn search__acc-btn--sticky" type="button"
                         data-bs-toggle="collapse" data-bs-target="#accRequired"
                         aria-expanded="{{ $requiredCount ? 'true' : 'false' }}">
                         <span class="search__acc-left">
-                            <i class="bi bi-check2-circle me-1"></i>必須項目
+                            <i class="bi bi-funnel-fill me-1"></i>絞り込み条件
                             <span class="search__acc-note">職種・雇用形態・勤務条件</span>
                         </span>
                         <i class="bi bi-chevron-down search__acc-chevron"></i>
@@ -485,7 +485,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
 
 
-    // 必須項目ヘッダーをスクロール時に固定（position:fixed + placeholder）
+    // 絞り込み条件ヘッダーをスクロール時に固定（position:fixed + placeholder）
     (function () {
         const btn  = document.querySelector('.search__acc-btn--sticky');
         if (!btn) return;
@@ -528,7 +528,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }, { passive: true });
     })();
 
-    // 必須項目：タブ件数バッジ＋アコーディオン合計バッジ
+    // 絞り込み条件：タブ件数バッジ＋アコーディオン合計バッジ
     const requiredBadge = document.getElementById('badge-required');
     const requiredCounts = { 'panel-job-types': 'cnt-job-types', 'panel-emp-types': 'cnt-emp-types', 'panel-conditions': 'cnt-conditions' };
     const updateRequiredBadge = () => {};
@@ -603,46 +603,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         cbs.forEach(cb => cb.addEventListener('change', update));
     }
 
-    // チェックボックスの状態をlocalStorageに保存・復元
+    // リセットボタン(過去のlocalStorage残骸もクリア)
     (function () {
-        const STORAGE_KEY = 'care_entry_search';
         const form = document.querySelector('.search__form');
         if (!form) return;
 
-        // 復元
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-        form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            const key = cb.name + '=' + cb.value;
-            if (saved[key]) {
-                cb.checked = true;
-                cb.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-        });
-        const areaSelect = form.querySelector('select[name="area"]');
-        if (areaSelect && saved['area']) areaSelect.value = saved['area'];
+        // 過去に保存された検索条件のlocalStorageを一度クリア(旧実装の残骸除去)
+        localStorage.removeItem('care_entry_search');
 
-        // 保存
-        form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', () => {
-                const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-                const key = cb.name + '=' + cb.value;
-                if (cb.checked) current[key] = true;
-                else delete current[key];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-            });
-        });
-        if (areaSelect) {
-            areaSelect.addEventListener('change', () => {
-                const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-                if (areaSelect.value) current['area'] = areaSelect.value;
-                else delete current['area'];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-            });
-        }
-
-        // リセットボタン
         const resetBtn = document.getElementById('searchResetBtn');
-        if (resetBtn && form) {
+        if (resetBtn) {
             resetBtn.addEventListener('click', () => {
                 form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.checked = false;
@@ -650,7 +620,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 });
                 const sel = form.querySelector('select[name="area"]');
                 if (sel) { sel.value = ''; sel.dispatchEvent(new Event('change')); }
-                localStorage.removeItem(STORAGE_KEY);
             });
         }
     })();
