@@ -650,22 +650,38 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
                 '例:希望入社時期を教えてください',
             ];
         @endphp
+        <p class="small mb-2" style="color:#8a6d00;">
+            <i class="bi bi-info-circle-fill me-1"></i><strong>回答形式</strong>を選べます:「はい/いいえ」形式 or 「自由記入」形式
+        </p>
         @for($i = 0; $i < 3; $i++)
             @php
                 $eq = $existingQuestions[$i]['q'] ?? '';
                 $et = $existingQuestions[$i]['type'] ?? 'yesno';
             @endphp
-            <div class="row g-2 mb-2 align-items-center">
-                <div class="col-md-9">
+            <div class="mb-3 p-2 rounded" style="background:#fff;border:1px solid #f6d97a;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-warning text-dark" style="min-width:32px;">Q{{ $i + 1 }}</span>
                     <input type="text" name="questions[{{ $i }}][q]" class="form-control form-control-sm"
                            value="{{ old('questions.' . $i . '.q', $eq) }}"
-                           placeholder="質問 {{ $i + 1 }} (任意・{{ $placeholderExamples[$i] }})" maxlength="200">
+                           placeholder="{{ $placeholderExamples[$i] }} (任意)" maxlength="200">
                 </div>
-                <div class="col-md-3">
-                    <select name="questions[{{ $i }}][type]" class="form-select form-select-sm">
-                        <option value="yesno" @if(old('questions.' . $i . '.type', $et) === 'yesno') selected @endif>はい/いいえ</option>
-                        <option value="text" @if(old('questions.' . $i . '.type', $et) === 'text') selected @endif>自由記入</option>
-                    </select>
+                <div class="d-flex align-items-center gap-2" style="padding-left:44px;">
+                    <span class="small text-muted">回答形式:</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="questions[{{ $i }}][type]"
+                               id="q{{ $i }}_yesno" value="yesno"
+                               @if(old('questions.' . $i . '.type', $et) === 'yesno') checked @endif>
+                        <label class="btn btn-outline-primary" for="q{{ $i }}_yesno" style="font-size:0.78rem;">
+                            <i class="bi bi-check-circle me-1"></i>はい/いいえ
+                        </label>
+
+                        <input type="radio" class="btn-check" name="questions[{{ $i }}][type]"
+                               id="q{{ $i }}_text" value="text"
+                               @if(old('questions.' . $i . '.type', $et) === 'text') checked @endif>
+                        <label class="btn btn-outline-primary" for="q{{ $i }}_text" style="font-size:0.78rem;">
+                            <i class="bi bi-pencil me-1"></i>自由記入
+                        </label>
+                    </div>
                 </div>
             </div>
         @endfor
