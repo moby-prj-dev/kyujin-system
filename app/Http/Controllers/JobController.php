@@ -172,6 +172,16 @@ class JobController extends Controller
 
         Mail::to($email)->send(new JobVerificationMail($job));
 
+        // 管理者にも仮登録の通知
+        $adminEmail = config('mail.admin_email');
+        if ($adminEmail) {
+            try {
+                Mail::to($adminEmail)->send(new \App\Mail\AdminJobPendingMail($job));
+            } catch (\Throwable $e) {
+                Log::warning('管理者への申込通知メール送信失敗: ' . $e->getMessage());
+            }
+        }
+
         return redirect()->route('jobs.verify_sent', ['email' => $email]);
     }
 
