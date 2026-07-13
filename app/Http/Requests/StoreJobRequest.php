@@ -87,6 +87,9 @@ class StoreJobRequest extends FormRequest
             'contact_email'       => ['required', 'email', 'max:255'],
             'contact_phone'       => ['required', 'regex:/^[0-9]{10,11}$/'],
             'plan'                => ['required', 'in:basic,standard'],
+            'screener_questions'          => ['nullable', 'array', 'max:3'],
+            'screener_questions.*.q'      => ['nullable', 'string', 'max:200'],
+            'screener_questions.*.type'   => ['nullable', 'in:yesno,text'],
             'agreement_flag'      => ['required', 'accepted'],
             'terms_agreed'        => ['required', 'accepted'],
         ];

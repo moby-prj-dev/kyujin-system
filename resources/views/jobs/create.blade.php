@@ -292,6 +292,57 @@
     @error('photo') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
+{{-- 選考質問(スクリーナー) --}}
+<div class="form-section">
+    <h5>応募前の選考質問 <small class="text-muted fw-normal">（任意・最大3個）</small> <span class="badge bg-warning text-dark ms-1" style="font-size:0.68rem;">無駄応募対策</span></h5>
+    <p class="text-muted small mb-3">
+        応募者は求人応募前に以下の質問に必ず回答します。事前に応募者の適性を確認でき、冷やかしや条件不一致の応募を減らせます。<br>
+        後から管理URLでも編集可能です。
+    </p>
+    <p class="small mb-2" style="color:#8a6d00;">
+        <i class="bi bi-info-circle-fill me-1"></i><strong>回答形式</strong>を選べます:「はい/いいえ」形式 or 「自由記入」形式
+    </p>
+    @php
+        $placeholderExamples = [
+            '例:介護福祉士の資格をお持ちですか?',
+            '例:夜勤対応は可能ですか?',
+            '例:希望入社時期を教えてください',
+        ];
+    @endphp
+    @for($i = 0; $i < 3; $i++)
+        <div class="mb-3 p-2 rounded" style="background:#fff8e1;border:1px solid #f6d97a;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-warning text-dark" style="min-width:32px;">Q{{ $i + 1 }}</span>
+                <input type="text" name="screener_questions[{{ $i }}][q]" class="form-control form-control-sm"
+                       value="{{ old('screener_questions.' . $i . '.q', '') }}"
+                       placeholder="{{ $placeholderExamples[$i] }} (任意)" maxlength="200">
+            </div>
+            <div class="d-flex align-items-center gap-2" style="padding-left:44px;">
+                <span class="small text-muted">回答形式:</span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="screener_questions[{{ $i }}][type]"
+                           id="cq{{ $i }}_yesno" value="yesno"
+                           @if(old('screener_questions.' . $i . '.type', 'yesno') === 'yesno') checked @endif>
+                    <label class="btn btn-outline-primary" for="cq{{ $i }}_yesno" style="font-size:0.78rem;">
+                        <i class="bi bi-check-circle me-1"></i>はい/いいえ
+                    </label>
+
+                    <input type="radio" class="btn-check" name="screener_questions[{{ $i }}][type]"
+                           id="cq{{ $i }}_text" value="text"
+                           @if(old('screener_questions.' . $i . '.type', '') === 'text') checked @endif>
+                    <label class="btn btn-outline-primary" for="cq{{ $i }}_text" style="font-size:0.78rem;">
+                        <i class="bi bi-pencil me-1"></i>自由記入
+                    </label>
+                </div>
+            </div>
+        </div>
+    @endfor
+    <div class="small text-muted mt-1">
+        <i class="bi bi-lightbulb me-1"></i>他の例:「未経験でも応募可能ですか?」「通勤手段を教えてください」「勤務可能な曜日は?」「希望勤務時間は?」など
+    </div>
+    @error('screener_questions.*.q') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+</div>
+
 {{-- 掲載プラン選択 --}}
 <div class="form-section">
     <h5>掲載プラン <span class="text-danger">*</span></h5>

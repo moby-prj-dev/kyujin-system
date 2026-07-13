@@ -113,7 +113,17 @@ class JobController extends Controller
             ]);
         }
 
-        DB::transaction(function () use ($request, $email, $inheritPlan, &$job) {
+        // 選考質問を正規化(空文字は除外・最大3個)
+        $screenerQuestions = collect($request->input('screener_questions', []))
+            ->filter(fn($q) => !empty($q['q']) && trim($q['q']) !== '')
+            ->map(fn($q) => [
+                'q'    => mb_substr(trim($q['q']), 0, 200),
+                'type' => in_array($q['type'] ?? 'yesno', ['yesno', 'text']) ? $q['type'] : 'yesno',
+            ])
+            ->values()
+            ->all();
+
+        DB::transaction(function () use ($request, $email, $inheritPlan, $screenerQuestions, &$job) {
             $photoPath = $request->hasFile('photo')
                 ? $request->file('photo')->store('job_photos', 'public')
                 : null;
@@ -133,6 +143,7 @@ class JobController extends Controller
                 'salary_note'              => $request->salary_note,
                 'photo_path'               => $photoPath,
                 'title'                    => $request->filled('title') ? $request->title : '（生成中）',
+                'screener_questions'       => empty($screenerQuestions) ? null : $screenerQuestions,
                 'email_verification_token' => Str::random(64),
             ]);
 
