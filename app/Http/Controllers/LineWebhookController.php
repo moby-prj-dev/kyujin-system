@@ -283,10 +283,13 @@ class LineWebhookController extends Controller
             "■ 応募者情報",
             "氏名：{$application->applicant_name}",
             "電話：{$application->phone}",
+            $application->email ? "メール：{$application->email}" : null,
             "応募方法：LINE",
             "",
-            $condSummary ? "■ 応募者の希望条件\n{$condSummary}" : null,
-            "",
+            $condSummary ? "■ 応募者の希望条件\n{$condSummary}\n" : null,
+            $application->lineDetail?->appeal_message
+                ? "■ 志望動機・自己PR\n{$application->lineDetail->appeal_message}\n"
+                : null,
             "■ 求人管理ページ",
             url('/jobs/' . $job->token),
         ]));

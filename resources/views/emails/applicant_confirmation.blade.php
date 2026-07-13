@@ -57,6 +57,18 @@
     </tr>
 </table>
 
+@php
+    $appealMessage = $application->application_type === 'line'
+        ? ($application->lineDetail?->appeal_message)
+        : ($application->formDetail?->appeal_message);
+@endphp
+@if($appealMessage)
+<div style="margin:16px 0;padding:12px 14px;background:#f0f7ff;border-left:4px solid #1a73e8;border-radius:4px;">
+    <p style="margin:0 0 6px;font-size:12px;color:#666;font-weight:bold;">志望動機・自己PR</p>
+    <p style="margin:0;white-space:pre-wrap;font-size:13px;line-height:1.6;">{{ $appealMessage }}</p>
+</div>
+@endif
+
 <div style="background:#fff8e1;border-left:4px solid #f59e0b;padding:14px 18px;margin:24px 0;font-size:13px;">
     <strong style="color:#8a6d00;">📞 今後の流れ</strong><br>
     応募内容は求人掲載主様(<strong>{{ $job->company_name }}</strong>)にお送りしました。<br>

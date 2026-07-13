@@ -164,6 +164,7 @@ class LiffController extends Controller
             'applicant_name' => ['required', 'string', 'max:100'],
             'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
             'email'          => ['nullable', 'email', 'max:200'],
+            'appeal_message' => ['nullable', 'string', 'max:1000'],
             'line_user_id'   => ['required', 'string'],
             'line_display_name' => ['nullable', 'string'],
         ], [
@@ -171,6 +172,7 @@ class LiffController extends Controller
             'phone.required'          => '電話番号を入力してください。',
             'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
             'email.email'             => 'メールアドレスの形式が正しくありません。',
+            'appeal_message.max'      => '志望動機・自己PRは1000文字以内で入力してください。',
             'line_user_id.required'   => 'LINEログインが完了していません。',
         ]);
 
@@ -190,6 +192,7 @@ class LiffController extends Controller
                 'application_id' => $application->id,
                 'line_user_id'   => $request->line_user_id,
                 'line_session_id' => $request->line_session_id,
+                'appeal_message' => $request->input('appeal_message') ?: null,
                 'raw_answers_json' => [
                     'display_name' => $request->line_display_name,
                 ],
@@ -226,17 +229,21 @@ class LiffController extends Controller
 
         try {
             \Illuminate\Support\Facades\Mail::raw(
-                implode("\n", [
+                implode("\n", array_filter([
                     "【求人応募通知】LINEから新しい応募が届きました",
                     "",
                     "■ 応募者情報",
                     "氏名：{$application->applicant_name}",
                     "電話：{$application->phone}",
+                    $application->email ? "メール：{$application->email}" : null,
                     "応募方法：LINE",
                     "",
+                    $application->lineDetail?->appeal_message
+                        ? "■ 志望動機・自己PR\n{$application->lineDetail->appeal_message}\n"
+                        : null,
                     "■ 求人管理ページ",
                     url('/jobs/' . $job->token),
-                ]),
+                ])),
                 fn($message) => $message
                     ->to($recipients)
                     ->subject('【求人応募通知】LINEから新しい応募が届きました')

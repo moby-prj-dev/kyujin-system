@@ -171,7 +171,7 @@ const JOB = {
 
 const state = {
     profile: null,
-    answers: { applicant_name: '', phone: '', email: '', line_user_id: '', line_display_name: '', line_session_id: '' },
+    answers: { applicant_name: '', phone: '', email: '', appeal_message: '', line_user_id: '', line_display_name: '', line_session_id: '' },
     inputResolver: null,
     choiceResolver: null,
 };
@@ -465,7 +465,19 @@ async function main() {
     state.answers.email = email;
     addUserBubble(email || '(スキップ)');
 
-    // 6. Summary + submit
+    // 6. 志望動機・自己PR (optional)
+    await sleep(200);
+    await botSay('最後に、事業所様への志望動機や自己PRがあればお聞かせください(スキップも可・1000文字以内)', 700);
+    const appealMessage = await showInput({
+        placeholder: '例: 介護経験3年、夜勤対応可能です(任意)',
+        hint: '志望動機・自己PR(任意)',
+        allowSkip: true,
+        validate: v => (v.length > 1000 ? '1000文字以内で入力してください' : null),
+    });
+    state.answers.appeal_message = appealMessage;
+    addUserBubble(appealMessage || '(スキップ)');
+
+    // 7. Summary + submit
     await sleep(200);
     const summaryLines = [
         '以下の内容で応募いたします。よろしいですか?',
@@ -473,6 +485,7 @@ async function main() {
         `・お名前: ${name}`,
         `・電話番号: ${phone}`,
         email ? `・メール: ${email}` : '・メール: (なし)',
+        appealMessage ? `・志望動機: ${appealMessage.length > 40 ? appealMessage.slice(0,40) + '…' : appealMessage}` : '・志望動機: (なし)',
     ];
     await botSay(summaryLines.join('\n'), 600);
 

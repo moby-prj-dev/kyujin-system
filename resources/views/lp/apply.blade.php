@@ -420,7 +420,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div class="mb-0">
+            <div class="mb-3">
                 <label class="form-label">メールアドレス<span class="badge bg-secondary ms-1" style="font-size:0.68rem;">任意</span></label>
                 <input type="email" name="email"
                        class="form-control @error('email') is-invalid @enderror"
@@ -429,6 +429,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <i class="bi bi-info-circle me-1"></i>ご入力いただくと、応募内容の控えメールをお送りします
                 </div>
                 @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-0">
+                <label class="form-label">志望動機・自己PR<span class="badge bg-secondary ms-1" style="font-size:0.68rem;">任意</span></label>
+                <textarea name="appeal_message" rows="4"
+                          class="form-control @error('appeal_message') is-invalid @enderror"
+                          placeholder="例:介護経験が3年あります。夜勤も対応可能です。子育て中のため日勤希望です。"
+                          maxlength="1000">{{ old('appeal_message') }}</textarea>
+                <div class="form-text small text-muted">
+                    <i class="bi bi-info-circle me-1"></i>事業所様への志望動機やご希望などを自由にご入力ください(1000文字以内)
+                </div>
+                @error('appeal_message')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
         </div>
 

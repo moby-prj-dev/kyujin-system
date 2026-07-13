@@ -166,11 +166,13 @@ class ApplyController extends Controller
             'applicant_name' => ['required', 'string', 'max:100'],
             'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
             'email'          => ['nullable', 'email', 'max:200'],
+            'appeal_message' => ['nullable', 'string', 'max:1000'],
         ], [
             'applicant_name.required' => 'お名前を入力してください。',
             'phone.required'          => '電話番号を入力してください。',
             'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
             'email.email'             => 'メールアドレスの形式が正しくありません。',
+            'appeal_message.max'      => '志望動機・自己PRは1000文字以内で入力してください。',
         ]);
 
         $application = null;
@@ -191,7 +193,7 @@ class ApplyController extends Controller
             FormApplicationDetail::create([
                 'application_id' => $application->id,
                 'desired_area_id' => $conditions['area_ids'][0] ?? null,
-                'appeal_message' => null,
+                'appeal_message' => $request->input('appeal_message') ?: null,
                 'ip_address'     => $request->ip(),
                 'user_agent'     => substr($request->userAgent() ?? '', 0, 500),
             ]);
@@ -333,6 +335,7 @@ class ApplyController extends Controller
                     "■ 応募者情報",
                     "氏名：{$application->applicant_name}",
                     "電話：{$application->phone}",
+                    $application->email ? "メール：{$application->email}" : null,
                     "",
                     "■ 応募求人",
                     $job->seo_title ?: $job->title,
@@ -344,6 +347,9 @@ class ApplyController extends Controller
                     $conds       ? "希望勤務条件：\n{$conds}"       : null,
                     $appeals     ? "重視ポイント：{$appeals}"       : null,
                     "",
+                    $application->formDetail?->appeal_message
+                        ? "■ 志望動機・自己PR\n{$application->formDetail->appeal_message}\n"
+                        : null,
                     "■ 求人管理ページ",
                     url('/jobs/' . $job->token),
                 ])),
