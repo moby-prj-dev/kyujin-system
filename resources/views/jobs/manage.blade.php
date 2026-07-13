@@ -643,6 +643,13 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
         @csrf
         @method('PATCH')
         @php $existingQuestions = $job->screener_questions ?? []; @endphp
+        @php
+            $placeholderExamples = [
+                '例:介護福祉士の資格をお持ちですか?',
+                '例:夜勤対応は可能ですか?',
+                '例:希望入社時期を教えてください',
+            ];
+        @endphp
         @for($i = 0; $i < 3; $i++)
             @php
                 $eq = $existingQuestions[$i]['q'] ?? '';
@@ -652,7 +659,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
                 <div class="col-md-9">
                     <input type="text" name="questions[{{ $i }}][q]" class="form-control form-control-sm"
                            value="{{ old('questions.' . $i . '.q', $eq) }}"
-                           placeholder="質問 {{ $i + 1 }} (任意・例:介護経験3年以上ありますか?)" maxlength="200">
+                           placeholder="質問 {{ $i + 1 }} (任意・{{ $placeholderExamples[$i] }})" maxlength="200">
                 </div>
                 <div class="col-md-3">
                     <select name="questions[{{ $i }}][type]" class="form-select form-select-sm">
@@ -663,7 +670,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
             </div>
         @endfor
         <div class="small text-muted mt-2 mb-2">
-            <i class="bi bi-lightbulb me-1"></i>質問例:「介護福祉士資格をお持ちですか?」「夜勤対応可能ですか?」「希望入社時期を教えてください」など
+            <i class="bi bi-lightbulb me-1"></i>他の例:「未経験でも応募可能ですか?」「通勤手段を教えてください」「勤務可能な曜日は?」「希望勤務時間は?」など、事業所様が事前に確認したい項目を自由に設定できます。
         </div>
         <button type="submit" class="btn btn-warning btn-sm">
             <i class="bi bi-save me-1"></i>選考質問を保存
