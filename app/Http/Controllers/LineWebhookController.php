@@ -213,7 +213,8 @@ class LineWebhookController extends Controller
         $applicantName    = $session->applicant_name;
         $entryToken       = $session->entry_token;
 
-        DB::transaction(function () use ($job, $phone, $lineUserId, $applicantName, $entryToken, $searchConditions) {
+        $application = null;
+        DB::transaction(function () use ($job, $phone, $lineUserId, $applicantName, $entryToken, $searchConditions, &$application) {
             $application = Application::create([
                 'job_id'           => $job->id,
                 'application_type' => Application::TYPE_LINE,
@@ -231,9 +232,13 @@ class LineWebhookController extends Controller
                 'preferred_conditions_summary' => $this->buildConditionsSummary($searchConditions),
                 'raw_answers_json'             => $searchConditions,
             ]);
-
-            $this->notifyEmployer($job, $application, $searchConditions);
         });
+
+        // トランザクション外でメール送信(lineDetailを明示的にload・lazy loading事故防止)
+        if ($application) {
+            $application->load('lineDetail');
+            $this->notifyEmployer($job, $application, $searchConditions);
+        }
 
         $session->delete();
 

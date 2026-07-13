@@ -212,9 +212,13 @@ class LiffController extends Controller
                     'display_name' => $request->line_display_name,
                 ],
             ]);
-
-            $this->notifyEmployer($job, $application);
         });
+
+        // トランザクション外でメール送信(lineDetailを明示的にload・lazy loading事故防止)
+        if ($application) {
+            $application->load('lineDetail');
+            $this->notifyEmployer($job, $application);
+        }
 
         // 応募者に応募控えメール送信(任意入力・失敗しても応募自体は成立)
         if ($application && $request->filled('email')) {

@@ -230,9 +230,13 @@ class ApplyController extends Controller
             foreach ($conditions['appeal_ids'] as $id) {
                 FormDesiredAppeal::create(['application_id' => $application->id, 'appeal_id' => $id]);
             }
-
-            $this->notifyEmployer($job, $application, $conditions);
         });
+
+        // トランザクション外でメール送信(formDetailを明示的にload・lazy loading事故防止)
+        if ($application) {
+            $application->load('formDetail');
+            $this->notifyEmployer($job, $application, $conditions);
+        }
 
         // 応募者に応募控えメール送信(任意入力・失敗しても応募自体は成立)
         if ($application && $request->filled('email')) {
