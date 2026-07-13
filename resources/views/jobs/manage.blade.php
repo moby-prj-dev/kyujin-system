@@ -632,6 +632,45 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 </div>
 @endif
 
+{{-- 選考質問(スクリーナー) --}}
+<div class="form-section">
+    <h5><i class="bi bi-question-circle me-1"></i> 応募前の選考質問 <span class="badge bg-warning text-dark ms-1" style="font-size:0.68rem;">無駄応募対策</span></h5>
+    <p class="text-muted small mb-3">
+        応募者は求人応募前に以下の質問に必ず回答します。回答内容は応募通知メールに含まれるため、事前に応募者の適性を確認できます。<br>
+        <strong>質問は最大3個まで</strong>設定できます。冷やかしや条件不一致の応募を減らす効果があります。
+    </p>
+    <form method="POST" action="{{ route('jobs.screener', ['token' => $job->token]) }}">
+        @csrf
+        @method('PATCH')
+        @php $existingQuestions = $job->screener_questions ?? []; @endphp
+        @for($i = 0; $i < 3; $i++)
+            @php
+                $eq = $existingQuestions[$i]['q'] ?? '';
+                $et = $existingQuestions[$i]['type'] ?? 'yesno';
+            @endphp
+            <div class="row g-2 mb-2 align-items-center">
+                <div class="col-md-9">
+                    <input type="text" name="questions[{{ $i }}][q]" class="form-control form-control-sm"
+                           value="{{ old('questions.' . $i . '.q', $eq) }}"
+                           placeholder="質問 {{ $i + 1 }} (任意・例:介護経験3年以上ありますか?)" maxlength="200">
+                </div>
+                <div class="col-md-3">
+                    <select name="questions[{{ $i }}][type]" class="form-select form-select-sm">
+                        <option value="yesno" @if(old('questions.' . $i . '.type', $et) === 'yesno') selected @endif>はい/いいえ</option>
+                        <option value="text" @if(old('questions.' . $i . '.type', $et) === 'text') selected @endif>自由記入</option>
+                    </select>
+                </div>
+            </div>
+        @endfor
+        <div class="small text-muted mt-2 mb-2">
+            <i class="bi bi-lightbulb me-1"></i>質問例:「介護福祉士資格をお持ちですか?」「夜勤対応可能ですか?」「希望入社時期を教えてください」など
+        </div>
+        <button type="submit" class="btn btn-warning btn-sm">
+            <i class="bi bi-save me-1"></i>選考質問を保存
+        </button>
+    </form>
+</div>
+
 {{-- 求人編集フォーム --}}
 <div class="form-section">
 <h5>求人情報を編集</h5>

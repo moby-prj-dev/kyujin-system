@@ -162,18 +162,27 @@ class ApplyController extends Controller
                 ->withErrors(['match' => '条件が一致しないため応募できませんでした。']);
         }
 
-        $request->validate([
+        // 選考質問がある場合は全項目必須
+        $screenerRules = [];
+        $screenerMessages = [];
+        $screenerQuestions = $job->screener_questions ?? [];
+        foreach ($screenerQuestions as $i => $sq) {
+            $screenerRules["screener.$i"] = ['required', 'string', 'max:200'];
+            $screenerMessages["screener.$i.required"] = 'すべての選考質問にご回答ください。(Q' . ($i + 1) . ')';
+        }
+
+        $request->validate(array_merge([
             'applicant_name' => ['required', 'string', 'max:100'],
             'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
             'email'          => ['nullable', 'email', 'max:200'],
             'appeal_message' => ['nullable', 'string', 'max:1000'],
-        ], [
+        ], $screenerRules), array_merge([
             'applicant_name.required' => 'お名前を入力してください。',
             'phone.required'          => '電話番号を入力してください。',
             'phone.regex'             => '電話番号はハイフンなしの数字10〜11桁で入力してください。',
             'email.email'             => 'メールアドレスの形式が正しくありません。',
             'appeal_message.max'      => '志望動機・自己PRは1000文字以内で入力してください。',
-        ]);
+        ], $screenerMessages));
 
         $application = null;
         DB::transaction(function () use ($request, $job, $conditions, $validationService, &$application) {
@@ -190,12 +199,23 @@ class ApplyController extends Controller
             $validationService->validate($application);
             $application->save();
 
+            // 選考質問の回答を Q&A ペアに整形
+            $screenerAnswers = null;
+            if (!empty($job->screener_questions)) {
+                $answers = $request->input('screener', []);
+                $screenerAnswers = collect($job->screener_questions)->map(fn($sq, $i) => [
+                    'q' => $sq['q'],
+                    'a' => $answers[$i] ?? '',
+                ])->all();
+            }
+
             FormApplicationDetail::create([
-                'application_id' => $application->id,
-                'desired_area_id' => $conditions['area_ids'][0] ?? null,
-                'appeal_message' => $request->input('appeal_message') ?: null,
-                'ip_address'     => $request->ip(),
-                'user_agent'     => substr($request->userAgent() ?? '', 0, 500),
+                'application_id'   => $application->id,
+                'desired_area_id'  => $conditions['area_ids'][0] ?? null,
+                'appeal_message'   => $request->input('appeal_message') ?: null,
+                'screener_answers' => $screenerAnswers,
+                'ip_address'       => $request->ip(),
+                'user_agent'       => substr($request->userAgent() ?? '', 0, 500),
             ]);
 
             foreach ($conditions['job_type_ids'] as $id) {
@@ -349,6 +369,9 @@ class ApplyController extends Controller
                     "",
                     $application->formDetail?->appeal_message
                         ? "■ 志望動機・自己PR\n{$application->formDetail->appeal_message}\n"
+                        : null,
+                    !empty($application->formDetail?->screener_answers)
+                        ? "■ 選考質問への回答\n" . collect($application->formDetail->screener_answers)->map(fn($qa, $i) => "Q" . ($i + 1) . ". {$qa['q']}\n → {$qa['a']}")->join("\n") . "\n"
                         : null,
                     "■ 求人管理ページ",
                     url('/jobs/' . $job->token),

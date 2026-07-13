@@ -376,6 +376,30 @@ class JobController extends Controller
         return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
     }
 
+    public function updateScreener(Request $request, string $token)
+    {
+        $job = Job::where('token', $token)->firstOrFail();
+
+        $request->validate([
+            'questions'        => ['nullable', 'array', 'max:3'],
+            'questions.*.q'    => ['nullable', 'string', 'max:200'],
+            'questions.*.type' => ['nullable', 'in:yesno,text'],
+        ]);
+
+        $questions = collect($request->input('questions', []))
+            ->filter(fn($q) => !empty($q['q']) && trim($q['q']) !== '')
+            ->map(fn($q) => [
+                'q'    => mb_substr(trim($q['q']), 0, 200),
+                'type' => in_array($q['type'] ?? 'yesno', ['yesno', 'text']) ? $q['type'] : 'yesno',
+            ])
+            ->values()
+            ->all();
+
+        $job->update(['screener_questions' => empty($questions) ? null : $questions]);
+
+        return redirect()->route('jobs.manage', ['token' => $token])->with('updated', true);
+    }
+
     public function updatePlan(Request $request, string $token)
     {
         $job = Job::where('token', $token)->firstOrFail();

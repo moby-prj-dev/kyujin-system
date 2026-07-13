@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Care Entry 営業資料</title>
+<style>
+    @page { size: A4; margin: 15mm 15mm 20mm; }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'Yu Gothic', sans-serif;
+        color: #1a1a2e; margin: 0; padding: 0; line-height: 1.7;
+        font-size: 11pt;
+    }
+    .page {
+        page-break-after: always; padding: 8mm 4mm; min-height: 260mm;
+    }
+    .page:last-of-type { page-break-after: auto; }
+
+    /* Cover page */
+    .cover {
+        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        color: #fff; text-align: center;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        min-height: 260mm;
+    }
+    .cover .brand { font-size: 42pt; font-weight: 900; margin-bottom: 8pt; letter-spacing: 4px; }
+    .cover .brand-sub { font-size: 14pt; opacity: 0.9; margin-bottom: 60pt; }
+    .cover h1 { font-size: 28pt; font-weight: 800; margin: 0 0 20pt; line-height: 1.4; }
+    .cover .subtitle { font-size: 13pt; opacity: 0.95; max-width: 480pt; }
+    .cover .date { position: absolute; bottom: 30mm; font-size: 10pt; opacity: 0.9; }
+
+    h2 { font-size: 20pt; color: #0d47a1; border-bottom: 3px solid #1a73e8; padding-bottom: 6pt; margin: 0 0 18pt; }
+    h3 { font-size: 14pt; color: #1a1a2e; margin: 18pt 0 8pt; padding-left: 10pt; border-left: 4px solid #1a73e8; }
+    p { margin: 6pt 0; }
+
+    .lead { font-size: 12pt; background: #f0f7ff; padding: 12pt 14pt; border-radius: 6pt; margin-bottom: 20pt; }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12pt; margin: 15pt 0; }
+    .metric { background: #fff; border: 2px solid #d6e4f7; border-radius: 8pt; padding: 12pt; text-align: center; }
+    .metric .val { font-size: 24pt; font-weight: 900; color: #1a73e8; margin: 4pt 0; }
+    .metric .label { font-size: 9pt; color: #666; }
+    .metric .unit { font-size: 11pt; font-weight: 600; }
+
+    .feature { display: flex; gap: 12pt; margin: 12pt 0; padding: 12pt; background: #f8fbff; border-radius: 6pt; }
+    .feature .num {
+        flex-shrink: 0; width: 32pt; height: 32pt; background: #1a73e8; color: #fff;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 14pt;
+    }
+    .feature .title { font-weight: 800; font-size: 12pt; color: #0d47a1; }
+
+    .case-box { background: #fff8e1; border-left: 6px solid #f9a825; padding: 15pt; margin: 15pt 0; border-radius: 4pt; }
+    .case-box h3 { border: none; padding: 0; margin-top: 0; color: #f57c00; }
+    .case-quote { background: #fff; padding: 10pt 14pt; border-radius: 4pt; margin: 10pt 0; font-style: italic; color: #444; }
+    .case-numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8pt; margin: 12pt 0; }
+    .case-num-item { background: #fff; padding: 8pt; border-radius: 4pt; text-align: center; border: 1px solid #ffd54f; }
+    .case-num-item .n { font-size: 20pt; font-weight: 900; color: #f57c00; }
+    .case-num-item .l { font-size: 8pt; color: #666; }
+
+    .plan-table { width: 100%; border-collapse: collapse; margin: 12pt 0; }
+    .plan-table th, .plan-table td { padding: 10pt 8pt; border: 1px solid #d6e4f7; text-align: left; font-size: 10pt; vertical-align: top; }
+    .plan-table th { background: #1a73e8; color: #fff; font-weight: 800; text-align: center; }
+    .plan-table .highlight { background: #fff8e1; }
+    .plan-table .price { font-size: 16pt; font-weight: 900; color: #0d47a1; }
+
+    .flow-step { display: flex; gap: 12pt; margin: 12pt 0; align-items: flex-start; }
+    .flow-step .step-num {
+        flex-shrink: 0; width: 40pt; height: 40pt; background: #06C755; color: #fff;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 15pt;
+    }
+    .flow-step .step-body { padding-top: 6pt; }
+    .flow-step .step-title { font-weight: 800; margin-bottom: 3pt; }
+
+    .callout {
+        background: linear-gradient(135deg, #e3f2fd, #f0f7ff);
+        border: 2px solid #1a73e8; border-radius: 8pt; padding: 15pt; margin: 15pt 0;
+        page-break-inside: avoid;
+    }
+    .callout h4 { margin: 0 0 8pt; color: #0d47a1; font-size: 13pt; }
+    .flow-step { page-break-inside: avoid; }
+    .footer-info { page-break-inside: avoid; }
+
+    .footer-info {
+        margin-top: 25pt; padding-top: 12pt; border-top: 2px solid #d6e4f7;
+        font-size: 10pt; color: #666; text-align: center;
+    }
+    .footer-info strong { color: #0d47a1; }
+
+    .badge {
+        display: inline-block; background: #06C755; color: #fff;
+        padding: 3pt 8pt; border-radius: 3pt; font-size: 9pt; font-weight: 700;
+    }
+
+    .internal-only {
+        background: #ffebee; border: 2px dashed #c62828; padding: 8pt 12pt;
+        border-radius: 4pt; margin-bottom: 15pt; font-size: 10pt; color: #c62828; text-align: center; font-weight: 800;
+    }
+
+    .script-box {
+        background: #f5f5f5; padding: 12pt; border-radius: 6pt; margin: 10pt 0;
+        font-family: 'Courier New', monospace; font-size: 10pt; line-height: 1.6;
+    }
+    .script-box .step-label { color: #0d47a1; font-weight: 800; margin-bottom: 4pt; }
+
+    .qa-item { margin: 12pt 0; padding: 10pt 12pt; background: #f8fbff; border-radius: 6pt; }
+    .qa-q { font-weight: 800; color: #c62828; margin-bottom: 4pt; }
+    .qa-q::before { content: 'Q: '; }
+    .qa-a { color: #1a1a2e; font-size: 10pt; }
+    .qa-a::before { content: 'A: '; font-weight: 800; color: #0d47a1; }
+</style>
+</head>
+<body>
+
+<!-- ============= COVER ============= -->
+<section class="page cover" style="position:relative;">
+    <div class="brand">Care Entry</div>
+    <div class="brand-sub">ケアエントリー</div>
+    <div style="background:rgba(255,255,255,0.15);padding:14pt 24pt;border-radius:6pt;margin-bottom:36pt;text-align:center;">
+        <div style="font-size:10pt;opacity:0.85;margin-bottom:4pt;letter-spacing:2pt;">ご提案書</div>
+        <div style="font-size:14pt;font-weight:700;">医療法人タピック</div>
+        <div style="font-size:17pt;font-weight:800;">介護老人保健施設 亀の里 御中</div>
+    </div>
+    <h1>沖縄の介護・福祉に特化した<br>成果報酬型 求人サービス</h1>
+    <p class="subtitle">
+        貴施設の採用活動を<br>お手伝いする掲載サービスのご案内
+    </p>
+    <div class="date">
+        2026年7月 ご提案<br>
+        https://care-entry.net
+    </div>
+</section>
+
+<!-- ============= PAGE 2: 個別カバーレター ============= -->
+<section class="page">
+    <h2>ご挨拶・ご提案の背景</h2>
+
+    <p style="margin:12pt 0 18pt;font-size:11pt;">
+        医療法人タピック<br>
+        <strong>介護老人保健施設 亀の里 御中</strong>
+    </p>
+
+    <p>
+        平素より地域の介護福祉サービスにご尽力いただき、誠にありがとうございます。<br>
+        沖縄県豊見城市を拠点に、介護・福祉分野に特化した求人サイト「<strong>Care Entry(ケアエントリー)</strong>」を運営しております <strong>沖縄デジタルワークス</strong> と申します。
+    </p>
+
+    <div class="callout" style="margin-top:16pt;">
+        <h4>📌 貴施設にご提案する理由</h4>
+        <p style="margin:0;font-size:10.5pt;">
+            貴施設は現在、ハローワーク上で<strong>介護福祉士・介護職員(施設)を継続的に募集</strong>されており、うるま市・沖縄市エリアで介護スタッフを積極的にお探しであることを拝見いたしました。<br>
+            当社の Care Entry は、沖縄の介護・福祉に特化した求職者が月間で数千人単位で利用している求人サイトです。<br>
+            <strong>貴施設の採用チャネル拡大のお役に立てるのではないか</strong>と考え、本資料をお送りいたしました。
+        </p>
+    </div>
+
+    <h3>本資料でお伝えする3つのポイント</h3>
+
+    <div class="feature">
+        <div class="num">1</div>
+        <div>
+            <div class="title">掲載は完全無料、応募発生時のみ課金</div>
+            <p style="margin:0;font-size:10.5pt;">
+                初期費用・月額費用ゼロ。応募が届いた分だけ 3,000円/件 のご請求で、応募ゼロの月は費用は一切発生いたしません。ノーリスクでお試しいただけます。
+            </p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="num">2</div>
+        <div>
+            <div class="title">AIが求人ページを自動最適化</div>
+            <p style="margin:0;font-size:10.5pt;">
+                サイトのお申込みフォームに事業所情報・募集条件などをご入力いただくと、<strong>AIが求人タイトル・仕事内容・SEO文言を自動で生成・最適化</strong>いたします。文章作成のご負担なく、Google検索で見つかりやすい求人ページが完成します。
+            </p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="num">3</div>
+        <div>
+            <div class="title">応募前の条件マッチングで、無駄応募を削減</div>
+            <p style="margin:0;font-size:10.5pt;">
+                求職者は応募前に希望条件を入力し、条件が合う求人にのみ応募できる仕組みです。結果、貴施設に届く応募は「本気で条件が合った求職者」に絞り込まれ、選考の手間を削減できます。
+            </p>
+        </div>
+    </div>
+
+    <div class="callout" style="background:linear-gradient(135deg,#fff8e1,#fff3cd);border-color:#f9a825;margin-top:18pt;">
+        <h4 style="color:#c17600;">🎁 現在実施中のキャンペーン</h4>
+        <p style="margin:0;font-size:10.5pt;">
+            <strong>掲載開始から3ヶ月間、または有効応募3件のいずれかに到達するまで、成果報酬(応募課金 3,000円/件)を無料</strong>でお試しいただけます。ベーシックプランなら月額0円のため、この期間内は費用が一切発生いたしません。
+        </p>
+    </div>
+
+    <p style="margin-top:16pt;font-size:10pt;color:#555;">
+        次ページ以降で、Care Entry のサービス概要、実績データ、導入事例、料金プラン、お申込みの流れを詳しくご案内しております。ご一読いただけますと幸いです。
+    </p>
+</section>
+
+<!-- ============= PAGE 2: What is Care Entry ============= -->
+<section class="page">
+    <h2>Care Entry とは</h2>
+    <p class="lead">
+        Care Entry は、<strong>沖縄の介護・福祉分野に特化</strong>した求人サービスです。<br>
+        地域密着型の運営で、求職者との条件マッチングを重視し、掲載主様の「無駄応募」を減らすことに注力しています。
+    </p>
+
+    <h3>3つの特徴</h3>
+
+    <div class="feature">
+        <div class="num">1</div>
+        <div>
+            <div class="title">沖縄・介護福祉 に特化した専門サイト</div>
+            <p>他の総合求人サイトと違い、沖縄の介護・福祉分野の求職者だけを集めています。<br>
+            大手サイトでは埋もれてしまう地元事業所の求人が、必要な求職者に届きやすくなります。</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="num">2</div>
+        <div>
+            <div class="title">LINE から直接応募が来る仕組み <span class="badge" style="background:#1a73e8;color:#fff;font-size:0.68rem;padding:2px 6px;border-radius:3px;margin-left:4px;">スタンダード限定</span></div>
+            <p>求職者は会員登録なしで、LINE から直接応募できます(スタンダードプラン限定機能)。<br>
+            応募発生時は<strong>貴社のメールに応募通知</strong>が届きます(採用担当複数名の同時通知も可)。他の求人サイトにはない、Care Entry 独自機能です。</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="num">3</div>
+        <div>
+            <div class="title">条件マッチで無駄応募を減らす</div>
+            <p>応募前に希望条件と求人内容の照合を行い、条件が合わない場合は代替求人をご案内します。<br>
+            結果、貴社に届く応募は「条件が合った本気の求職者」だけになります。</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============= PAGE 3: 実績数字 ============= -->
+<section class="page">
+    <h2>実績データ(2026年6月時点)</h2>
+    <p class="lead">
+        Care Entry は運営開始から順調に成長し、月間で数千件のアクセスを集めるまでになりました。<br>
+        沖縄県の介護求人を検索する多くの求職者が、既に Care Entry に流入しています。
+    </p>
+
+    <h3>月間パフォーマンス</h3>
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="label">月間 表示回数</div>
+            <div class="val">5,107<span class="unit">回</span></div>
+            <div class="label">(Google検索結果)</div>
+        </div>
+        <div class="metric">
+            <div class="label">月間 クリック数</div>
+            <div class="val">378<span class="unit">回</span></div>
+            <div class="label">(前月比 +17%)</div>
+        </div>
+        <div class="metric">
+            <div class="label">平均 検索順位</div>
+            <div class="val">12.3<span class="unit">位</span></div>
+            <div class="label">(4週間前は16.3位)</div>
+        </div>
+    </div>
+
+    <h3>掲載・インデックス状況</h3>
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="label">掲載求人LP数</div>
+            <div class="val">2,391<span class="unit">件</span></div>
+            <div class="label">沖縄県内 介護・福祉</div>
+        </div>
+        <div class="metric">
+            <div class="label">Google インデックス済</div>
+            <div class="val">2,304<span class="unit">件</span></div>
+            <div class="label">2週間で12倍に増加</div>
+        </div>
+        <div class="metric">
+            <div class="label">検索対象クエリ数</div>
+            <div class="val">515<span class="unit">語</span></div>
+            <div class="label">沖縄関連キーワード</div>
+        </div>
+    </div>
+
+    <h3>特に強い検索キーワード</h3>
+    <p style="margin-top:0;">
+        「南城市パート求人」「愛楽園 求人」「桃源の郷 求人」など、<br>
+        <strong>事業所名や地域×職種の細かい検索で1位獲得</strong>しているクエリが多数あります。
+    </p>
+</section>
+
+<!-- ============= PAGE 4: 事例 桃源の郷 ============= -->
+<section class="page">
+    <h2>導入事例:医療法人 松風会 桃源の郷 様</h2>
+
+    <div class="case-box">
+        <h3>🏆 「桃源の郷 求人」で Google 平均1位を獲得</h3>
+        <p>沖縄県名護市にある介護老人保健施設「桃源の郷」の求人ページが、Care Entry に掲載後、<strong>事業所名検索で平均1位・CTR 100%</strong> を記録しました。</p>
+
+        <div class="case-numbers">
+            <div class="case-num-item">
+                <div class="n">1.0</div>
+                <div class="l">平均検索順位</div>
+            </div>
+            <div class="case-num-item">
+                <div class="n">100%</div>
+                <div class="l">CTR(クリック率)</div>
+            </div>
+            <div class="case-num-item">
+                <div class="n">3</div>
+                <div class="l">6月のクリック数</div>
+            </div>
+        </div>
+
+        <div class="case-quote">
+            「桃源の郷 求人」で Google 検索すると、Care Entry の求人ページが最上位に表示されています。<br>
+            事業所名で情報を探した求職者が全員 Care Entry を経由してアクセスしています。
+        </div>
+    </div>
+
+    <h3>他事業所でも同様の効果が期待できます</h3>
+    <p>
+        Care Entry は各求人LPに対して <strong>AIによるSEO最適化と独自の統計データ表示</strong>を行っており、
+        事業所名や地域×職種の細かい検索で優位に立てる設計になっています。
+    </p>
+    <p>
+        <strong>貴社の求人も既に Care Entry に無料掲載されている可能性</strong>があります。<br>
+        情報を追加・アップデートするだけで、地元の求職者への露出が大きく変わります。
+    </p>
+
+    <div class="callout">
+        <h4>💡 まずは「無料掲載モニター」でお試しください</h4>
+        <p style="margin:0;">
+            初期費用・月額費用ゼロで、応募が届いた時のみ費用が発生する成果報酬型です。
+            リスクなくお試しいただけます。
+        </p>
+    </div>
+</section>
+
+<!-- ============= PAGE 5: 料金プラン ============= -->
+<section class="page">
+    <h2>料金プラン</h2>
+    <p class="lead">
+        <strong>掲載は完全無料</strong>から始められます。<br>
+        応募が発生した時のみ費用が発生する、リスクの少ない成果報酬型モデルです。
+    </p>
+
+    <table class="plan-table">
+        <thead>
+            <tr>
+                <th style="width:22%">プラン</th>
+                <th>含まれる機能</th>
+                <th style="width:22%">料金</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>ベーシック</strong><br><span class="badge">月額 無料</span></td>
+                <td>
+                    ・掲載無料(初期費用 0円)<br>
+                    ・1事業所につき求人 1件掲載<br>
+                    ・Webフォーム応募<br>
+                    ・応募通知メール(1宛先)<br>
+                    ・管理URLでセルフ編集・停止
+                </td>
+                <td><span class="price">0</span>円/月<br><small>+ 応募 3,000円/件</small></td>
+            </tr>
+            <tr class="highlight">
+                <td><strong>スタンダード</strong><br><span class="badge">おすすめ</span></td>
+                <td>
+                    <strong>ベーシックの内容に加えて:</strong><br>
+                    ・複数求人掲載(最大 3件)<br>
+                    ・一覧ページで<strong>優先上位表示</strong><br>
+                    ・<strong>LINE応募機能</strong>(他社にない独自機能)<br>
+                    ・応募通知の追加宛先(採用担当複数へ)<br>
+                    ・応募データ分析画面(管理URLから)
+                </td>
+                <td><span class="price">3,000</span>円/月<br><small>+ 応募 3,000円/件</small></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-top:16px;font-size:0.85rem;color:#555;">
+        ※ 料金はすべて税別表示です。<br>
+        ※ 応募課金は <strong>「有効応募のみ」</strong> が対象です(内容不備・重複などの無効応募は課金対象外)。<br>
+        ※ 解約は管理URLからいつでも可能です(セルフサービス・違約金なし)。
+    </p>
+
+    <h3 style="margin-top:24px;">現在実施中:応募課金 無料モニターキャンペーン</h3>
+    <p>
+        <strong>掲載開始から3ヶ月間、または有効応募3件のいずれかに到達するまで、応募課金(3,000円/件)を無料</strong>とさせていただきます。ベーシックプランは月額0円のため、この期間内は費用が一切発生いたしません。
+    </p>
+
+    <div style="margin-top:20px;padding:12px 16px;background:#fff4e6;border-left:4px solid #f59e0b;border-radius:4px;font-size:0.9rem;">
+        <strong>💡 スタンダードプランで応募数UP</strong><br>
+        LINE応募機能があるだけで応募ハードルが下がり、応募数が増加します。
+        月3,000円の固定費は、<strong>応募が1件多く発生すれば元が取れる</strong>計算になります(応募課金 3,000円/件と同額)。
+    </div>
+</section>
+
+<!-- ============= PAGE 6: 導入までの流れ ============= -->
+<section class="page">
+    <h2>お申込みの流れ(すべてサイト上で完結)</h2>
+    <p class="lead">
+        Care Entry サイトのお申込みフォームからご登録いただくと、<strong>メール認証完了後すぐに掲載開始</strong>いたします。ご来社・書類郵送・営業電話は一切ございません。
+    </p>
+
+    <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+            <div class="step-title">サイトからお申込み(所要10〜15分)</div>
+            <p>Care Entry サイトの「求人掲載申込」フォームから、事業所名・募集職種・エリア・給与・仕事内容・ご連絡先などをご入力ください。ご希望のプラン(ベーシック or スタンダード)もこの画面で選択いただきます。<br>
+            <strong>お申込みURL:</strong> <span style="color:#1a73e8;font-weight:bold;">https://care-entry.net/jobs/create</span></p>
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+            <div class="step-title">メール認証で即掲載開始</div>
+            <p>ご入力のメールアドレスへ認証メールをお送りしますので、記載のURLをクリックいただくと<strong>その場で求人ページが公開</strong>されます。<br>
+            認証と同時に AI が求人タイトル・SEO文言を自動最適化し、本掲載ページが即座に完成します。待ち時間はほぼありません。</p>
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+            <div class="step-title">応募受付・貴施設への通知</div>
+            <p>求職者からの応募はリアルタイムでご担当者のメールアドレスへ通知されます。<br>
+            スタンダードプランでは<strong>採用担当者複数名への同時通知</strong>にも対応。応募情報は管理URLからもご確認いただけます(スタンダードは応募データ分析画面も表示)。</p>
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+            <div class="step-title">課金・請求(応募発生時のみ)</div>
+            <p>応募が発生した月末に、応募件数分の請求書をメールでお送りします。<br>
+            応募ゼロの月は費用は一切かかりません。<br>
+            解約は管理URLからいつでもご自身で操作いただけます(違約金なし)。</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <h4>🔧 掲載後の変更・プラン変更もセルフサービス</h4>
+        <p style="margin:0;font-size:10.5pt;">
+            求人内容の編集、掲載の一時停止・再開、<strong>ベーシック↔スタンダードのプラン変更、解約</strong>、応募通知の追加宛先設定など、<strong>すべて管理URLからご担当者様ご自身で完結</strong>いたします。当社へのご連絡は不要、24時間いつでも操作可能です。
+        </p>
+    </div>
+
+    <div class="footer-info">
+        <strong>Care Entry(ケアエントリー)運営事務局</strong><br>
+        電話:070-6401-9492(平日 10:00〜18:00) / メール:info@care-entry.net<br>
+        <strong>沖縄の介護・福祉専門 求人サービス</strong>【対応エリア:沖縄県】
+    </div>
+</section>
+
+
+</body>
+</html>

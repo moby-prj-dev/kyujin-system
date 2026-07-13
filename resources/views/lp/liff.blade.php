@@ -167,11 +167,13 @@ const JOB = {
     appeals: @json($appealNames),
     salary:  @json($job->salaryText()),
     desc:    @json($descShort),
+    screener: @json($job->screener_questions ?? []),
 };
 
 const state = {
     profile: null,
     answers: { applicant_name: '', phone: '', email: '', appeal_message: '', line_user_id: '', line_display_name: '', line_session_id: '' },
+    screener_answers: [],
     inputResolver: null,
     choiceResolver: null,
 };
@@ -371,6 +373,10 @@ async function submitApplication() {
         const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
         const formData = new URLSearchParams();
         Object.entries(state.answers).forEach(([k, v]) => { if (v) formData.append(k, v); });
+        // 選考質問回答をJSON文字列として送信
+        if (state.screener_answers && state.screener_answers.length > 0) {
+            formData.append('screener_answers_json', JSON.stringify(state.screener_answers));
+        }
         formData.append('_token', csrf);
         const res = await fetch(STORE_URL, {
             method: 'POST',
@@ -467,7 +473,7 @@ async function main() {
 
     // 6. 志望動機・自己PR (optional)
     await sleep(200);
-    await botSay('最後に、事業所様への志望動機や自己PRがあればお聞かせください(スキップも可・1000文字以内)', 700);
+    await botSay('事業所様への志望動機や自己PRがあればお聞かせください(スキップも可・1000文字以内)', 700);
     const appealMessage = await showInput({
         placeholder: '例: 介護経験3年、夜勤対応可能です(任意)',
         hint: '志望動機・自己PR(任意)',
@@ -476,6 +482,32 @@ async function main() {
     });
     state.answers.appeal_message = appealMessage;
     addUserBubble(appealMessage || '(スキップ)');
+
+    // 6.5 選考質問(スクリーナー)- 事業所側で設定されている場合のみ・全て必須
+    if (JOB.screener && JOB.screener.length > 0) {
+        await sleep(200);
+        await botSay(`事業所様から${JOB.screener.length}件のご質問があります。順にお答えください。`, 600);
+        for (let i = 0; i < JOB.screener.length; i++) {
+            const sq = JOB.screener[i];
+            await sleep(200);
+            await botSay(`【Q${i+1}】 ${sq.q}`, 500);
+            let answer;
+            if ((sq.type || 'yesno') === 'yesno') {
+                answer = await addActionButtons([
+                    { label: 'はい', primary: true, value: 'はい' },
+                    { label: 'いいえ', value: 'いいえ' },
+                ]);
+            } else {
+                answer = await showInput({
+                    placeholder: 'ご回答を入力してください',
+                    hint: 'Q' + (i+1) + 'の回答',
+                    validate: v => (!v ? 'ご回答をお願いします' : (v.length > 200 ? '200文字以内で入力してください' : null)),
+                });
+            }
+            state.screener_answers.push({ q: sq.q, a: answer });
+            addUserBubble(answer);
+        }
+    }
 
     // 7. Summary + submit
     await sleep(200);

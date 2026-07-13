@@ -165,6 +165,7 @@ class LiffController extends Controller
             'phone'          => ['required', 'regex:/^[0-9]{10,11}$/'],
             'email'          => ['nullable', 'email', 'max:200'],
             'appeal_message' => ['nullable', 'string', 'max:1000'],
+            'screener_answers_json' => ['nullable', 'string', 'max:2000'],
             'line_user_id'   => ['required', 'string'],
             'line_display_name' => ['nullable', 'string'],
         ], [
@@ -176,8 +177,21 @@ class LiffController extends Controller
             'line_user_id.required'   => 'LINEログインが完了していません。',
         ]);
 
+        // 選考質問がある場合、回答が全部揃っているかチェック
+        $screenerAnswers = null;
+        if (!empty($job->screener_questions)) {
+            $parsed = json_decode($request->input('screener_answers_json', '[]'), true) ?: [];
+            if (count($parsed) < count($job->screener_questions)) {
+                return response()->json(['error' => 'screener_incomplete', 'message' => '選考質問への回答が不足しています。'], 422);
+            }
+            $screenerAnswers = collect($job->screener_questions)->map(fn($sq, $i) => [
+                'q' => $sq['q'],
+                'a' => mb_substr((string)($parsed[$i]['a'] ?? ''), 0, 200),
+            ])->all();
+        }
+
         $application = null;
-        DB::transaction(function () use ($request, $job, &$application) {
+        DB::transaction(function () use ($request, $job, &$application, $screenerAnswers) {
             $application = Application::create([
                 'job_id'           => $job->id,
                 'application_type' => Application::TYPE_LINE,
@@ -189,10 +203,11 @@ class LiffController extends Controller
             ]);
 
             LineApplicationDetail::create([
-                'application_id' => $application->id,
-                'line_user_id'   => $request->line_user_id,
-                'line_session_id' => $request->line_session_id,
-                'appeal_message' => $request->input('appeal_message') ?: null,
+                'application_id'   => $application->id,
+                'line_user_id'     => $request->line_user_id,
+                'line_session_id'  => $request->line_session_id,
+                'appeal_message'   => $request->input('appeal_message') ?: null,
+                'screener_answers' => $screenerAnswers,
                 'raw_answers_json' => [
                     'display_name' => $request->line_display_name,
                 ],
@@ -240,6 +255,9 @@ class LiffController extends Controller
                     "",
                     $application->lineDetail?->appeal_message
                         ? "■ 志望動機・自己PR\n{$application->lineDetail->appeal_message}\n"
+                        : null,
+                    !empty($application->lineDetail?->screener_answers)
+                        ? "■ 選考質問への回答\n" . collect($application->lineDetail->screener_answers)->map(fn($qa, $i) => "Q" . ($i + 1) . ". {$qa['q']}\n → {$qa['a']}")->join("\n") . "\n"
                         : null,
                     "■ 求人管理ページ",
                     url('/jobs/' . $job->token),

@@ -444,6 +444,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
         </div>
 
+        {{-- 選考質問(事業所側で設定した場合のみ表示・全項目必須) --}}
+        @if(!empty($job->screener_questions))
+        <div class="card-section" style="background:#fff8e1;border:1px solid #f6d97a;">
+            <div class="section-title" style="color:#8a6d00;">
+                <i class="bi bi-question-circle-fill"></i> 事業所様からのご質問
+            </div>
+            <p class="small text-muted mb-3">事業所様が事前に確認したい項目です。回答をお願いします。</p>
+            @foreach($job->screener_questions as $i => $sq)
+                <div class="mb-3">
+                    <label class="form-label">
+                        <span class="badge bg-warning text-dark me-1">Q{{ $i + 1 }}</span>
+                        {{ $sq['q'] }}<span class="required-badge">必須</span>
+                    </label>
+                    @if(($sq['type'] ?? 'yesno') === 'yesno')
+                        <div class="d-flex gap-3">
+                            <label class="check-tag">
+                                <input type="radio" name="screener[{{ $i }}]" value="はい" required>
+                                <span>はい</span>
+                            </label>
+                            <label class="check-tag">
+                                <input type="radio" name="screener[{{ $i }}]" value="いいえ" required>
+                                <span>いいえ</span>
+                            </label>
+                        </div>
+                    @else
+                        <input type="text" name="screener[{{ $i }}]"
+                               class="form-control" maxlength="200" required
+                               placeholder="ご回答を入力してください">
+                    @endif
+                    @error('screener.' . $i)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                </div>
+            @endforeach
+        </div>
+        @endif
+
         <button type="submit" class="btn-primary-round">
             <i class="bi bi-send-fill me-2"></i>この内容で応募する
         </button>

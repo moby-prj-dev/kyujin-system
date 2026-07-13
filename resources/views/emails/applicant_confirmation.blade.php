@@ -69,6 +69,23 @@
 </div>
 @endif
 
+@php
+    $screenerAnswers = $application->application_type === 'line'
+        ? ($application->lineDetail?->screener_answers)
+        : ($application->formDetail?->screener_answers);
+@endphp
+@if(!empty($screenerAnswers))
+<div style="margin:16px 0;padding:12px 14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:4px;">
+    <p style="margin:0 0 8px;font-size:12px;color:#666;font-weight:bold;">選考質問への回答</p>
+    @foreach($screenerAnswers as $i => $qa)
+        <div style="margin-bottom:8px;font-size:13px;">
+            <div style="color:#8a6d00;font-weight:bold;">Q{{ $i + 1 }}. {{ $qa['q'] }}</div>
+            <div style="margin-left:20px;color:#333;">→ {{ $qa['a'] }}</div>
+        </div>
+    @endforeach
+</div>
+@endif
+
 <div style="background:#fff8e1;border-left:4px solid #f59e0b;padding:14px 18px;margin:24px 0;font-size:13px;">
     <strong style="color:#8a6d00;">📞 今後の流れ</strong><br>
     応募内容は求人掲載主様(<strong>{{ $job->company_name }}</strong>)にお送りしました。<br>

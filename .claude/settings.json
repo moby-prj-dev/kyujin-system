@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Read(//etc/cron.d/**)",
+      "Bash(php artisan *)",
+      "Bash(mysql -u sail -ppassword kyujin_db -e \"SELECT COUNT\\(*\\) as total FROM content_articles;\")",
+      "Bash(crontab -l)"
+    ]
+  }
+}

@@ -43,6 +43,7 @@ Route::patch('/jobs/{token}/close', [\App\Http\Controllers\JobController::class,
 Route::patch('/jobs/{token}/reopen', [\App\Http\Controllers\JobController::class, 'reopen'])->name('jobs.reopen');
 Route::patch('/jobs/{token}/notifications', [\App\Http\Controllers\JobController::class, 'updateNotifications'])->name('jobs.notifications');
 Route::patch('/jobs/{token}/plan', [\App\Http\Controllers\JobController::class, 'updatePlan'])->name('jobs.plan');
+Route::patch('/jobs/{token}/screener', [\App\Http\Controllers\JobController::class, 'updateScreener'])->name('jobs.screener');
 Route::delete('/jobs/{token}', [\App\Http\Controllers\JobController::class, 'destroy'])->name('jobs.destroy');
 Route::get('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'create'])->name('disputes.create');
 Route::post('/jobs/{token}/disputes/{application}', [\App\Http\Controllers\DisputeController::class, 'store'])->name('disputes.store')->middleware('throttle:10,60');
