@@ -29,10 +29,10 @@
     @if($jobs->isNotEmpty())
     <script type="application/ld+json">
     {!! json_encode([
-        '@context' => 'https://schema.org',
-        '@type'    => 'ItemList',
+        '@' . 'context' => 'https://schema.org',
+        '@' . 'type'    => 'ItemList',
         'itemListElement' => $jobs->take(10)->values()->map(fn($j, $i) => [
-            '@type'    => 'ListItem',
+            '@' . 'type'    => 'ListItem',
             'position' => $i + 1,
             'url'      => route('lp.show', $j->token),
             'name'     => $j->seo_title ?: $j->title,

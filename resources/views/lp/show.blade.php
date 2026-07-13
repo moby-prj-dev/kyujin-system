@@ -43,15 +43,15 @@
         $areaName = $job->jobAreas->first()?->area?->name ?? '沖縄県';
         $salaryUnitMap = ['hourly' => 'HOUR', 'monthly' => 'MONTH'];
         $schema = [
-            '@context'    => 'https://schema.org/',
-            '@type'       => 'JobPosting',
+            '@' . 'context'    => 'https://schema.org/',
+            '@' . 'type'       => 'JobPosting',
             'title'       => $job->title,
             'description' => mb_substr(strip_tags($job->description_generated ?? $job->meta_description ?? ''), 0, 500),
             'datePosted'  => $job->created_at->toDateString(),
             'employmentType' => count($empTypesSchema) ? $empTypesSchema : ['OTHER'],
-            'hiringOrganization' => ['@type' => 'Organization', 'name' => $job->company_name],
-            'jobLocation' => ['@type' => 'Place', 'address' => [
-                '@type' => 'PostalAddress',
+            'hiringOrganization' => ['@' . 'type' => 'Organization', 'name' => $job->company_name],
+            'jobLocation' => ['@' . 'type' => 'Place', 'address' => [
+                '@' . 'type' => 'PostalAddress',
                 'addressRegion'   => '沖縄県',
                 'addressLocality' => $areaName,
                 'addressCountry'  => 'JP',
@@ -59,9 +59,9 @@
         ];
         if ($job->expires_at) $schema['validThrough'] = $job->expires_at->toIso8601String();
         if ($job->salary_type && $job->salary_min) {
-            $salaryValue = ['@type' => 'QuantitativeValue', 'minValue' => $job->salary_min, 'unitText' => $salaryUnitMap[$job->salary_type] ?? 'MONTH'];
+            $salaryValue = ['@' . 'type' => 'QuantitativeValue', 'minValue' => $job->salary_min, 'unitText' => $salaryUnitMap[$job->salary_type] ?? 'MONTH'];
             if ($job->salary_max) $salaryValue['maxValue'] = $job->salary_max;
-            $schema['baseSalary'] = ['@type' => 'MonetaryAmount', 'currency' => 'JPY', 'value' => $salaryValue];
+            $schema['baseSalary'] = ['@' . 'type' => 'MonetaryAmount', 'currency' => 'JPY', 'value' => $salaryValue];
         }
     @endphp
     <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
@@ -70,13 +70,13 @@
     @php
         $areaSlug = $job->jobAreas->first()?->area?->slug ?? null;
         $breadcrumb = [
-            '@context' => 'https://schema.org',
-            '@type'    => 'BreadcrumbList',
+            '@' . 'context' => 'https://schema.org',
+            '@' . 'type'    => 'BreadcrumbList',
             'itemListElement' => array_values(array_filter([
-                ['@type' => 'ListItem', 'position' => 1, 'name' => 'ホーム', 'item' => url('/')],
-                ['@type' => 'ListItem', 'position' => 2, 'name' => '沖縄の求人一覧', 'item' => url('/jobs/okinawa')],
-                $areaSlug ? ['@type' => 'ListItem', 'position' => 3, 'name' => $areaName . 'の求人', 'item' => url('/jobs/okinawa/' . $areaSlug)] : null,
-                ['@type' => 'ListItem', 'position' => $areaSlug ? 4 : 3, 'name' => $job->title],
+                ['@' . 'type' => 'ListItem', 'position' => 1, 'name' => 'ホーム', 'item' => url('/')],
+                ['@' . 'type' => 'ListItem', 'position' => 2, 'name' => '沖縄の求人一覧', 'item' => url('/jobs/okinawa')],
+                $areaSlug ? ['@' . 'type' => 'ListItem', 'position' => 3, 'name' => $areaName . 'の求人', 'item' => url('/jobs/okinawa/' . $areaSlug)] : null,
+                ['@' . 'type' => 'ListItem', 'position' => $areaSlug ? 4 : 3, 'name' => $job->title],
             ])),
         ];
     @endphp
@@ -88,46 +88,46 @@
         // Q1: 給与について
         if ($job->salaryText()) {
             $faqs[] = [
-                '@type' => 'Question',
+                '@' . 'type' => 'Question',
                 'name'  => 'この求人の給与はいくらですか?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $job->salaryText() . ($job->salary_note ? '(' . mb_substr($job->salary_note, 0, 100) . ')' : '') . '(応募前に条件は必ずご確認ください)'],
+                'acceptedAnswer' => ['@' . 'type' => 'Answer', 'text' => $job->salaryText() . ($job->salary_note ? '(' . mb_substr($job->salary_note, 0, 100) . ')' : '') . '(応募前に条件は必ずご確認ください)'],
             ];
         }
         // Q2: 応募方法
         if ($job->source === 'hellowork') {
             $faqs[] = [
-                '@type' => 'Question',
+                '@' . 'type' => 'Question',
                 'name'  => 'この求人への応募方法は?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'この求人はハローワーク経由で応募いただけます。ハローワークインターネットサービスの求人詳細ページよりお申込みください。'],
+                'acceptedAnswer' => ['@' . 'type' => 'Answer', 'text' => 'この求人はハローワーク経由で応募いただけます。ハローワークインターネットサービスの求人詳細ページよりお申込みください。'],
             ];
         } else {
             $applyMethod = $job->isStandard() ? 'LINE応募またはWebフォーム応募が可能です。' : 'Webフォームからご応募いただけます。';
             $faqs[] = [
-                '@type' => 'Question',
+                '@' . 'type' => 'Question',
                 'name'  => 'この求人への応募方法は?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $applyMethod . '応募前に希望条件を確認するため、条件がマッチしない場合は代替求人をご案内しています。'],
+                'acceptedAnswer' => ['@' . 'type' => 'Answer', 'text' => $applyMethod . '応募前に希望条件を確認するため、条件がマッチしない場合は代替求人をご案内しています。'],
             ];
         }
         // Q3: 事業所について
         $faqs[] = [
-            '@type' => 'Question',
+            '@' . 'type' => 'Question',
             'name'  => '事業所はどこにありますか?',
-            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $job->company_name . 'は沖縄県' . $areaName . 'に所在する事業所です。詳細な住所は応募後にお伝えいたします。'],
+            'acceptedAnswer' => ['@' . 'type' => 'Answer', 'text' => $job->company_name . 'は沖縄県' . $areaName . 'に所在する事業所です。詳細な住所は応募後にお伝えいたします。'],
         ];
         // Q4: 雇用形態
         $empList = $job->jobEmploymentTypes->map(fn($e) => $e->employmentType?->name)->filter()->join('、');
         if ($empList) {
             $faqs[] = [
-                '@type' => 'Question',
+                '@' . 'type' => 'Question',
                 'name'  => '雇用形態は何ですか?',
-                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $empList . 'の雇用形態で募集しています。' . ($job->source === 'hellowork' ? 'ハローワークで詳細をご確認ください。' : '')],
+                'acceptedAnswer' => ['@' . 'type' => 'Answer', 'text' => $empList . 'の雇用形態で募集しています。' . ($job->source === 'hellowork' ? 'ハローワークで詳細をご確認ください。' : '')],
             ];
         }
 
         if (!empty($faqs)) {
             $faqSchema = [
-                '@context' => 'https://schema.org',
-                '@type'    => 'FAQPage',
+                '@' . 'context' => 'https://schema.org',
+                '@' . 'type'    => 'FAQPage',
                 'mainEntity' => $faqs,
             ];
         }
@@ -139,23 +139,23 @@
     {{-- LocalBusiness JSON-LD (事業所ローカル検索対策) --}}
     @php
         $localBiz = [
-            '@context' => 'https://schema.org',
-            '@type'    => 'LocalBusiness',
+            '@' . 'context' => 'https://schema.org',
+            '@' . 'type'    => 'LocalBusiness',
             'name'     => $job->company_name,
             'address'  => [
-                '@type' => 'PostalAddress',
+                '@' . 'type' => 'PostalAddress',
                 'addressRegion'   => '沖縄県',
                 'addressLocality' => $areaName,
                 'addressCountry'  => 'JP',
             ],
-            'areaServed' => ['@type' => 'AdministrativeArea', 'name' => $areaName . '(沖縄県)'],
+            'areaServed' => ['@' . 'type' => 'AdministrativeArea', 'name' => $areaName . '(沖縄県)'],
         ];
         // 業種分類(介護福祉・保育など)
         $jobTypeName = $job->jobJobTypes->first()?->jobType?->name ?? '';
         if (str_contains($jobTypeName, '看護') || str_contains($jobTypeName, '医療')) {
-            $localBiz['@type'] = ['LocalBusiness', 'MedicalBusiness'];
+            $localBiz['@' . 'type'] = ['LocalBusiness', 'MedicalBusiness'];
         } elseif (str_contains($jobTypeName, '保育')) {
-            $localBiz['@type'] = ['LocalBusiness', 'ChildCare'];
+            $localBiz['@' . 'type'] = ['LocalBusiness', 'ChildCare'];
         }
     @endphp
     <script type="application/ld+json">{!! json_encode($localBiz, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
