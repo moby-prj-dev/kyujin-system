@@ -392,6 +392,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
+    @php
+        $hasScreener = !empty($job->screener_questions);
+        $sectionN = 1;
+    @endphp
+
     <form method="POST" action="{{ route('lp.apply.store', $job->token) }}" autocomplete="off">
         @csrf
         @foreach($conditions as $key => $ids)
@@ -400,57 +405,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             @endforeach
         @endforeach
 
-        <div class="card-section">
-            <div class="section-title"><i class="bi bi-person-fill"></i> 応募者情報</div>
-
-            <div class="mb-3">
-                <label class="form-label">お名前<span class="required-badge">必須</span></label>
-                <input type="text" name="applicant_name"
-                       class="form-control @error('applicant_name') is-invalid @enderror"
-                       value="{{ old('applicant_name') }}" placeholder="山田 太郎">
-                @error('applicant_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">電話番号<span class="required-badge">必須</span></label>
-                <input type="tel" name="phone"
-                       class="form-control @error('phone') is-invalid @enderror"
-                       value="{{ old('phone') }}" placeholder="09012345678">
-                <div class="form-text small text-muted">ハイフンなしで入力してください</div>
-                @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">メールアドレス<span class="badge bg-secondary ms-1" style="font-size:0.68rem;">任意</span></label>
-                <input type="email" name="email"
-                       class="form-control @error('email') is-invalid @enderror"
-                       value="{{ old('email') }}" placeholder="you@example.com">
-                <div class="form-text small text-muted">
-                    <i class="bi bi-info-circle me-1"></i>ご入力いただくと、応募内容の控えメールをお送りします
-                </div>
-                @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="mb-0">
-                <label class="form-label">志望動機・自己PR<span class="badge bg-secondary ms-1" style="font-size:0.68rem;">任意</span></label>
-                <textarea name="appeal_message" rows="4"
-                          class="form-control @error('appeal_message') is-invalid @enderror"
-                          placeholder="例:介護経験が3年あります。夜勤も対応可能です。子育て中のため日勤希望です。"
-                          maxlength="1000">{{ old('appeal_message') }}</textarea>
-                <div class="form-text small text-muted">
-                    <i class="bi bi-info-circle me-1"></i>事業所様への志望動機やご希望などを自由にご入力ください(1000文字以内)
-                </div>
-                @error('appeal_message')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-        </div>
-
-        {{-- 選考質問(事業所側で設定した場合のみ表示・全項目必須) --}}
-        @if(!empty($job->screener_questions))
-        <div class="card-section" style="background:#fff8e1;border:1px solid #f6d97a;">
-            <div class="section-title" style="color:#8a6d00;">
+        {{-- ===================================
+             セクション1:選考質問(先頭に配置)
+             事業所側で設定されていれば必ず先に確認
+             ================================== --}}
+        @if($hasScreener)
+        <div class="card-section" style="background:#fff8e1;border:2px solid #f9a825;box-shadow:0 2px 6px rgba(249,168,37,0.15);">
+            <div class="section-title" style="color:#8a6d00;display:flex;align-items:center;gap:8px;">
+                <span style="background:#f9a825;color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;">{{ $sectionN }}</span>
                 <i class="bi bi-question-circle-fill"></i> 事業所様からのご質問
+                <span class="badge bg-danger ms-auto" style="font-size:0.7rem;">全て必須</span>
             </div>
-            <p class="small text-muted mb-3">事業所様が事前に確認したい項目です。回答をお願いします。</p>
+            <p class="small text-muted mb-3">
+                <i class="bi bi-info-circle me-1"></i>事業所様が応募前に確認したい項目です。全ての質問にご回答ください。
+            </p>
             @foreach($job->screener_questions as $i => $sq)
                 <div class="mb-3">
                     <label class="form-label">
@@ -477,7 +445,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             @endforeach
         </div>
+        @php $sectionN++; @endphp
         @endif
+
+        {{-- ===================================
+             セクション2:応募者情報
+             ================================== --}}
+        <div class="card-section" style="background:#f8fbff;border:1px solid #cfe0f5;">
+            <div class="section-title" style="color:#0d47a1;display:flex;align-items:center;gap:8px;">
+                <span style="background:#1a73e8;color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;">{{ $sectionN }}</span>
+                <i class="bi bi-person-fill"></i> 応募者情報
+            </div>
+            <p class="small text-muted mb-3">
+                <i class="bi bi-shield-check me-1"></i>いただいた情報は事業所様への連絡目的のみに使用します。
+            </p>
+
+            <div class="mb-3">
+                <label class="form-label">お名前<span class="required-badge">必須</span></label>
+                <input type="text" name="applicant_name"
+                       class="form-control @error('applicant_name') is-invalid @enderror"
+                       value="{{ old('applicant_name') }}" placeholder="山田 太郎">
+                @error('applicant_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">電話番号<span class="required-badge">必須</span></label>
+                <input type="tel" name="phone"
+                       class="form-control @error('phone') is-invalid @enderror"
+                       value="{{ old('phone') }}" placeholder="09012345678">
+                <div class="form-text small text-muted">ハイフンなしで入力してください</div>
+                @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-0">
+                <label class="form-label">メールアドレス<span class="badge bg-secondary ms-1" style="font-size:0.68rem;">任意</span></label>
+                <input type="email" name="email"
+                       class="form-control @error('email') is-invalid @enderror"
+                       value="{{ old('email') }}" placeholder="you@example.com">
+                <div class="form-text small text-muted">
+                    <i class="bi bi-info-circle me-1"></i>ご入力いただくと、応募内容の控えメールをお送りします
+                </div>
+                @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+        </div>
+        @php $sectionN++; @endphp
+
+        {{-- ===================================
+             セクション3:志望動機(任意)
+             ================================== --}}
+        <div class="card-section" style="background:#f5f5f5;border:1px solid #ddd;">
+            <div class="section-title" style="color:#555;display:flex;align-items:center;gap:8px;">
+                <span style="background:#888;color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;">{{ $sectionN }}</span>
+                <i class="bi bi-chat-dots-fill"></i> 志望動機・自己PR
+                <span class="badge bg-secondary ms-auto" style="font-size:0.7rem;">任意</span>
+            </div>
+            <p class="small text-muted mb-3">
+                <i class="bi bi-lightbulb me-1"></i>ご記入いただくと、事業所様の選考時のご参考になります。空欄でも応募いただけます。
+            </p>
+            <textarea name="appeal_message" rows="4"
+                      class="form-control @error('appeal_message') is-invalid @enderror"
+                      placeholder="例:介護経験が3年あります。夜勤も対応可能です。子育て中のため日勤希望です。"
+                      maxlength="1000">{{ old('appeal_message') }}</textarea>
+            @error('appeal_message')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
 
         <button type="submit" class="btn-primary-round">
             <i class="bi bi-send-fill me-2"></i>この内容で応募する
