@@ -139,9 +139,9 @@ PROMPT;
         try {
             $apiKey = config('services.gemini.api_key');
             $model  = config('services.gemini.model', 'gemini-2.5-flash');
-            $url    = "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}";
+            $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
-            $client   = new Client(['timeout' => 15]);
+            $client   = new Client(['timeout' => 30]);
             $response = $client->post($url, [
                 'headers' => ['content-type' => 'application/json'],
                 'json'    => [
@@ -149,8 +149,9 @@ PROMPT;
                         ['parts' => [['text' => $prompt]]],
                     ],
                     'generationConfig' => [
-                        'maxOutputTokens' => 100,
+                        'maxOutputTokens' => 200,
                         'temperature'     => 0.7,
+                        'thinkingConfig'  => ['thinkingBudget' => 0], // Gemini 2.5系: thinking無効化
                     ],
                 ],
             ]);
@@ -161,6 +162,7 @@ PROMPT;
             if ($title) {
                 return $title;
             }
+            Log::warning('Gemini APIタイトル生成: 空レスポンス', ['response' => $body]);
         } catch (\Exception $e) {
             Log::warning('Gemini APIタイトル生成失敗: ' . $e->getMessage());
         }
@@ -287,22 +289,25 @@ PROMPT;
         try {
             $apiKey = config('services.gemini.api_key');
             $model  = config('services.gemini.model', 'gemini-2.5-flash');
-            $url    = "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}";
+            $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
-            $client   = new Client(['timeout' => 15]);
+            $client   = new Client(['timeout' => 30]);
             $response = $client->post($url, [
                 'headers' => ['content-type' => 'application/json'],
                 'json'    => [
                     'contents' => [['parts' => [['text' => $prompt]]]],
                     'generationConfig' => [
-                        'maxOutputTokens' => 200,
+                        'maxOutputTokens' => 400,
                         'temperature'     => 0.7,
+                        'thinkingConfig'  => ['thinkingBudget' => 0],
                     ],
                 ],
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
-            return trim($body['candidates'][0]['content']['parts'][0]['text'] ?? '');
+            $text = trim($body['candidates'][0]['content']['parts'][0]['text'] ?? '');
+            if (!$text) Log::warning('Gemini APIメタディスク生成: 空レスポンス', ['response' => $body]);
+            return $text;
         } catch (\Exception $e) {
             Log::warning('Gemini APIメタディスク生成失敗: ' . $e->getMessage());
             return '';
@@ -372,9 +377,9 @@ PROMPT;
         try {
             $apiKey = config('services.gemini.api_key');
             $model  = config('services.gemini.model', 'gemini-2.5-flash');
-            $url    = "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}";
+            $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
-            $client   = new Client(['timeout' => 20]);
+            $client   = new Client(['timeout' => 30]);
             $response = $client->post($url, [
                 'headers' => ['content-type' => 'application/json'],
                 'json'    => [
@@ -382,14 +387,17 @@ PROMPT;
                         ['parts' => [['text' => $prompt]]],
                     ],
                     'generationConfig' => [
-                        'maxOutputTokens' => 800,
+                        'maxOutputTokens' => 1200,
                         'temperature'     => 0.8,
+                        'thinkingConfig'  => ['thinkingBudget' => 0],
                     ],
                 ],
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
-            return trim($body['candidates'][0]['content']['parts'][0]['text'] ?? '');
+            $text = trim($body['candidates'][0]['content']['parts'][0]['text'] ?? '');
+            if (!$text) Log::warning('Gemini API本文生成: 空レスポンス', ['response' => $body]);
+            return $text;
         } catch (\Exception $e) {
             Log::warning('Gemini API本文生成失敗: ' . $e->getMessage());
             return '';
