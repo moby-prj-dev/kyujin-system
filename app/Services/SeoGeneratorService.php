@@ -44,7 +44,9 @@ class SeoGeneratorService
             ?: $this->generateDescription($areaStr, $mainJobType, $empStr, $conditionItems, $appealItems, $jobTypeItems, $mainAppeal);
 
         $job->title                 = $mainTitle;
-        $job->seo_title             = $mainTitle . " | {$areaStr}";
+        // 事業所名を先頭に配置してブランド検索(=事業所名検索)で発見されやすくする
+        $companyPrefix = $job->company_name ? mb_substr($job->company_name, 0, 30) . ' ' : '';
+        $job->seo_title             = $companyPrefix . $mainTitle . " | {$areaStr} | Care Entry";
         $job->subtitle              = $subtitle;
         $job->lp_tags               = $tags;
         $job->meta_description      = $metaDesc;

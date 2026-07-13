@@ -2,6 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $article->title }}｜Care Entry</title>
@@ -116,6 +118,32 @@
             gap: 5px 16px; margin-bottom: 12px;
         }
     </style>
+
+    {{-- BreadcrumbList JSON-LD --}}
+    @php
+        $articleBreadcrumb = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'BreadcrumbList',
+            'itemListElement' => array_values(array_filter([
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'ホーム', 'item' => url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => '記事一覧', 'item' => route('articles.index')],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $article->h1 ?: $article->title],
+            ])),
+        ];
+        $articleSchema = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'Article',
+            'headline' => $article->h1 ?: $article->title,
+            'description' => $article->meta_description ?? '',
+            'datePublished' => $article->published_at?->toIso8601String() ?? $article->created_at->toIso8601String(),
+            'dateModified' => $article->updated_at->toIso8601String(),
+            'author'   => ['@type' => 'Organization', 'name' => 'Care Entry'],
+            'publisher' => ['@type' => 'Organization', 'name' => 'Care Entry', 'url' => url('/')],
+            'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => url()->current()],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($articleBreadcrumb, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    <script type="application/ld+json">{!! json_encode($articleSchema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
 </head>
 <body>
 
@@ -163,7 +191,8 @@
 
                     @if($article->image_url)
                     <img src="{{ $article->image_url }}" alt="{{ $article->title }}"
-                         style="width:100%;border-radius:10px;margin-bottom:20px;object-fit:cover;max-height:300px;">
+                         style="width:100%;border-radius:10px;margin-bottom:20px;object-fit:cover;max-height:300px;"
+                         loading="lazy" width="800" height="300">
                     @endif
 
                     <div class="article-meta">
@@ -387,6 +416,6 @@
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

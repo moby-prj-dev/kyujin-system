@@ -19,6 +19,8 @@
     </script>
 @endif
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -63,6 +65,100 @@
         }
     @endphp
     <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+
+    {{-- BreadcrumbList JSON-LD --}}
+    @php
+        $areaSlug = $job->jobAreas->first()?->area?->slug ?? null;
+        $breadcrumb = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'BreadcrumbList',
+            'itemListElement' => array_values(array_filter([
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'ホーム', 'item' => url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => '沖縄の求人一覧', 'item' => url('/jobs/okinawa')],
+                $areaSlug ? ['@type' => 'ListItem', 'position' => 3, 'name' => $areaName . 'の求人', 'item' => url('/jobs/okinawa/' . $areaSlug)] : null,
+                ['@type' => 'ListItem', 'position' => $areaSlug ? 4 : 3, 'name' => $job->title],
+            ])),
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($breadcrumb, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+
+    {{-- FAQ JSON-LD (求人LPで頻出のQ&Aで検索リッチスニペット狙い) --}}
+    @php
+        $faqs = [];
+        // Q1: 給与について
+        if ($job->salaryText()) {
+            $faqs[] = [
+                '@type' => 'Question',
+                'name'  => 'この求人の給与はいくらですか?',
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $job->salaryText() . ($job->salary_note ? '(' . mb_substr($job->salary_note, 0, 100) . ')' : '') . '(応募前に条件は必ずご確認ください)'],
+            ];
+        }
+        // Q2: 応募方法
+        if ($job->source === 'hellowork') {
+            $faqs[] = [
+                '@type' => 'Question',
+                'name'  => 'この求人への応募方法は?',
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'この求人はハローワーク経由で応募いただけます。ハローワークインターネットサービスの求人詳細ページよりお申込みください。'],
+            ];
+        } else {
+            $applyMethod = $job->isStandard() ? 'LINE応募またはWebフォーム応募が可能です。' : 'Webフォームからご応募いただけます。';
+            $faqs[] = [
+                '@type' => 'Question',
+                'name'  => 'この求人への応募方法は?',
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $applyMethod . '応募前に希望条件を確認するため、条件がマッチしない場合は代替求人をご案内しています。'],
+            ];
+        }
+        // Q3: 事業所について
+        $faqs[] = [
+            '@type' => 'Question',
+            'name'  => '事業所はどこにありますか?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $job->company_name . 'は沖縄県' . $areaName . 'に所在する事業所です。詳細な住所は応募後にお伝えいたします。'],
+        ];
+        // Q4: 雇用形態
+        $empList = $job->jobEmploymentTypes->map(fn($e) => $e->employmentType?->name)->filter()->join('、');
+        if ($empList) {
+            $faqs[] = [
+                '@type' => 'Question',
+                'name'  => '雇用形態は何ですか?',
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $empList . 'の雇用形態で募集しています。' . ($job->source === 'hellowork' ? 'ハローワークで詳細をご確認ください。' : '')],
+            ];
+        }
+
+        if (!empty($faqs)) {
+            $faqSchema = [
+                '@context' => 'https://schema.org',
+                '@type'    => 'FAQPage',
+                'mainEntity' => $faqs,
+            ];
+        }
+    @endphp
+    @if(!empty($faqSchema))
+    <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    @endif
+
+    {{-- LocalBusiness JSON-LD (事業所ローカル検索対策) --}}
+    @php
+        $localBiz = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'LocalBusiness',
+            'name'     => $job->company_name,
+            'address'  => [
+                '@type' => 'PostalAddress',
+                'addressRegion'   => '沖縄県',
+                'addressLocality' => $areaName,
+                'addressCountry'  => 'JP',
+            ],
+            'areaServed' => ['@type' => 'AdministrativeArea', 'name' => $areaName . '(沖縄県)'],
+        ];
+        // 業種分類(介護福祉・保育など)
+        $jobTypeName = $job->jobJobTypes->first()?->jobType?->name ?? '';
+        if (str_contains($jobTypeName, '看護') || str_contains($jobTypeName, '医療')) {
+            $localBiz['@type'] = ['LocalBusiness', 'MedicalBusiness'];
+        } elseif (str_contains($jobTypeName, '保育')) {
+            $localBiz['@type'] = ['LocalBusiness', 'ChildCare'];
+        }
+    @endphp
+    <script type="application/ld+json">{!! json_encode($localBiz, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
 </head>
 <body>
 @if(app()->environment('production'))
@@ -102,7 +198,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="lp-wrap">
 
         @if($job->photo_path)
-        <img src="{{ asset('storage/' . $job->photo_path) }}" alt="{{ $job->company_name }}" class="job-photo">
+        <img src="{{ asset('storage/' . $job->photo_path) }}" alt="{{ $job->company_name }}" class="job-photo" loading="lazy" width="800" height="450">
         @endif
 
         <div class="section-card">
@@ -274,6 +370,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
