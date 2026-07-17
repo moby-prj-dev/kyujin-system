@@ -30,6 +30,9 @@ Schedule::call(function () {
         ->delete();
 })->dailyAt('04:00')->name('hellowork:cleanup-expired');
 
+// 毎日深夜4時30分：HW原本URLを叩いて削除済み求人を検出→削除(1日50件・約2ヶ月で全件回る)
+Schedule::command('hellowork:cleanup-deleted --limit=50')->dailyAt('04:30');
+
 // 毎朝5時：Google Indexing API へ未送信URLを通知（クロール促進）
 Schedule::command('indexing:submit --type=all')->dailyAt('05:00');
 
