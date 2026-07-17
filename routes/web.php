@@ -10,6 +10,7 @@ Route::get('/fb', [\App\Http\Controllers\ClientController::class, 'facebook'])->
 // -----------------------------------------------
 // 求人管理（掲載主向け）
 // -----------------------------------------------
+Route::redirect('/apply', '/jobs/create'); // 営業FAX資料用の短縮URL
 Route::get('/jobs/create', [\App\Http\Controllers\JobController::class, 'create'])->name('jobs.create');
 Route::get('/jobs/check-trial', [\App\Http\Controllers\JobController::class, 'checkTrial'])->name('jobs.check_trial');
 Route::post('/jobs', [\App\Http\Controllers\JobController::class, 'store'])->middleware('throttle:5,60')->name('jobs.store');
