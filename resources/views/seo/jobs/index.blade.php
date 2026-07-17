@@ -129,7 +129,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 @php $entryBaseParams = $searchConditionIds ?? []; @endphp
                 @forelse($jobs as $job)
-                    @php $isHw = $job->source === 'hellowork'; @endphp
+                    @php
+                        $isHw = $job->source === 'hellowork';
+                        $isNew = $job->created_at && $job->created_at->gte(now()->subDays(7));
+                    @endphp
                     <div class="job-card">
                         <p class="job-card__company">{{ $job->company_name }}</p>
                         <p class="job-card__title">
@@ -138,6 +141,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </a>
                         </p>
                         <div class="job-card__tags">
+                            @if($isNew)
+                                <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>
+                            @endif
                             @if($isHw)
                                 <span class="job-card__tag" style="background:#fff3e0;color:#e65100;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:4px;">ハローワーク</span>
                             @endif
