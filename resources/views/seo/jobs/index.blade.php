@@ -131,7 +131,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 @forelse($jobs as $job)
                     @php
                         $isHw = $job->source === 'hellowork';
-                        $isNew = $job->created_at && $job->created_at->gte(now()->subDays(7));
+                        // NEWバッジは自社(care_entry)求人のみ・HW求人には表示しない
+                        $isNew = !$isHw && $job->created_at && $job->created_at->gte(now()->subDays(7));
                     @endphp
                     <div class="job-card">
                         <p class="job-card__company">{{ $job->company_name }}</p>
