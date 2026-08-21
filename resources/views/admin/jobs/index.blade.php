@@ -113,7 +113,8 @@
                         $validSub      = (int) ($job->valid_count_sub ?? 0);
                         $expiresAt     = $job->expires_at;
                         $monitorEndsAt = $job->monitor_ends_at;
-                        if (!$monitorEndsAt) {
+                        // is_monitor=false の求人はトライアル対象外(表示は「—」)
+                        if (!$monitorEndsAt || !$job->is_monitor) {
                             $trialLabel = '—'; $trialClass = 'bg-secondary';
                         } elseif (now()->greaterThan($monitorEndsAt) || $validSub >= 3) {
                             $trialLabel = '終了済み'; $trialClass = 'bg-secondary';
@@ -267,11 +268,10 @@
                                     @endif
                                 </form>
                                 @endif
-                                {{-- 求人設定画面(掲載主向け管理画面) --}}
+                                {{-- 編集 --}}
                                 <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
-                                   class="btn btn-xs btn-outline-primary" target="_blank"
-                                   title="求人設定画面を開く(掲載主向け管理画面)">
-                                    <i class="bi bi-gear me-1"></i>設定
+                                   class="btn btn-xs btn-outline-primary" target="_blank">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                                 {{-- 削除 --}}
                                 <form method="POST" action="{{ route('admin.jobs.destroy', $job) }}"

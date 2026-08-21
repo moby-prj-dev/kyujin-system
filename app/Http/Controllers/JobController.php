@@ -559,9 +559,11 @@ class JobController extends Controller
             ->exists();
         if ($isPermanentlyFree) return false;
 
-        // monitor_ends_at が設定されていれば、解除後も期限で判定
+        // is_monitor=true かつ monitor_ends_at 設定されている求人が1件でもあれば無料期間中
+        // (is_monitor が false になった時点で無料期間は終了とみなす)
         $monitorJob = Job::where('contact_email', $email)
             ->whereNotNull('email_verified_at')
+            ->where('is_monitor', true)
             ->whereNotNull('monitor_ends_at')
             ->orderBy('email_verified_at')
             ->first();

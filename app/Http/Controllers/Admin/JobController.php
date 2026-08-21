@@ -76,9 +76,12 @@ class JobController extends Controller
             ]);
             $msg = '無料モニターに設定しました。（' . $monitorEndsAt->format('Y/m/d') . 'まで無料）';
         } else {
-            // モニター解除：monitor_ends_at はそのまま（期限まで課金なし）
-            $job->update(['is_monitor' => false]);
-            $msg = 'モニターを解除しました。（' . ($job->monitor_ends_at?->format('Y/m/d') . 'まで課金なし）');
+            // モニター解除：無料期間も即終了 (monitor_ends_at をクリア = 通常課金開始)
+            $job->update([
+                'is_monitor'      => false,
+                'monitor_ends_at' => null,
+            ]);
+            $msg = 'モニターを解除しました。（無料期間終了・通常課金に切替)';
         }
 
         return back()->with('success', $msg);
