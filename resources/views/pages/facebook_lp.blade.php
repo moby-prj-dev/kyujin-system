@@ -30,10 +30,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>求人を出しても応募が来ない方へ｜ケアエントリー【介護・福祉向け・沖縄エリア対応】</title>
-    <meta name="description" content="介護・福祉事業者向け求人掲載サービス「ケアエントリー」(対応エリア:沖縄県)。応募前に条件を確認する仕組みでミスマッチを防ぎます。現在モニター募集中・無料でお試しいただけます。">
+    <meta name="description" content="介護・福祉事業者向け求人掲載サービス「ケアエントリー」(対応エリア:沖縄県)。応募前に条件を確認する仕組みでミスマッチを防ぎます。掲載無料・応募があった時のみ課金・採用時0円。">
     <meta name="robots" content="noindex">
     <meta property="og:title" content="求人を出しても応募が来ない方へ｜ケアエントリー">
-    <meta property="og:description" content="介護・福祉事業者向け求人掲載サービス(対応エリア:沖縄県)。現在モニター募集中・無料でお試しいただけます。">
+    <meta property="og:description" content="介護・福祉事業者向け求人掲載サービス(対応エリア:沖縄県)。掲載無料・応募があった時のみ課金・採用時0円。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://care-entry.net/fb">
     <meta property="og:image" content="https://care-entry.net/images/ogp.png">
@@ -547,7 +547,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-{{-- ④ オファー（モニター） --}}
+{{-- ④ オファー（モニター期間中のみ表示） --}}
+@if(now()->lte($monitorCutoff))
 <section class="offer">
     <div class="container-sm text-center">
         <span class="offer__badge">
@@ -579,6 +580,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </p>
     </div>
 </section>
+@endif
 
 {{-- ⑤ 掲載の流れ --}}
 <section class="steps">

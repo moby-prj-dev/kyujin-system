@@ -509,11 +509,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <p class="hero__note">
                     <i class="bi bi-shield-check me-1"></i>まずは無料で掲載し、反応を確認していただけます
                 </p>
+                @if(now()->lte($monitorCutoff))
                 <p style="margin-top:10px;font-size:0.82rem;background:#fff3cd;border:1.5px solid #f9a825;border-radius:8px;padding:8px 14px;display:inline-block;">
                     <i class="bi bi-clock me-1" style="color:#f57f17;"></i>
                     <strong style="color:#f57f17;">無料モニター締切：{{ $monitorCutoff->format('Y年m月d日') }}</strong>
                     &nbsp;／ 3か月間または有効応募3件まで無料
                 </p>
+                @endif
             </div>
             <div class="col-lg-6">
                 <div class="hero__visual">
@@ -592,10 +594,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             </div>
         </div>
+        @if(now()->lte($monitorCutoff))
         <p style="text-align:center;font-size:0.78rem;color:#888;margin-top:16px;margin-bottom:4px;">
             ※ 現在はモニター期間中のため、掲載費・成果報酬すべて<strong>無料</strong>でご利用いただけます
             （{{ $monitorCutoff->format('Y年m月d日') }}までの登録・<strong style="color:#e65100;">有効応募3件まで無料</strong>）
         </p>
+        @endif
         <p style="text-align:center;font-size:0.75rem;color:#aaa;margin-top:6px;margin-bottom:0;">
             ※ 有効応募 = 重複・スパムを除いた応募 ／ 振込手数料はご負担ください ／ 掲載の継続・停止はいつでも管理ページから操作できます
         </p>
@@ -707,7 +711,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-{{-- 無料モニター募集バナー --}}
+{{-- 無料モニター募集バナー(モニター期間中のみ表示) --}}
+@if(now()->lte($monitorCutoff))
 <section style="background:linear-gradient(90deg,#fff8e1,#fff3cd);border-top:3px solid #f9a825;border-bottom:3px solid #f9a825;padding:28px 0;">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -731,6 +736,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 </section>
+@endif
 
 {{-- ④ 最終CTA --}}
 <section class="cta-band">
