@@ -122,6 +122,7 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     // 設定
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+    Route::post('/settings/toggle-monitor', [\App\Http\Controllers\Admin\SettingController::class, 'toggleMonitor'])->name('settings.toggle_monitor');
 
     // 無効申告管理
     Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');

@@ -13,8 +13,9 @@ class SettingController extends Controller
         $startDate = Setting::monitorStartDate();
         $months    = Setting::monitorMonths();
         $cutoff    = Setting::monitorCutoffDate();
+        $disabled  = Setting::isMonitorDisabled();
 
-        return view('admin.settings.index', compact('startDate', 'months', 'cutoff'));
+        return view('admin.settings.index', compact('startDate', 'months', 'cutoff', 'disabled'));
     }
 
     public function update(Request $request)
@@ -28,5 +29,16 @@ class SettingController extends Controller
         Setting::set('monitor_months', $request->monitor_months);
 
         return back()->with('success', 'モニター設定を更新しました。');
+    }
+
+    public function toggleMonitor(Request $request)
+    {
+        $disable = $request->boolean('disable');
+        Setting::set('monitor_disabled', $disable ? '1' : '0');
+
+        return back()->with(
+            'success',
+            $disable ? 'モニターを解除しました(全モニターUIが非表示になります)。' : 'モニターを再開しました。'
+        );
     }
 }

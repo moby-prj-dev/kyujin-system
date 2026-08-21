@@ -46,6 +46,40 @@
 
             <button type="submit" class="btn btn-primary">保存する</button>
         </form>
+
+        <hr class="my-4">
+
+        {{-- モニター解除/再開ボタン --}}
+        <div class="p-3 rounded" style="background:{{ $disabled ? '#fff3cd' : '#f0f7ff' }};border:1.5px solid {{ $disabled ? '#f9a825' : '#c5d8f8' }};">
+            <div class="fw-bold mb-2">
+                @if($disabled)
+                    <i class="bi bi-pause-circle-fill me-1" style="color:#e65100;"></i>モニター募集は現在【解除中】です
+                @else
+                    <i class="bi bi-play-circle-fill me-1" style="color:#1a73e8;"></i>モニター募集は現在【有効】です
+                @endif
+            </div>
+            <p class="text-muted small mb-3">
+                @if($disabled)
+                    全ての「無料モニター募集」告知UIが非表示になっています。<br>
+                    再開すると、上記の期間設定に基づいて再度表示されます。
+                @else
+                    上記の期間中は「無料モニター募集中」バーが各ページに表示されます。<br>
+                    <strong>「解除」ボタンを押すと即座に全告知UIが非表示</strong>になります(期間設定は保持)。
+                @endif
+            </p>
+            <form method="POST" action="{{ route('admin.settings.toggle_monitor') }}"
+                  onsubmit="return confirm('{{ $disabled ? "モニター募集を再開しますか?" : "モニター募集を解除しますか?(全告知UIが非表示になります)" }}');">
+                @csrf
+                <input type="hidden" name="disable" value="{{ $disabled ? '0' : '1' }}">
+                <button type="submit" class="btn {{ $disabled ? 'btn-success' : 'btn-warning' }}">
+                    @if($disabled)
+                        <i class="bi bi-play-fill me-1"></i>モニター募集を再開する
+                    @else
+                        <i class="bi bi-pause-fill me-1"></i>モニター募集を解除する
+                    @endif
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 

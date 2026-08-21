@@ -34,6 +34,15 @@ class Setting extends Model
 
     public static function monitorCutoffDate(): Carbon
     {
+        // 手動解除フラグが立ってる時は過去日付を返して全モニターUIを非表示化
+        if (static::isMonitorDisabled()) {
+            return Carbon::parse('2000-01-01');
+        }
         return Carbon::parse(static::monitorStartDate())->addMonths(static::monitorMonths());
+    }
+
+    public static function isMonitorDisabled(): bool
+    {
+        return (bool) static::get('monitor_disabled', 0);
     }
 }
