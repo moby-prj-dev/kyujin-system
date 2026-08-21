@@ -113,8 +113,9 @@
                         $validSub      = (int) ($job->valid_count_sub ?? 0);
                         $expiresAt     = $job->expires_at;
                         $monitorEndsAt = $job->monitor_ends_at;
-                        // is_monitor=false の求人はトライアル対象外(表示は「—」)
-                        if (!$monitorEndsAt || !$job->is_monitor) {
+                        $globalMonitorOff = \App\Models\Setting::isMonitorDisabled() || now()->greaterThan(\App\Models\Setting::monitorCutoffDate());
+                        // is_monitor=false もしくはグローバル解除中の求人はトライアル対象外
+                        if (!$monitorEndsAt || !$job->is_monitor || $globalMonitorOff) {
                             $trialLabel = '—'; $trialClass = 'bg-secondary';
                         } elseif (now()->greaterThan($monitorEndsAt) || $validSub >= 3) {
                             $trialLabel = '終了済み'; $trialClass = 'bg-secondary';
