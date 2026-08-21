@@ -93,6 +93,7 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     Route::patch('/jobs/{job}/toggle-hidden', [\App\Http\Controllers\Admin\JobController::class, 'toggleHidden'])->name('jobs.toggle_hidden');
     Route::patch('/jobs/{job}/toggle-monitor', [\App\Http\Controllers\Admin\JobController::class, 'toggleMonitor'])->name('jobs.toggle_monitor');
     Route::patch('/jobs/{job}/toggle-permanently-free', [\App\Http\Controllers\Admin\JobController::class, 'togglePermanentlyFree'])->name('jobs.toggle_permanently_free');
+    Route::patch('/jobs/{job}/toggle-featured', [\App\Http\Controllers\Admin\JobController::class, 'toggleFeatured'])->name('jobs.toggle_featured');
     Route::patch('/jobs/{job}/toggle-plan', [\App\Http\Controllers\Admin\JobController::class, 'togglePlan'])->name('jobs.toggle_plan');
     Route::patch('/jobs/{job}/memo', [\App\Http\Controllers\Admin\JobController::class, 'updateMemo'])->name('jobs.memo');
     Route::delete('/jobs/{job}', [\App\Http\Controllers\Admin\JobController::class, 'destroy'])->name('jobs.destroy');

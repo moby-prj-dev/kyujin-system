@@ -87,6 +87,14 @@ class JobController extends Controller
         return back()->with('success', $msg);
     }
 
+    public function toggleFeatured(Job $job)
+    {
+        $newVal = !$job->is_featured;
+        $job->update(['is_featured' => $newVal]);
+        $msg = $newVal ? '注目求人に設定しました。(検索結果でトップ表示)' : '注目求人を解除しました。';
+        return back()->with('success', $msg);
+    }
+
     public function togglePermanentlyFree(Job $job)
     {
         $newVal = !$job->is_permanently_free;

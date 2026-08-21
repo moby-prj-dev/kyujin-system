@@ -235,6 +235,22 @@
                                         </button>
                                     @endif
                                 </form>
+                                {{-- 注目求人切替(検索結果でトップ表示) --}}
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.toggle_featured', $job) }}">
+                                    @csrf @method('PATCH')
+                                    @if($job->is_featured)
+                                        <button type="submit" class="btn btn-xs btn-warning text-dark"
+                                                onclick="return confirm('注目求人を解除しますか？')">
+                                            <i class="bi bi-star-fill me-1"></i>注目解除
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-xs btn-outline-warning"
+                                                onclick="return confirm('この求人を注目に設定しますか？(検索結果でトップ表示)')">
+                                            <i class="bi bi-star me-1"></i>注目
+                                        </button>
+                                    @endif
+                                </form>
                                 {{-- 永久無料切替 --}}
                                 <form method="POST"
                                       action="{{ route('admin.jobs.toggle_permanently_free', $job) }}">

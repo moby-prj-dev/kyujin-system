@@ -81,6 +81,7 @@ class SeoJobController extends Controller
         $searchConditionIds = [...$searchConditionIds, ...$filterIds];
 
         $jobs = $query
+            ->orderByDesc('is_featured')
             ->orderByRaw("CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 WHEN source = 'care_entry' THEN 1 ELSE 2 END")
             ->latest()
             ->paginate(20)->withQueryString();
@@ -119,6 +120,7 @@ class SeoJobController extends Controller
         $searchConditionIds = ['area_ids' => [$currentArea->id], ...$filterIds];
 
         $jobs = $query
+            ->orderByDesc('is_featured')
             ->orderByRaw("CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 WHEN source = 'care_entry' THEN 1 ELSE 2 END")
             ->latest()
             ->paginate(20)->withQueryString();
@@ -160,6 +162,7 @@ class SeoJobController extends Controller
         ];
 
         $jobs = $query
+            ->orderByDesc('is_featured')
             ->orderByRaw("CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 WHEN source = 'care_entry' THEN 1 ELSE 2 END")
             ->latest()
             ->paginate(20)->withQueryString();
