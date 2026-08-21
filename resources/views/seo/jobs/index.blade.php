@@ -144,9 +144,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             @if($isNew)
                                 <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>
                             @endif
-                            @if($isHw)
-                                <span class="job-card__tag" style="background:#fff3e0;color:#e65100;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:4px;">ハローワーク</span>
-                            @endif
                             @foreach($job->jobAreas->take(2) as $ja)
                                 @if($ja->area)
                                     <span class="job-card__tag job-card__tag--area">
