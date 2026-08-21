@@ -267,10 +267,11 @@
                                     @endif
                                 </form>
                                 @endif
-                                {{-- 編集 --}}
+                                {{-- 求人設定画面(掲載主向け管理画面) --}}
                                 <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
-                                   class="btn btn-xs btn-outline-primary" target="_blank">
-                                    <i class="bi bi-pencil"></i>
+                                   class="btn btn-xs btn-outline-primary" target="_blank"
+                                   title="求人設定画面を開く(掲載主向け管理画面)">
+                                    <i class="bi bi-gear me-1"></i>設定
                                 </a>
                                 {{-- 削除 --}}
                                 <form method="POST" action="{{ route('admin.jobs.destroy', $job) }}"
