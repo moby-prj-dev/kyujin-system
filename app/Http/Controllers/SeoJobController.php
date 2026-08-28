@@ -133,14 +133,15 @@ class SeoJobController extends Controller
 
         $stats = $this->statsFor($currentArea, null);
 
+        $total = $stats['total'] ?? 0;
         return view('seo.jobs.index', [
             'jobs'               => $jobs,
             'currentArea'        => $currentArea,
             'currentJobType'     => null,
             'areas'              => $areas,
             'stats'              => $stats,
-            'pageTitle'          => "{$currentArea->name}の介護・福祉求人一覧",
-            'pageDesc'           => "{$currentArea->name}で介護・福祉の仕事を探している方向けの求人一覧です。現在{$stats['total']}件掲載中。",
+            'pageTitle'          => "【沖縄県{$currentArea->name}】介護・福祉の求人 " . ($total > 0 ? "{$total}件" : '募集'),
+            'pageDesc'           => "沖縄県{$currentArea->name}の介護・福祉求人" . ($total > 0 ? "を{$total}件掲載中" : "の最新募集情報") . "。介護職員・ヘルパー・看護・保育など職種から絞り込み可能。応募がなければ掲載料無料のCare Entry(ケアエントリー)。",
             'searchConditionIds' => $searchConditionIds,
         ]);
     }
@@ -175,14 +176,15 @@ class SeoJobController extends Controller
 
         $stats = $this->statsFor($currentArea, $currentJobType);
 
+        $total = $stats['total'] ?? 0;
         return view('seo.jobs.index', [
             'jobs'               => $jobs,
             'currentArea'        => $currentArea,
             'currentJobType'     => $currentJobType,
             'areas'              => $areas,
             'stats'              => $stats,
-            'pageTitle'          => "{$currentArea->name}の{$currentJobType->name}求人一覧",
-            'pageDesc'           => "{$currentArea->name}で{$currentJobType->name}の仕事を探している方向けの求人一覧。現在{$stats['total']}件掲載中。給与・雇用形態など条件で絞り込めます。",
+            'pageTitle'          => "【沖縄県{$currentArea->name}】{$currentJobType->name}の求人 " . ($total > 0 ? "{$total}件" : '募集'),
+            'pageDesc'           => "沖縄県{$currentArea->name}の{$currentJobType->name}求人" . ($total > 0 ? "を{$total}件掲載中" : "の最新募集情報") . "。給与・雇用形態(正社員・パート・契約社員)から絞り込み検索が可能。応募がなければ掲載料無料のCare Entry。",
             'searchConditionIds' => $searchConditionIds,
         ]);
     }

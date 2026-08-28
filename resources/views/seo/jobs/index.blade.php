@@ -40,6 +40,26 @@
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
     </script>
     @endif
+
+    {{-- BreadcrumbList JSON-LD: 階層構造をGoogleに伝え、SERPパンくず表示を狙う --}}
+    @php
+        $breadcrumbItems = [
+            ['@' . 'type' => 'ListItem', 'position' => 1, 'name' => 'ホーム', 'item' => url('/')],
+            ['@' . 'type' => 'ListItem', 'position' => 2, 'name' => '沖縄の介護・福祉求人', 'item' => route('seo.jobs.okinawa')],
+        ];
+        if ($currentArea) {
+            $breadcrumbItems[] = ['@' . 'type' => 'ListItem', 'position' => 3, 'name' => "{$currentArea->name}の求人", 'item' => route('seo.jobs.area', $currentArea->slug)];
+        }
+        if (($currentJobType ?? null) && $currentArea) {
+            $breadcrumbItems[] = ['@' . 'type' => 'ListItem', 'position' => 4, 'name' => "{$currentArea->name}の{$currentJobType->name}求人", 'item' => url()->current()];
+        }
+        $seoBreadcrumb = [
+            '@' . 'context' => 'https://schema.org',
+            '@' . 'type'    => 'BreadcrumbList',
+            'itemListElement' => $breadcrumbItems,
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($seoBreadcrumb, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/jobs.css">
@@ -247,9 +267,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="seo-supplement">
                     <h3>
                         <i class="bi bi-info-circle-fill text-primary me-1"></i>
-                        {{ $currentArea ? "{$currentArea->name}の介護・福祉の仕事" : '介護・福祉の仕事【沖縄エリア対応】' }}
+                        @if(($currentJobType ?? null) && $currentArea)
+                            {{ $currentArea->name }}で{{ $currentJobType->name }}の仕事を探す
+                        @elseif($currentArea)
+                            {{ $currentArea->name }}の介護・福祉の仕事
+                        @else
+                            介護・福祉の仕事【沖縄エリア対応】
+                        @endif
                     </h3>
-                    @if($currentArea)
+                    @if(($currentJobType ?? null) && $currentArea)
+                        <p>沖縄県{{ $currentArea->name }}で{{ $currentJobType->name }}として働ける求人を掲載しています。{{ $currentArea->name }}は{{ $currentArea->region }}エリアに位置し、地域密着型の施設から中規模施設まで多様な職場があります。通勤圏内で{{ $currentJobType->name }}の仕事を探している方におすすめのエリアです。</p>
+                        <p>正社員・パート・契約社員など雇用形態も選べます。給与や勤務条件から絞り込んで、自分に合った{{ $currentJobType->name }}の求人を見つけましょう。</p>
+                    @elseif($currentArea)
                         <p>{{ $currentArea->name }}は沖縄県{{ $currentArea->region }}エリアに位置し、介護・福祉施設の求人が多く掲載されています。地域に根ざした職場で働きたい方に向けた求人を探せます。</p>
                     @else
                         <p>沖縄県内の介護・福祉求人を一覧で確認できます。那覇・南部・中部・北部・離島と、沖縄全域のエリアから自分に合う職場を探せます。</p>

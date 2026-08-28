@@ -27,6 +27,15 @@
     </url>
     @endforeach
 
+    {{-- エリア×職種別求人ページ (求人が実在する組み合わせのみ) --}}
+    @foreach($areaJobTypeCombos as $combo)
+    <url>
+        <loc>{{ route('seo.jobs.area_jobtype', [$combo->area_slug, $combo->job_type_slug]) }}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+    @endforeach
+
     {{-- 記事ページ --}}
     @foreach($articles as $article)
     <url>
