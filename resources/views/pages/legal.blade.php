@@ -46,7 +46,7 @@
                 <tr>
                     <th class="bg-light" style="vertical-align:middle;">販売価格</th>
                     <td>
-                        本サービスは、月額料金と成果報酬を組み合わせた料金体系です。掲載主は以下の2種類のプランから選択します。
+                        本サービスは、月額料金と成果報酬を組み合わせた料金体系です。掲載主は以下の2種類のプランから選択します(スタンダードプランには注目求人オプションを追加できます)。
                         <table class="table table-bordered mt-2 mb-2" style="font-size:0.88rem;">
                             <thead class="table-light">
                                 <tr>
@@ -65,6 +65,11 @@
                                     <td><strong>スタンダード</strong></td>
                                     <td><strong>3,000円(税別)/月</strong></td>
                                     <td>有効応募1件につき<br><strong>3,000円(税別)</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>注目求人オプション</strong><br><span class="small">(スタンダード限定)</span></td>
+                                    <td><strong>+3,000円(税別)/月</strong></td>
+                                    <td>―</td>
                                 </tr>
                             </tbody>
                         </table>

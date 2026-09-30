@@ -256,6 +256,22 @@ body {
     transition: .2s;
 }
 .search__submit:hover { background: var(--color-primary-dark); }
+.search__area-note { font-size: 0.75rem; font-weight: 500; color: var(--color-muted); margin-left: 6px; }
+.search__region { border: 1.5px solid #d0e4f7; border-radius: 10px; background: #fff; padding: 8px 12px; margin-bottom: 8px; }
+.search__region-head { display: flex; align-items: center; gap: 8px; }
+.search__region-all { display: inline-flex; align-items: center; gap: 7px; font-size: 0.92rem; font-weight: 700; color: var(--color-text); cursor: pointer; margin: 0; }
+.search__region-all input { width: 18px; height: 18px; accent-color: var(--color-primary); cursor: pointer; }
+.search__region-count { font-size: 0.7rem; font-weight: 700; color: #fff; background: var(--color-primary); border-radius: 9px; min-width: 18px; height: 18px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; }
+.search__region-all-note { font-size: 0.72rem; font-weight: 500; color: var(--color-muted); }
+.search__region-toggle { margin-left: auto; background: none; border: none; color: var(--color-primary); font-size: 0.8rem; font-weight: 700; padding: 4px 0; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.search__region-toggle .bi { transition: transform .2s; }
+.search__region-toggle[aria-expanded="true"] .bi { transform: rotate(180deg); }
+.search__check-group.search__region-body { display: none; margin: 10px 0 4px; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.search__check-group.search__region-body.is-open { display: grid; }
+@media (min-width: 768px) {
+    .search__areas { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; align-items: start; }
+    .search__areas > .search__label { grid-column: 1 / -1; }
+}
 .search__detail-toggle {
     background: none;
     border: none;

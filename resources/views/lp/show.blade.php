@@ -101,7 +101,7 @@
                 'acceptedAnswer' => ['@' . 'type' => 'Answer', 'text' => 'この求人はハローワーク経由で応募いただけます。ハローワークインターネットサービスの求人詳細ページよりお申込みください。'],
             ];
         } else {
-            $applyMethod = $job->isStandard() ? 'LINE応募またはWebフォーム応募が可能です。' : 'Webフォームからご応募いただけます。';
+            $applyMethod = 'LINE応募またはWebフォーム応募が可能です。';
             $faqs[] = [
                 '@' . 'type' => 'Question',
                 'name'  => 'この求人への応募方法は?',
@@ -273,7 +273,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         @if($job->source !== 'hellowork')
         <div class="section-card">
             <div class="section-title"><i class="bi bi-send-fill"></i> 応募方法</div>
-            @if($job->isStandard())
+            @if($job->canUseLine())
             <div class="apply-method-item">
                 <div class="apply-icon apply-icon-line">
                     <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
@@ -356,7 +356,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </a>
             <p class="cta-note"><i class="bi bi-info-circle me-1"></i>ハローワークインターネットサービスのページに移動します</p>
         @else
-            @if($job->isStandard() && config('line.liff_id'))
+            @if($job->canUseLine() && config('line.liff_id'))
                 <a href="https://liff.line.me/{{ config('line.liff_id') }}/{{ $job->token }}" class="btn-line-apply">
                     <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
                     LINEで応募する

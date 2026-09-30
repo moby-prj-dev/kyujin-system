@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Cache;
 
 class SeoJobController extends Controller
 {
+    // 表示順: 注目(スタンダード限定オプション) → スタンダード → ベーシック → ハローワーク
+    private const RANK_ORDER_SQL = "CASE
+        WHEN is_featured = 1 AND plan = 'standard' AND source = 'care_entry' THEN 0
+        WHEN plan = 'standard' AND source = 'care_entry' THEN 1
+        WHEN source = 'care_entry' THEN 2
+        ELSE 3 END";
+
     private function visibleJobs()
     {
         return Job::active()
@@ -61,18 +68,33 @@ class SeoJobController extends Controller
 
     public function index(Request $request)
     {
-        $currentArea       = null;
-        $searchConditionIds = [];
+        // エリアは複数選択(areas[])。旧形式の ?area=slug も受け付ける
+        $areaSlugs = array_values(array_unique(array_filter(array_merge(
+            (array) $request->input('areas', []),
+            (array) $request->input('area', [])
+        ), 'is_string')));
 
-        if ($request->filled('area')) {
-            $currentArea = MasterArea::active()->where('slug', $request->area)->first();
+        $selectedAreas = $areaSlugs
+            ? MasterArea::active()->where('prefecture', '沖縄県')->whereIn('slug', $areaSlugs)->orderBy('sort_order')->get()
+            : collect();
+
+        // 1エリアだけならインデックス対象のエリアページへ集約(SEO)
+        if ($selectedAreas->count() === 1) {
+            return redirect()->route('seo.jobs.area', [
+                'slug' => $selectedAreas->first()->slug,
+                ...$request->except(['area', 'areas', 'page']),
+            ], 301);
         }
+
+        $currentArea        = null;
+        $searchConditionIds = [];
 
         $query = $this->visibleJobs();
 
-        if ($currentArea) {
-            $query->whereHas('jobAreas', fn($q) => $q->where('area_id', $currentArea->id));
-            $searchConditionIds['area_ids'] = [$currentArea->id];
+        if ($selectedAreas->isNotEmpty()) {
+            $areaIds = $selectedAreas->pluck('id')->all();
+            $query->whereHas('jobAreas', fn($q) => $q->whereIn('area_id', $areaIds));
+            $searchConditionIds['area_ids'] = $areaIds;
         } else {
             $query->whereHas('jobAreas.area', fn($q) => $q->where('prefecture', '沖縄県'));
         }
@@ -81,8 +103,7 @@ class SeoJobController extends Controller
         $searchConditionIds = [...$searchConditionIds, ...$filterIds];
 
         $jobs = $query
-            ->orderByDesc('is_featured')
-            ->orderByRaw("CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 WHEN source = 'care_entry' THEN 1 ELSE 2 END")
+            ->orderByRaw(self::RANK_ORDER_SQL)
             ->latest()
             ->paginate(20)->withQueryString();
 
@@ -92,16 +113,20 @@ class SeoJobController extends Controller
             ->get()
             ->groupBy('region');
 
-        $pageTitle = $currentArea
-            ? "{$currentArea->name}の介護・福祉求人一覧"
+        $areaLabel = $selectedAreas->isNotEmpty()
+            ? $selectedAreas->take(3)->pluck('name')->implode('・') . ($selectedAreas->count() > 3 ? "など{$selectedAreas->count()}エリア" : '')
+            : null;
+
+        $pageTitle = $areaLabel
+            ? "{$areaLabel}の介護・福祉求人一覧"
             : '沖縄の介護・福祉求人一覧';
 
-        $pageDesc = $currentArea
-            ? "{$currentArea->name}で介護・福祉の仕事を探している方向けの求人一覧です。地域の特性に合った求人を掲載しています。"
+        $pageDesc = $areaLabel
+            ? "{$areaLabel}で介護・福祉の仕事を探している方向けの求人一覧です。地域の特性に合った求人を掲載しています。"
             : '沖縄で介護・福祉の仕事を探している方向けの求人一覧です。エリアや職種から自分に合う求人を探せます。';
 
         $currentJobType = null;
-        $stats          = $currentArea ? $this->statsFor($currentArea, null) : null;
+        $stats          = null;
 
         return view('seo.jobs.index', compact(
             'jobs', 'currentArea', 'currentJobType', 'areas', 'stats',
@@ -120,8 +145,7 @@ class SeoJobController extends Controller
         $searchConditionIds = ['area_ids' => [$currentArea->id], ...$filterIds];
 
         $jobs = $query
-            ->orderByDesc('is_featured')
-            ->orderByRaw("CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 WHEN source = 'care_entry' THEN 1 ELSE 2 END")
+            ->orderByRaw(self::RANK_ORDER_SQL)
             ->latest()
             ->paginate(20)->withQueryString();
 
@@ -163,8 +187,7 @@ class SeoJobController extends Controller
         ];
 
         $jobs = $query
-            ->orderByDesc('is_featured')
-            ->orderByRaw("CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 WHEN source = 'care_entry' THEN 1 ELSE 2 END")
+            ->orderByRaw(self::RANK_ORDER_SQL)
             ->latest()
             ->paginate(20)->withQueryString();
 

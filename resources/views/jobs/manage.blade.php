@@ -208,6 +208,20 @@
         </div>
         @endif
     </div>
+    @if($job->isStandard())
+    <div class="p-3 rounded mb-3" style="background:#fffbeb;border:1px solid #fde68a;font-size:0.85rem;">
+        @if($job->is_featured)
+            <i class="bi bi-star-fill me-1" style="color:#f59e0b;"></i><strong>注目求人オプション ご利用中</strong>
+            @if($job->featured_started_at)
+                <span class="text-muted small ms-1">({{ $job->featured_started_at->format('Y/n/j') }}開始・月額 3,000円)</span>
+            @endif
+            <br><span class="text-muted small">検索結果の最上部に注目マーク付きで表示されています。解除をご希望の場合はお問い合わせください。</span>
+        @else
+            <i class="bi bi-star me-1" style="color:#f59e0b;"></i><strong>注目求人オプション</strong>(+月3,000円・税別)<br>
+            <span class="text-muted small">検索結果の最上部に注目マーク付きで表示されます。1市町村あたり{{ \App\Models\Job::FEATURED_SLOTS_PER_AREA }}枠限定のため、ご希望の方は<a href="{{ route('contact.show') }}">お問い合わせ</a>ください。</span>
+        @endif
+    </div>
+    @endif
     @if($job->isStandard() && $job->nextBillingDate())
     <div class="alert alert-info py-2 mb-3" style="font-size:0.85rem;">
         <i class="bi bi-info-circle me-1"></i>
@@ -230,11 +244,11 @@
         <div class="fw-bold mb-2" style="color:#1a73e8;"><i class="bi bi-arrow-up-circle me-1"></i>スタンダードプランにアップグレード</div>
         <p class="small text-muted mb-3">月額 3,000円で以下の機能が使えます:</p>
         <ul class="small mb-3" style="line-height:1.8;">
+            <li>地域の検索結果での<strong>優先上位表示</strong>(ベーシック求人より上に表示)</li>
             <li>複数求人掲載(最大3件)</li>
-            <li>求人一覧での<strong>優先上位表示</strong></li>
-            <li><strong>LINE応募機能</strong>(他社にない独自機能・応募ハードルが下がります)</li>
             <li>応募通知の追加宛先(採用担当複数へ)</li>
             <li>応募データ分析画面</li>
+            <li><strong>注目求人オプション</strong>(+月3,000円・検索結果の最上部に注目マーク付きで表示・1市町村{{ \App\Models\Job::FEATURED_SLOTS_PER_AREA }}枠限定)</li>
         </ul>
         <p class="small text-muted mb-3">
             <i class="bi bi-info-circle me-1"></i>月3,000円は応募課金1件と同じ額です。応募が1件でも多く発生すれば元が取れる計算になります。<br>
@@ -254,7 +268,8 @@
     <div class="p-3 rounded" style="background:#fff5f5;border:1px solid #f5c6cb;">
         <div class="fw-bold mb-2" style="color:#8a3a3a;"><i class="bi bi-arrow-down-circle me-1"></i>ベーシックプランに変更</div>
         <p class="small text-muted mb-3">
-            LINE応募機能・優先上位表示・分析画面などが使えなくなります。<br>
+            優先上位表示・追加宛先・分析画面などが使えなくなります(LINE応募は引き続きご利用いただけます)。<br>
+            注目求人オプションをご利用中の場合は同時に解除されます。<br>
             複数求人掲載中の場合、2件目以降は自動的に掲載停止となります。<br>
             <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
         </p>

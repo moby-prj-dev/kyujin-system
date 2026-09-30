@@ -107,6 +107,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         @if(session('success'))
         <div class="alert alert-success mb-3"><i class="bi bi-check-circle me-1"></i>{{ session('success') }}</div>
         @endif
+        @if(session('error'))
+        <div class="alert alert-danger mb-3"><i class="bi bi-exclamation-triangle me-1"></i>{{ session('error') }}</div>
+        @endif
         @yield('content')
     </div>
 </main>

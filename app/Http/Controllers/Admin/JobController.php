@@ -89,10 +89,33 @@ class JobController extends Controller
 
     public function toggleFeatured(Job $job)
     {
-        $newVal = !$job->is_featured;
-        $job->update(['is_featured' => $newVal]);
-        $msg = $newVal ? '注目求人に設定しました。(検索結果でトップ表示)' : '注目求人を解除しました。';
-        return back()->with('success', $msg);
+        if ($job->is_featured) {
+            $job->update(['is_featured' => false, 'featured_started_at' => null]);
+            return back()->with('success', '注目求人を解除しました。(翌月分より注目オプション料金なし)');
+        }
+
+        // 注目求人はスタンダード限定の有料オプション
+        if ($job->source !== 'care_entry' || !$job->isStandard()) {
+            return back()->with('error', '注目求人はスタンダードプラン限定のオプションです。先にスタンダードへ切替してください。');
+        }
+
+        // 1市町村あたりの枠数上限(掲載エリアのどれか1つでも満枠なら不可)
+        $fullAreas = \App\Models\JobArea::query()
+            ->whereIn('area_id', $job->jobAreas()->pluck('area_id'))
+            ->whereHas('job', fn($q) => $q->where('is_featured', true)->where('id', '!=', $job->id))
+            ->with('area')
+            ->get()
+            ->groupBy('area_id')
+            ->filter(fn($rows) => $rows->count() >= Job::FEATURED_SLOTS_PER_AREA)
+            ->map(fn($rows) => $rows->first()->area?->name)
+            ->filter();
+
+        if ($fullAreas->isNotEmpty()) {
+            return back()->with('error', '注目枠が満枠です(' . $fullAreas->implode('・') . ':各' . Job::FEATURED_SLOTS_PER_AREA . '枠まで)。');
+        }
+
+        $job->update(['is_featured' => true, 'featured_started_at' => now()]);
+        return back()->with('success', '注目求人に設定しました。(検索結果でトップ表示・月額 ' . number_format(Job::FEATURED_MONTHLY_FEE) . '円は翌月1日より請求対象)');
     }
 
     public function togglePermanentlyFree(Job $job)
@@ -114,6 +137,8 @@ class JobController extends Controller
             'plan' => $newPlan,
             // plan_started_at はスタンダード時は現在時刻、ベーシック戻し時は null
             'plan_started_at' => $newPlan === Job::PLAN_STANDARD ? now() : null,
+            // 注目求人はスタンダード限定のため、ベーシック戻し時に解除
+            ...($newPlan === Job::PLAN_BASIC ? ['is_featured' => false, 'featured_started_at' => null] : []),
         ]);
 
         $msg = $newPlan === Job::PLAN_STANDARD

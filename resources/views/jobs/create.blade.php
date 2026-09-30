@@ -360,7 +360,7 @@
                     <ul class="small text-muted mb-0" style="padding-left:1.1rem;line-height:1.7;">
                         <li>掲載無料 + 有効応募 3,000円/件</li>
                         <li>1事業所につき1求人</li>
-                        <li>Webフォーム応募</li>
+                        <li>LINE応募・Webフォーム応募</li>
                         <li>応募通知メール(1宛先)</li>
                     </ul>
                 </div>
@@ -378,9 +378,10 @@
                     </div>
                     <ul class="small text-muted mb-0" style="padding-left:1.1rem;line-height:1.7;">
                         <li>ベーシックの内容に加えて:</li>
+                        <li>地域の検索結果で優先上位表示</li>
                         <li>複数求人掲載(最大3件)</li>
-                        <li>LINE応募機能・優先上位表示</li>
                         <li>応募通知の追加宛先・分析画面</li>
+                        <li>注目求人オプション(+3,000円/月)を追加可</li>
                     </ul>
                 </div>
             </label>

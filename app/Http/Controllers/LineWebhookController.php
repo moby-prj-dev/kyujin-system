@@ -112,8 +112,8 @@ class LineWebhookController extends Controller
 
         $job = $entryToken->job;
 
-        // LINE応募機能はスタンダードプラン限定
-        if (!$job || !$job->isStandard()) {
+        // LINE応募は全プラン対象(ハローワーク求人は除く)
+        if (!$job || !$job->canUseLine()) {
             $this->reply($api, $replyToken, LineMessageBuilder::expiredToken());
             return;
         }

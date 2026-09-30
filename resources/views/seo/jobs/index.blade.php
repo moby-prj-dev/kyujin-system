@@ -135,7 +135,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row g-4">
             {{-- 求人一覧 --}}
             <div class="col-lg-8">
-                @php $hasFilters = request()->hasAny(['job_types', 'employment_types', 'condition_ids', 'appeal_ids', 'area']); @endphp
+                @php $hasFilters = request()->hasAny(['job_types', 'employment_types', 'condition_ids', 'appeal_ids', 'area', 'areas']); @endphp
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                     <p class="result-count mb-0">
                         <strong>{{ number_format($jobs->total()) }}件</strong> の求人が見つかりました
@@ -162,6 +162,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </a>
                         </p>
                         <div class="job-card__tags">
+                            @if($job->isFeaturedActive())
+                                <span class="job-card__tag" style="background:#f59e0b;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;"><i class="bi bi-star-fill"></i> 注目</span>
+                            @endif
                             @if($isNew)
                                 <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>
                             @endif

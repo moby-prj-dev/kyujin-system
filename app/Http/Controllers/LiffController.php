@@ -23,8 +23,8 @@ class LiffController extends Controller
         if ($job->is_admin_hidden) {
             abort(404);
         }
-        // LINE応募機能はスタンダードプラン限定
-        if (!$job->isStandard()) {
+        // LINE応募は全プラン対象(ハローワーク求人は除く)
+        if (!$job->canUseLine()) {
             abort(404);
         }
         return $job;

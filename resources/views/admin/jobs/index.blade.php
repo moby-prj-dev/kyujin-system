@@ -160,6 +160,9 @@
                                 @if($job->isStandard())
                                     <br><span class="badge bg-info text-dark mt-1" style="font-size:0.66rem;"><i class="bi bi-star-fill"></i> Std</span>
                                 @endif
+                                @if($job->is_featured)
+                                    <br><span class="badge bg-warning text-dark mt-1" style="font-size:0.66rem;"><i class="bi bi-megaphone-fill"></i> 注目</span>
+                                @endif
                             @endif
                         </td>
                         <td class="text-center">
@@ -235,22 +238,25 @@
                                         </button>
                                     @endif
                                 </form>
-                                {{-- 注目求人切替(検索結果でトップ表示) --}}
+                                {{-- 注目求人切替(スタンダード限定の有料オプション・1市町村2枠) --}}
+                                @if($job->is_featured || ($job->source === 'care_entry' && $job->isStandard()))
                                 <form method="POST"
                                       action="{{ route('admin.jobs.toggle_featured', $job) }}">
                                     @csrf @method('PATCH')
                                     @if($job->is_featured)
                                         <button type="submit" class="btn btn-xs btn-warning text-dark"
+                                                title="{{ $job->featured_started_at ? '開始: ' . $job->featured_started_at->format('Y/n/j') : '' }}"
                                                 onclick="return confirm('注目求人を解除しますか？')">
                                             <i class="bi bi-star-fill me-1"></i>注目解除
                                         </button>
                                     @else
                                         <button type="submit" class="btn btn-xs btn-outline-warning"
-                                                onclick="return confirm('この求人を注目に設定しますか？(検索結果でトップ表示)')">
+                                                onclick="return confirm('注目求人オプション(月{{ number_format(\App\Models\Job::FEATURED_MONTHLY_FEE) }}円)を設定しますか？\n検索結果でトップ表示されます(翌月1日より請求対象)')">
                                             <i class="bi bi-star me-1"></i>注目
                                         </button>
                                     @endif
                                 </form>
+                                @endif
                                 {{-- 永久無料切替 --}}
                                 <form method="POST"
                                       action="{{ route('admin.jobs.toggle_permanently_free', $job) }}">
@@ -274,12 +280,12 @@
                                     @csrf @method('PATCH')
                                     @if($job->isStandard())
                                         <button type="submit" class="btn btn-xs btn-primary"
-                                                onclick="return confirm('スタンダードプランを解除してベーシックに戻しますか？(同じ連絡先の全求人が対象)')">
+                                                onclick="return confirm('スタンダードプランを解除してベーシックに戻しますか？(同じ連絡先の全求人が対象・注目求人も解除されます)')">
                                             <i class="bi bi-star-fill me-1"></i>Std
                                         </button>
                                     @else
                                         <button type="submit" class="btn btn-xs btn-outline-primary"
-                                                onclick="return confirm('スタンダードプランに切替しますか?(同じ連絡先の全求人が対象・LINE応募と分析画面が有効になります)')">
+                                                onclick="return confirm('スタンダードプランに切替しますか?(同じ連絡先の全求人が対象・優先上位表示と分析画面が有効になります)')">
                                             <i class="bi bi-star me-1"></i>Std
                                         </button>
                                     @endif

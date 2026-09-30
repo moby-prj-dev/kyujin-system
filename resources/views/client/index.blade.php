@@ -485,7 +485,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <p class="hero__sub">
                     応募前に条件を確認する仕組みにより、ミスマッチを減らす設計です。<br>
                     求職者と企業の条件を事前にすり合わせることで、無駄な応募を減らします。<br>
-                    <span style="font-size:0.85em;color:#888;">（Webフォーム応募/スタンダードプランではLINE応募にも対応）</span>
+                    <span style="font-size:0.85em;color:#888;">（全プランでLINE応募・Webフォーム応募に対応）</span>
                 </p>
                 <div class="hero__features">
                     <span class="hero__feature-item">
@@ -569,7 +569,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 掲載無料(初期費用0円)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 1事業所につき 1求人</li>
-                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> Webフォーム応募</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>LINE応募</strong>・Webフォーム応募</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知メール(1宛先)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 管理URLでセルフ編集・停止</li>
                     </ul>
@@ -585,12 +585,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <p style="font-size:0.85rem;color:#666;margin-top:8px;margin-bottom:16px;">+ 有効応募 <strong style="color:#1a1a2e;">¥3,000/件</strong> (税別)</p>
                     <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
                         <li><i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>ベーシックの内容に加えて</strong></li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>地域の検索結果で優先上位表示</strong></li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 複数求人掲載(最大3件)</li>
-                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 一覧ページで優先上位表示</li>
-                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>LINE応募機能</strong>(独自機能)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知の追加宛先(複数名同時通知)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募データ分析画面</li>
                     </ul>
+                    <div style="margin-top:14px;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:0.8rem;line-height:1.6;">
+                        <i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>注目求人オプション +¥3,000/月</strong><br>
+                        検索結果の最上部に注目マーク付きで表示(1市町村{{ \App\Models\Job::FEATURED_SLOTS_PER_AREA }}枠限定)
+                    </div>
                 </div>
             </div>
         </div>
@@ -656,8 +659,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="col-md-4">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
-                    <p class="merit-card__title">LINE応募で応募率アップ<span style="font-size:0.7rem;background:#1a73e8;color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;">スタンダード</span></p>
-                    <p class="merit-card__body">スタンダードプランでは、求職者が使い慣れたLINEから応募できる仕組みで応募へのハードルを下げます。ベーシックプランはWebフォーム応募に対応しています。</p>
+                    <p class="merit-card__title">LINE応募で応募率アップ<span style="font-size:0.7rem;background:#06c755;color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;">全プラン</span></p>
+                    <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで応募へのハードルを下げます。無料のベーシックプランでもご利用いただけます。</p>
                 </div>
             </div>
         </div>

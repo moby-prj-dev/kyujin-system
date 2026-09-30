@@ -12,7 +12,7 @@ class Job extends Model
 {
     use SoftDeletes;
     protected $table = 'job_listings';
-    protected $fillable = ['source','hw_job_no','hw_job_url','company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','salary_type','salary_min','salary_max','salary_note','photo_path','status','is_admin_hidden','is_monitor','is_permanently_free','is_featured','plan','plan_started_at','plan_locked_until','monitor_ends_at','admin_memo','admin_memo_updated_at','token','contact_email','secondary_emails','screener_questions','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at'];
+    protected $fillable = ['source','hw_job_no','hw_job_url','company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','salary_type','salary_min','salary_max','salary_note','photo_path','status','is_admin_hidden','is_monitor','is_permanently_free','is_featured','featured_started_at','plan','plan_started_at','plan_locked_until','monitor_ends_at','admin_memo','admin_memo_updated_at','token','contact_email','secondary_emails','screener_questions','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at'];
 
     const SALARY_TYPES = [
         'monthly' => '月給',
@@ -35,6 +35,8 @@ class Job extends Model
         'screener_questions'    => 'array',
         'is_monitor'            => 'boolean',
         'is_permanently_free'   => 'boolean',
+        'is_featured'           => 'boolean',
+        'featured_started_at'   => 'datetime',
         'monitor_ends_at'       => 'datetime',
     ];
 
@@ -49,7 +51,20 @@ class Job extends Model
     const PLAN_STANDARD = 'standard';
     const STANDARD_MAX_JOBS = 3;
 
+    // 注目求人オプション(スタンダード限定・1市町村あたりの枠数上限)
+    const FEATURED_SLOTS_PER_AREA = 2;
+    const FEATURED_MONTHLY_FEE    = 3000;
+
     public function isStandard(): bool { return $this->plan === self::PLAN_STANDARD; }
+
+    /** LINE応募は全プランで利用可(ハローワーク求人は対象外) */
+    public function canUseLine(): bool { return $this->source !== 'hellowork'; }
+
+    /** 注目表示が有効か(スタンダード解除後にフラグが残っていても表示しない) */
+    public function isFeaturedActive(): bool
+    {
+        return $this->is_featured && $this->isStandard() && $this->source === 'care_entry';
+    }
     public function notificationEmails(): array
     {
         $primary = $this->contact_email ? [$this->contact_email] : [];

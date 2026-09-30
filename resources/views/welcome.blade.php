@@ -131,25 +131,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </p>
         <p class="search__sub">エリア・職種・雇用形態・勤務条件から絞り込めます</p>
         <form action="{{ route('seo.jobs.okinawa') }}" method="GET" class="search__form">
-            {{-- 基本条件：エリアのみ --}}
-            <div class="row g-3 align-items-end">
-                <div class="col-sm-8 col-md-5">
-                    <label class="search__label" for="search-area">
-                        <i class="bi bi-geo-alt me-1"></i>エリア
-                    </label>
-                    <select class="search__select" id="search-area" name="area">
-                        <option value="">エリアを選択（沖縄県）</option>
-                        @foreach($areasByRegion as $region => $regionAreas)
-                            <optgroup label="{{ $region }}">
-                                @foreach($regionAreas as $area)
-                                    <option value="{{ $area->slug }}" @selected(request('area') === $area->slug)>
-                                        {{ $area->name }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- 基本条件：エリア(複数選択・地域ごと一括選択可) --}}
+            @php
+                $selectedAreaSlugs = array_merge((array) request('areas', []), (array) request('area', []));
+            @endphp
+            <div class="search__areas" id="searchAreas">
+                <p class="search__label mb-2">
+                    <i class="bi bi-geo-alt me-1"></i>エリア<span class="search__area-note">(複数選択できます・未選択なら沖縄県全域)</span>
+                </p>
+                @foreach($areasByRegion as $region => $regionAreas)
+                    @php
+                        $regionChecked = $regionAreas->filter(fn($a) => in_array($a->slug, $selectedAreaSlugs))->count();
+                    @endphp
+                    <div class="search__region" data-region>
+                        <div class="search__region-head">
+                            <label class="search__region-all">
+                                <input type="checkbox" data-region-all
+                                    @checked($regionChecked > 0 && $regionChecked === $regionAreas->count())>
+                                {{ $region }}<span class="search__region-all-note">すべて</span>
+                            </label>
+                            <span class="search__region-count{{ $regionChecked ? '' : ' d-none' }}" data-region-count>{{ $regionChecked }}</span>
+                            <button type="button" class="search__region-toggle" data-region-toggle
+                                aria-expanded="{{ $regionChecked ? 'true' : 'false' }}">
+                                市町村を選ぶ<i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="search__check-group search__region-body{{ $regionChecked ? ' is-open' : '' }}" data-region-body>
+                            @foreach($regionAreas as $area)
+                                <label class="search__check-label">
+                                    <input type="checkbox" name="areas[]" value="{{ $area->slug }}"
+                                        @checked(in_array($area->slug, $selectedAreaSlugs))>
+                                    {{ $area->name }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
             </div>
 
             {{-- 詳細条件トグル --}}
@@ -559,6 +576,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         cbs.forEach(cb => cb.addEventListener('change', update));
     });
 
+    // エリア：地域ごと一括選択・件数バッジ・市町村の開閉
+    document.querySelectorAll('#searchAreas [data-region]').forEach(region => {
+        const allCb  = region.querySelector('[data-region-all]');
+        const cbs    = region.querySelectorAll('input[name="areas[]"]');
+        const cntEl  = region.querySelector('[data-region-count]');
+        const body   = region.querySelector('[data-region-body]');
+        const toggle = region.querySelector('[data-region-toggle]');
+        const sync = () => {
+            const n = Array.from(cbs).filter(cb => cb.checked).length;
+            allCb.checked       = n === cbs.length;
+            allCb.indeterminate = n > 0 && n < cbs.length;
+            cntEl.textContent = n;
+            cntEl.classList.toggle('d-none', n === 0);
+        };
+        allCb.addEventListener('change', () => {
+            cbs.forEach(cb => { cb.checked = allCb.checked; });
+            sync();
+        });
+        cbs.forEach(cb => cb.addEventListener('change', sync));
+        toggle.addEventListener('click', () => {
+            const open = body.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        sync();
+    });
+
     // 職種カテゴリーピル
     (function () {
         const pills  = document.querySelectorAll('.jt-cat-pill');
@@ -620,8 +663,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     cb.checked = false;
                     cb.dispatchEvent(new Event('change', { bubbles: true }));
                 });
-                const sel = form.querySelector('select[name="area"]');
-                if (sel) { sel.value = ''; sel.dispatchEvent(new Event('change')); }
             });
         }
     })();
