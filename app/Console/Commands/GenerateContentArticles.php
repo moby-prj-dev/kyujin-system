@@ -15,7 +15,18 @@ class GenerateContentArticles extends Command
         $definitions = ArticleGeneratorService::articleDefinitions();
 
         if ($slug = $this->option('slug')) {
-            $definitions = array_filter($definitions, fn($d) => $d['slug'] === $slug);
+            // 全フェーズの定義から探す
+            $all = array_merge(
+                $definitions,
+                ArticleGeneratorService::dynamicDefinitions(),
+                ArticleGeneratorService::conditionDefinitions(),
+                ArticleGeneratorService::qualificationDefinitions(),
+                ArticleGeneratorService::columnDefinitions(),
+                ArticleGeneratorService::beginnerDefinitions(),
+                ArticleGeneratorService::practicalDefinitions(),
+                ArticleGeneratorService::curatedDefinitions(),
+            );
+            $definitions = array_values(array_filter($all, fn($d) => $d['slug'] === $slug));
             if (empty($definitions)) {
                 $this->error("slug '{$slug}' が見つかりません。");
                 return self::FAILURE;
@@ -36,6 +47,7 @@ class GenerateContentArticles extends Command
                     ArticleGeneratorService::columnDefinitions(),       // Phase 5: 業界動向
                     ArticleGeneratorService::beginnerDefinitions(),     // Phase 6: 初心者向け
                     ArticleGeneratorService::practicalDefinitions(),    // Phase 7: 面接・履歴書等 実用トピック
+                    ArticleGeneratorService::curatedDefinitions(),      // Phase 8: 個別テーマ(介護・福祉限定)
                 );
                 $definitions = array_values(array_filter($merged, fn($d) => !in_array($d['slug'], $existingSlugs)));
             }

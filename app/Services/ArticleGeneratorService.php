@@ -608,7 +608,6 @@ class ArticleGeneratorService
         return [
             ['slug' => 'kaigo-mensetsu-shitsumon-okinawa',       'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '面接', 'よくある質問', '回答例', '沖縄', '対策']],
             ['slug' => 'kaigo-jishoku-riyu-okinawa',             'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '志望動機', '例文', '書き方', '沖縄']],
-            ['slug' => 'kaigo-jikou-pr-okinawa',                 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '自己PR', '例文', '未経験', '経験者', '沖縄']],
             ['slug' => 'kaigo-shokumu-keirekisho-okinawa',       'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '職務経歴書', '書き方', 'テンプレート', '沖縄']],
             ['slug' => 'kaigo-tenshoku-jiki-okinawa',            'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '転職', '時期', 'ベストタイミング', '4月', '10月', '沖縄']],
             ['slug' => 'kaigo-tenshoku-sagashikata-okinawa',     'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '転職サイト', '選び方', 'ハローワーク', '違い', '沖縄']],
@@ -621,6 +620,71 @@ class ArticleGeneratorService
             ['slug' => 'kaigo-w-license-okinawa',                'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', 'ダブルライセンス', '介護福祉士', 'ケアマネ', '取得順', '沖縄']],
             ['slug' => 'kaigo-yasumi-okinawa',                   'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '休み', '有給', '年間休日', '実態', '沖縄']],
             ['slug' => 'kaigo-teacher-okinawa',                  'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', '実務者研修', '教員', '講師', '沖縄']],
+        ];
+    }
+
+    /**
+     * Phase 8: 個別テーマ(2026-10 追加)。テンプレート量産を避け、介護・福祉に限定した1本ずつ異なるテーマ
+     * A:施設・事業所ごとの働き方 / B:未掲載の職種 / C:介護・福祉の仕事術 / D:沖縄ならでは / E:キャリアとお金
+     */
+    public static function curatedDefinitions(): array
+    {
+        return [
+            ['slug' => 'tokuyou-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['特別養護老人ホーム', '特養', '働き方', '仕事内容', '1日の流れ', '向いている人', '沖縄']],
+            ['slug' => 'rouken-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護老人保健施設', '老健', '在宅復帰', 'リハビリ', '介護職', '働き方', '沖縄']],
+            ['slug' => 'grouphome-ninchisho-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['グループホーム', '認知症', '少人数', 'ユニットケア', '働き方', '沖縄']],
+            ['slug' => 'yuryo-roujin-home-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['有料老人ホーム', '介護付き', '住宅型', '違い', '働き方', '沖縄']],
+            ['slug' => 'sakoju-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['サービス付き高齢者向け住宅', 'サ高住', '安否確認', '生活支援', '働き方', '沖縄']],
+            ['slug' => 'shoukibo-takinou-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['小規模多機能型居宅介護', '通い', '泊まり', '訪問', '働き方', '沖縄']],
+            ['slug' => 'kantaki-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'nurse_welfare_facility', 'keywords' => ['看護小規模多機能型居宅介護', '看多機', '医療ニーズ', '看護師', '介護職', '沖縄']],
+            ['slug' => 'day-service-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['デイサービス', '通所介護', '日勤のみ', '送迎', 'レクリエーション', '沖縄']],
+            ['slug' => 'day-care-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'physical_therapist', 'keywords' => ['デイケア', '通所リハビリテーション', 'デイサービスとの違い', 'リハビリ職', '介護職', '沖縄']],
+            ['slug' => 'houmon-nyuyoku-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['訪問入浴介護', '3人1組', '看護師', 'オペレーター', '仕事内容', '沖縄']],
+            ['slug' => 'shogai-grouphome-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'life_support_worker', 'keywords' => ['障害者グループホーム', '共同生活援助', '世話人', '生活支援員', '夜間支援', '沖縄']],
+            ['slug' => 'houkago-day-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'child_guidance_worker', 'keywords' => ['放課後等デイサービス', '放デイ', '児童指導員', '療育', '送迎', '沖縄']],
+            ['slug' => 'jido-hattatsu-shien-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'childcare_worker', 'keywords' => ['児童発達支援', '未就学児', '療育', '保育士', '児童指導員', '沖縄']],
+            ['slug' => 'shuro-keizoku-ab-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'employment_support_worker', 'keywords' => ['就労継続支援A型', '就労継続支援B型', '違い', '職業指導員', '就労支援員', '沖縄']],
+            ['slug' => 'seikatsu-kaigo-hataraku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'life_support_worker', 'keywords' => ['生活介護', '障害者', '日中活動', '創作活動', '生活支援員', '沖縄']],
+            ['slug' => 'school-social-worker-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'social_welfare_worker', 'keywords' => ['スクールソーシャルワーカー', 'SSW', '学校', '教育委員会', '社会福祉士', '沖縄']],
+            ['slug' => 'jido-yougo-shisetsu-shokuin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'child_guidance_worker', 'keywords' => ['児童養護施設', '職員', '児童指導員', '保育士', '住み込み', '沖縄']],
+            ['slug' => 'boshi-shienin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => null, 'keywords' => ['母子支援員', '母子生活支援施設', 'ひとり親', '仕事内容', '資格', '沖縄']],
+            ['slug' => 'katei-shien-senmon-soudanin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'family_support_consultant', 'keywords' => ['家庭支援専門相談員', 'ファミリーソーシャルワーカー', '児童養護施設', '家族再統合', '沖縄']],
+            ['slug' => 'fukushi-yougu-senmon-soudanin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => null, 'keywords' => ['福祉用具専門相談員', '福祉用具貸与', '講習', '営業', '介護保険', '沖縄']],
+            ['slug' => 'kaigo-jimu-shigoto-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'care_admin', 'keywords' => ['介護事務', '介護報酬請求', 'レセプト', '受付', '未経験', '沖縄']],
+            ['slug' => 'kaigo-sougei-driver-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => null, 'keywords' => ['介護施設', '送迎ドライバー', '福祉車両', '車いす', '普通免許', '沖縄']],
+            ['slug' => 'shisetsu-chouriin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => null, 'keywords' => ['介護施設', '調理員', '嚥下食', '刻み食', '調理補助', '沖縄']],
+            ['slug' => 'kinou-kunren-shidouin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'physical_therapist', 'keywords' => ['機能訓練指導員', 'デイサービス', '個別機能訓練', '柔道整復師', '看護師', '沖縄']],
+            ['slug' => 'shisetsu-kanri-eiyoushi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'registered_dietitian', 'keywords' => ['管理栄養士', '介護施設', '栄養ケアマネジメント', '献立', '多職種連携', '沖縄']],
+            ['slug' => 'touroku-helper-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'home_helper', 'keywords' => ['登録ヘルパー', '訪問介護', '直行直帰', '働き方', '収入', '沖縄']],
+            ['slug' => 'iryouteki-care-ji-shien-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'child_guidance_worker', 'keywords' => ['医療的ケア児', '支援', 'たん吸引', '経管栄養', '放課後等デイサービス', '沖縄']],
+            ['slug' => 'ijou-kaijo-youtsu-yobou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['移乗介助', 'コツ', '腰痛予防', 'ボディメカニクス', '介護職', '長く働く']],
+            ['slug' => 'kaigo-kiroku-kakikata-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護記録', '書き方', '例文', '客観的', '5W1H', '介護職']],
+            ['slug' => 'moushiokuri-kotsu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['申し送り', 'コツ', '引き継ぎ', '情報共有', '夜勤', '介護職']],
+            ['slug' => 'hiyari-hatto-houkoku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['ヒヤリハット', '事故報告', '書き方', '再発防止', '介護施設']],
+            ['slug' => 'riyousha-kazoku-kakawari-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['利用者家族', '関わり方', '信頼関係', 'クレーム対応', '介護職']],
+            ['slug' => 'yakin-sugoshikata-kamin-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['夜勤', '過ごし方', '仮眠', '体調管理', '巡視', '介護職']],
+            ['slug' => 'shintai-kousoku-shinai-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['身体拘束', '廃止', 'スピーチロック', '代替ケア', '介護施設']],
+            ['slug' => 'gyakutai-boushi-kihon-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['高齢者虐待', '障害者虐待', '防止', '不適切ケア', '研修', '介護・福祉職']],
+            ['slug' => 'kitaku-ganbou-taiou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['認知症', '帰宅願望', '夕暮れ症候群', '対応', '声かけ', '介護職']],
+            ['slug' => 'hattatsu-shogai-shien-kihon-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'child_guidance_worker', 'keywords' => ['発達障害', '子ども', '支援', '関わり方', '放課後等デイサービス', '児童指導員']],
+            ['slug' => 'kobetsu-shien-keikaku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'service_manager', 'keywords' => ['個別支援計画', '書き方', 'モニタリング', 'サービス管理責任者', '障害福祉']],
+            ['slug' => 'kansenshou-taisaku-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['感染症対策', '介護施設', '手洗い', 'インフルエンザ', 'ノロウイルス', '標準予防策']],
+            ['slug' => 'ritou-kaigo-hataraku-okinawa', 'category' => 'area', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['離島', '宮古島', '石垣島', '久米島', '介護職', '移住', '働き方']],
+            ['slug' => 'kurumashakai-tsukin-sougei-okinawa', 'category' => 'area', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['沖縄', '車社会', '車通勤', '送迎業務', '介護職', '渋滞']],
+            ['slug' => 'taifuu-kaigo-shisetsu-taiou-okinawa', 'category' => 'area', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['台風', '介護施設', '出勤', '停電', 'BCP', '沖縄']],
+            ['slug' => 'uchinaaguchi-koureisha-communication', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['うちなーぐち', '方言', '高齢者', 'コミュニケーション', '介護', '沖縄']],
+            ['slug' => 'ui-turn-kaigo-okinawa', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['Uターン', 'Iターン', '移住', '沖縄', '介護職', '福祉職', '転職']],
+            ['slug' => 'okinawa-kazokukan-zaitaku-kaigo', 'category' => 'area', 'area' => null, 'job_type' => 'home_helper', 'keywords' => ['沖縄', '家族観', '在宅介護', '訪問介護', '地域のつながり', '介護職']],
+            ['slug' => 'okinawa-kaigo-shugaku-shikin-shien', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['沖縄県', '介護福祉士修学資金', '再就職準備金', '貸付', '就職支援', '福祉人材センター']],
+            ['slug' => 'okinawa-chouju-kaigo-yobou', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['沖縄', '長寿', '介護予防', '高齢者', '地域', '介護・福祉職の役割']],
+            ['slug' => 'kaigo-kara-seikatsu-soudanin-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'life_consultant', 'keywords' => ['介護職', '生活相談員', 'キャリアアップ', '要件', '仕事内容', '沖縄']],
+            ['slug' => 'shisetsuchou-kanrisha-naru-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['施設長', '管理者', '介護施設', 'なるには', 'キャリア', '沖縄']],
+            ['slug' => 'kaigo-kara-kangoshi-mezasu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'nurse_welfare_facility', 'keywords' => ['介護職', '看護師', '准看護師', '働きながら', '学校', '沖縄']],
+            ['slug' => 'houmon-kaigo-kaigyou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'service_provision_manager', 'keywords' => ['訪問介護', '開業', '独立', '指定申請', '人員基準', '沖縄']],
+            ['slug' => 'yakin-teate-souba-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['夜勤手当', '相場', '介護職', '施設形態別', '月収', '沖縄']],
+            ['slug' => 'kaigo-taishokukin-fukushi-kyousai-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '退職金', '社会福祉施設職員等退職手当共済', '中退共', '確認方法']],
+            ['slug' => 'kaigo-rousai-youtsu-hoshou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '労災', '腰痛', '申請', '補償', '職場の対応']],
+            ['slug' => 'fukushi-tenshoku-kaisuu-hyouka-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護・福祉職', '転職回数', '面接', '評価', '伝え方', '沖縄']],
         ];
     }
 
@@ -638,7 +702,7 @@ class ArticleGeneratorService
         $area    = $areaId    ? MasterArea::find($areaId)    : null;
         $jobType = $jobTypeId ? MasterJobType::find($jobTypeId) : null;
 
-        ['title' => $title, 'h1' => $h1, 'meta' => $meta, 'body' => $body, 'image_url' => $imageUrl] = $this->callGemini($def, $area, $jobType);
+        ['title' => $title, 'h1' => $h1, 'meta' => $meta, 'body' => $body, 'image_url' => $imageUrl] = $this->generateDistinct($def, $area, $jobType);
 
         return ContentArticle::updateOrCreate(
             ['slug' => $slug],
@@ -661,7 +725,7 @@ class ArticleGeneratorService
         $area    = $def['area']    ? MasterArea::where('slug', $def['area'])->first() : null;
         $jobType = $def['job_type'] ? MasterJobType::where('slug', $def['job_type'])->first() : null;
 
-        ['title' => $title, 'h1' => $h1, 'meta' => $meta, 'body' => $body, 'image_url' => $imageUrl] = $this->callGemini($def, $area, $jobType);
+        ['title' => $title, 'h1' => $h1, 'meta' => $meta, 'body' => $body, 'image_url' => $imageUrl] = $this->generateDistinct($def, $area, $jobType);
 
         return ContentArticle::updateOrCreate(
             ['slug' => $def['slug']],
@@ -679,11 +743,91 @@ class ArticleGeneratorService
         );
     }
 
-    private function callGemini(array $def, $area, $jobType): array
+    // 既存記事タイトルとの類似度(文字bigramのJaccard)がこれ以上なら重複とみなし保存しない
+    private const DUPLICATE_THRESHOLD = 0.6;
+
+    /**
+     * 既存記事と重ならない記事を生成する。
+     * 似た既存タイトルをプロンプトに渡し、それでも重複タイトルになったら1回だけ再生成、だめなら例外(保存しない)。
+     */
+    private function generateDistinct(array $def, $area, $jobType): array
+    {
+        $existing = ContentArticle::where('slug', '!=', $def['slug'])->pluck('title')->all();
+        $topic    = implode(' ', array_filter([$area?->name, $jobType?->name, implode(' ', $def['keywords'])]));
+        $avoid    = $this->similarTitles($topic, $existing, 6, 0.15);
+
+        for ($attempt = 1; $attempt <= 2; $attempt++) {
+            $data = $this->callGemini($def, $area, $jobType, $avoid);
+            [$score, $closest] = $this->mostSimilar($data['title'], $existing);
+            if ($score < self::DUPLICATE_THRESHOLD) {
+                return $data;
+            }
+            // 重複したタイトルを明示して避けさせる
+            $avoid = array_values(array_unique(array_merge([$closest], $avoid)));
+        }
+
+        throw new \RuntimeException("既存記事と重複するため保存しません(類似度{$score}: {$closest})");
+    }
+
+    /** @return string[] 類似度の高い順に既存タイトルを返す */
+    private function similarTitles(string $text, array $titles, int $limit, float $min): array
+    {
+        $scored = [];
+        foreach ($titles as $t) {
+            $sc = $this->titleSimilarity($text, $t);
+            if ($sc >= $min) {
+                $scored[$t] = $sc;
+            }
+        }
+        arsort($scored);
+        return array_slice(array_keys($scored), 0, $limit);
+    }
+
+    /** @return array{0: float, 1: string} [最大類似度, そのタイトル] */
+    private function mostSimilar(string $title, array $titles): array
+    {
+        $best = [0.0, ''];
+        foreach ($titles as $t) {
+            $sc = $this->titleSimilarity($title, $t);
+            if ($sc > $best[0]) {
+                $best = [round($sc, 2), $t];
+            }
+        }
+        return $best;
+    }
+
+    private function titleSimilarity(string $a, string $b): float
+    {
+        $x = $this->bigrams($a);
+        $y = $this->bigrams($b);
+        if (!$x || !$y) {
+            return 0.0;
+        }
+        $inter = count(array_intersect_key($x, $y));
+        return $inter / (count($x) + count($y) - $inter);
+    }
+
+    private function bigrams(string $text): array
+    {
+        $text = preg_replace('/[｜|！!？?：:、。・（）()「」【】\s]/u', '', $text);
+        // どの記事にも出る語は除外して比較(沖縄・求人など)
+        $text  = str_replace(['沖縄県', '沖縄', 'を解説', '解説', '求人', '探す', '介護・福祉', 'とは', 'について'], '', $text);
+        $chars = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY);
+        $grams = [];
+        for ($i = 0; $i < count($chars) - 1; $i++) {
+            $grams[$chars[$i] . $chars[$i + 1]] = true;
+        }
+        return $grams;
+    }
+
+    private function callGemini(array $def, $area, $jobType, array $avoidTitles = []): array
     {
         $areaName    = $area    ? $area->name    : '沖縄県';
         $jobTypeName = $jobType ? $jobType->name : 'なし';
         $keywords    = implode('、', $def['keywords']);
+        $avoidBlock  = $avoidTitles
+            ? "\n【既存記事(これらと切り口・内容・タイトルを重ねないこと)】\n- " . implode("\n- ", $avoidTitles) . "\n"
+            : '';
 
         $prompt = <<<PROMPT
 あなたは介護・福祉業界に詳しいSEOライターです。以下の情報をもとに、求職者向けの情報記事を生成してください。
@@ -700,7 +844,7 @@ class ArticleGeneratorService
 【対象エリア】{$areaName}
 【対象職種】{$jobTypeName}
 【含めるキーワード】{$keywords}
-
+{$avoidBlock}
 【記事ルール】
 - 誇張表現・ランキング・No.1などは禁止
 - 事実ベースで書く（具体的な数字は「〜程度」「〜が多い」など推定表現を使う）
@@ -741,9 +885,11 @@ PROMPT;
             }
         } catch (\Exception $e) {
             Log::warning('Gemini記事生成失敗: ' . $e->getMessage());
+            throw new \RuntimeException('Gemini記事生成失敗: ' . $e->getMessage(), 0, $e);
         }
 
-        return $this->fallback($def['keywords'], $areaName);
+        // 中身の薄い仮記事は公開しない(翌日以降に再生成される)
+        throw new \RuntimeException('Gemini記事生成失敗: 応答のJSONが不正です');
     }
 
     private function fetchUnsplashImage(string $query): ?string
@@ -762,17 +908,5 @@ PROMPT;
             Log::warning('Pexels画像取得失敗: ' . $e->getMessage());
             return null;
         }
-    }
-
-    private function fallback(array $keywords, string $area): array
-    {
-        $topic = $keywords[0] ?? '介護・福祉の仕事';
-        return [
-            'title'     => "{$area}の{$topic}について",
-            'h1'        => "{$area}で{$topic}に関する情報をお探しの方へ",
-            'meta'      => "{$area}の介護・福祉に関する情報をまとめています。求職者向けに仕事内容や給与相場などを解説します。",
-            'body'      => "{$area}の介護・福祉業界についての情報を掲載しています。\n\nCare Entry（ケアエントリー）では沖縄の介護・福祉求人を掲載しています。エリアや職種から自分に合う求人をお探しください。",
-            'image_url' => null,
-        ];
     }
 }

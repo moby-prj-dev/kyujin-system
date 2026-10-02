@@ -60,6 +60,12 @@
             color: #333;
         }
         .article-body p { margin-bottom: 1.2em; }
+        .article-body h2 { font-size: 1.15rem; font-weight: 800; color: #1a1a2e; margin: 2em 0 0.8em; padding: 0 0 6px 10px; border-left: 4px solid var(--color-primary); border-bottom: 1px solid var(--color-border); }
+        .article-body h3 { font-size: 1.02rem; font-weight: 800; color: #1a1a2e; margin: 1.6em 0 0.6em; }
+        .article-body h4 { font-size: 0.95rem; font-weight: 700; margin: 1.4em 0 0.5em; }
+        .article-body ul, .article-body ol { margin: 0 0 1.2em; padding-left: 1.4em; }
+        .article-body li { margin-bottom: 0.3em; }
+        .article-body strong { font-weight: 700; color: #1a1a2e; }
 
         .category-badge {
             display: inline-flex; align-items: center; gap: 5px;
@@ -262,11 +268,8 @@
                     @endif
 
                     <div class="article-body">
-                        @foreach(explode("\n\n", $article->body) as $paragraph)
-                            @if(trim($paragraph))
-                                <p>{{ trim($paragraph) }}</p>
-                            @endif
-                        @endforeach
+                        {{-- 本文は Gemini 生成で Markdown(## 見出し・**太字**・箇条書き)を含むことがあるため変換して表示。HTMLはエスケープ --}}
+                        {!! \Illuminate\Support\Str::markdown($article->body, ['html_input' => 'escape', 'allow_unsafe_links' => false, 'renderer' => ['soft_break' => "<br>\n"]]) !!}
                     </div>
                 </div>
 
