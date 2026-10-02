@@ -18,7 +18,7 @@ Schedule::command('billing:send-job-expired-notifications')->dailyAt('09:10');
 Schedule::command('billing:generate-monthly')->monthlyOn(1, '08:00');
 
 // 毎日深夜2時：SEOコンテンツ記事を新規5件生成
-Schedule::command('articles:generate --limit=5')->dailyAt('02:00');
+Schedule::command('articles:generate --limit=3')->dailyAt('02:00');
 
 // 毎日深夜3時30分：ハローワーク求人のAI生成LP更新（1日15件・年5,000件超のカバレッジ）
 Schedule::command('hellowork:generate-lps --limit=15')->dailyAt('03:30');

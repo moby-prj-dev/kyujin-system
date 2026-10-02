@@ -53,10 +53,10 @@ class GenerateContentArticles extends Command
             $picked = [];
             $n      = (int) $limit;
             while (count($picked) < $n && !empty($byCategory)) {
-                foreach ($byCategory as $cat => &$items) {
+                foreach (array_keys($byCategory) as $cat) {
                     if (count($picked) >= $n) break;
-                    $picked[] = array_shift($items);
-                    if (empty($items)) unset($byCategory[$cat]);
+                    $picked[] = array_shift($byCategory[$cat]);
+                    if (empty($byCategory[$cat])) unset($byCategory[$cat]);
                 }
             }
             $definitions = $picked;

@@ -446,6 +446,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             'area'          => ['label' => 'エリア情報',  'icon' => 'bi-geo-alt-fill'],
             'qualification' => ['label' => '資格・研修',  'icon' => 'bi-award-fill'],
             'beginner'      => ['label' => '未経験・転職','icon' => 'bi-person-plus-fill'],
+            'practical'     => ['label' => '介護・福祉の仕事術','icon' => 'bi-lightbulb-fill'],
         ];
         @endphp
         <div class="row g-3">

@@ -601,7 +601,7 @@ class ArticleGeneratorService
     }
 
     /**
-     * Phase 7: 実務・準備・面接・履歴書などの実用トピック
+     * Phase 7: 実務・準備・面接・履歴書などの実用トピック(practical=介護・福祉の仕事術。介護・福祉の話題に限定)
      */
     public static function practicalDefinitions(): array
     {
@@ -705,6 +705,7 @@ class ArticleGeneratorService
 - 誇張表現・ランキング・No.1などは禁止
 - 事実ベースで書く（具体的な数字は「〜程度」「〜が多い」など推定表現を使う）
 - 求職者が疑問に思うことを丁寧に解説する
+- 介護・福祉の仕事・職場に関する内容に限定し、他業界にも当てはまる一般的な就職・転職論に広げない
 - 最後に「Care Entry（ケアエントリー）」で求人を探せることを自然に案内する
 - 本文のみ出力（タイトルや説明文は不要）
 PROMPT;

@@ -53,6 +53,7 @@
         .category-label--area        { background: #fff3e0; color: #e65100; }
         .category-label--qualification { background: #f3e5f5; color: #6a1b9a; }
         .category-label--beginner    { background: #e0f7fa; color: #00695c; }
+        .category-label--practical   { background: #fff8e1; color: #8d6e00; }
 
         .article-card {
             background: #fff; border-radius: 12px; border: 1.5px solid var(--color-border);
@@ -119,6 +120,7 @@
             'area'          => ['label' => 'エリア情報',  'icon' => 'bi-geo-alt-fill'],
             'qualification' => ['label' => '資格・研修',  'icon' => 'bi-award-fill'],
             'beginner'      => ['label' => '未経験・転職','icon' => 'bi-person-plus-fill'],
+            'practical'     => ['label' => '介護・福祉の仕事術','icon' => 'bi-lightbulb-fill'],
         ];
         @endphp
 

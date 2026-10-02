@@ -26,7 +26,7 @@ class ArticleController extends Controller
     {
         $request->validate([
             'keywords' => ['required', 'string', 'max:300'],
-            'category' => ['required', 'in:industry,job_type,area,qualification,beginner'],
+            'category' => ['required', 'in:industry,job_type,area,qualification,beginner,practical'],
             'slug'     => ['nullable', 'string', 'max:100', 'regex:/^[a-z0-9\-]+$/'],
             'area_id'  => ['nullable', 'integer', 'exists:master_areas,id'],
             'job_type_id' => ['nullable', 'integer', 'exists:master_job_types,id'],

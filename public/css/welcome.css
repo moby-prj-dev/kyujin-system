@@ -688,6 +688,7 @@ body {
 .article-card-home__badge--area          { background: #fff3e0; color: #e65100; }
 .article-card-home__badge--qualification { background: #f3e5f5; color: #6a1b9a; }
 .article-card-home__badge--beginner      { background: #e0f7fa; color: #00695c; }
+.article-card-home__badge--practical     { background: #fff8e1; color: #8d6e00; }
 .article-card-home__title {
     font-size: 0.93rem;
     font-weight: 800;

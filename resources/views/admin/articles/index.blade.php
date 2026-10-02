@@ -48,6 +48,7 @@
                             <option value="area"          {{ old('category') === 'area'          ? 'selected' : '' }}>エリア情報</option>
                             <option value="qualification" {{ old('category') === 'qualification' ? 'selected' : '' }}>資格・研修</option>
                             <option value="beginner"      {{ old('category') === 'beginner'      ? 'selected' : '' }}>未経験・転職</option>
+                            <option value="practical"     {{ old('category') === 'practical'     ? 'selected' : '' }}>介護・福祉の仕事術</option>
                         </select>
                         @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
@@ -114,6 +115,7 @@
                 'area'          => ['エリア',      'warning',   'bi-geo-alt-fill'],
                 'qualification' => ['資格・研修',  'secondary', 'bi-award-fill'],
                 'beginner'      => ['未経験・転職','info',      'bi-person-plus-fill'],
+                'practical'     => ['介護・福祉の仕事術','warning', 'bi-lightbulb-fill'],
             ];
             @endphp
             @if($articles->isEmpty())
