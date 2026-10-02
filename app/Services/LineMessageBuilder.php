@@ -141,7 +141,9 @@ class LineMessageBuilder
         foreach ($alternatives as $i => $alt) {
             $altArea = $alt->jobAreas->first()?->area?->name ?? '沖縄県';
             $altType = $alt->jobJobTypes->first()?->jobType?->name ?? '';
-            $text .= "\n{$nums[$i]} {$altArea}｜{$altType}\n" . route('lp.show', $alt->token);
+            // スタンダード(露出拡大)で優先表示している求人はステマ規制対応でPR表記
+            $pr = $alt->isPrEligible() ? '[PR] ' : '';
+            $text .= "\n{$nums[$i]} {$pr}{$altArea}｜{$altType}\n" . route('lp.show', $alt->token);
         }
 
         $text .= "\n\n▼他の求人を見る\n" . url('/');

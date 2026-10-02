@@ -162,8 +162,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </a>
                         </p>
                         <div class="job-card__tags">
-                            @if($job->isFeaturedActive())
-                                <span class="job-card__tag" style="background:#f59e0b;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;"><i class="bi bi-star-fill"></i> 注目</span>
+                            {{-- スタンダードプラン(露出拡大・優先上位表示)はステマ規制対応でPR表記(掲載期限切れ等の対象外求人には付けない) --}}
+                            @if(!$isHw && $job->isPrEligible())
+                                <span class="job-card__tag" style="background:#fff;color:#6b7280;border:1px solid #c4c9d2;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.5px;">PR</span>
                             @endif
                             @if($isNew)
                                 <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>

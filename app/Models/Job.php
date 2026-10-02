@@ -51,20 +51,37 @@ class Job extends Model
     const PLAN_STANDARD = 'standard';
     const STANDARD_MAX_JOBS = 3;
 
-    // 注目求人オプション(スタンダード限定・1市町村あたりの枠数上限)
-    const FEATURED_SLOTS_PER_AREA = 2;
-    const FEATURED_MONTHLY_FEE    = 3000;
-
     public function isStandard(): bool { return $this->plan === self::PLAN_STANDARD; }
+
+    /**
+     * スタンダード「露出拡大」(おすすめ求人・PR表記)の対象か
+     * 自社求人・スタンダード・公開中・メール認証済・非表示でない・掲載期限内
+     * ※ scopePrEligible と条件を揃えること
+     */
+    public function isPrEligible(): bool
+    {
+        return $this->source === 'care_entry'
+            && $this->isStandard()
+            && $this->isActive()
+            && $this->email_verified_at !== null
+            && !$this->is_admin_hidden
+            && (!$this->expires_at || $this->expires_at->isFuture());
+    }
+
+    /** isPrEligible() のクエリ版 */
+    public function scopePrEligible($q)
+    {
+        return $q->where('status', self::STATUS_ACTIVE)
+            ->where('source', 'care_entry')
+            ->where('plan', self::PLAN_STANDARD)
+            ->whereNotNull('email_verified_at')
+            ->where('is_admin_hidden', false)
+            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()));
+    }
 
     /** LINE応募は全プランで利用可(ハローワーク求人は対象外) */
     public function canUseLine(): bool { return $this->source !== 'hellowork'; }
 
-    /** 注目表示が有効か(スタンダード解除後にフラグが残っていても表示しない) */
-    public function isFeaturedActive(): bool
-    {
-        return $this->is_featured && $this->isStandard() && $this->source === 'care_entry';
-    }
     public function notificationEmails(): array
     {
         $primary = $this->contact_email ? [$this->contact_email] : [];

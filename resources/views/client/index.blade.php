@@ -570,7 +570,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 掲載無料(初期費用0円)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 1事業所につき 1求人</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>LINE応募</strong>・Webフォーム応募</li>
-                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知メール(1宛先)</li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知(1宛先)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 管理URLでセルフ編集・停止</li>
                     </ul>
                 </div>
@@ -586,14 +586,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
                         <li><i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>ベーシックの内容に加えて</strong></li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>地域の検索結果で優先上位表示</strong></li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>ハローワーク求人ページ・お役立ち記事・トップページに「おすすめ求人(PR)」として掲載</strong></li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 複数求人掲載(最大3件)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知の追加宛先(複数名同時通知)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募データ分析画面</li>
                     </ul>
-                    <div style="margin-top:14px;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:0.8rem;line-height:1.6;">
-                        <i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>注目求人オプション +¥3,000/月</strong><br>
-                        検索結果の最上部に注目マーク付きで表示(1市町村{{ \App\Models\Job::FEATURED_SLOTS_PER_AREA }}枠限定)
-                    </div>
                 </div>
             </div>
         </div>

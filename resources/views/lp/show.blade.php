@@ -297,6 +297,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         @endif
 
+        {{-- おすすめ求人(PR) ※HW求人ページのみ・同エリアのスタンダード求人(自社求人ページには他社広告を出さない) --}}
+        @if($job->source === 'hellowork')
+            @include('partials.recommended_jobs', ['jobs' => $recommendedJobs ?? collect(), 'heading' => 'この地域のおすすめ求人', 'wrap' => 'section-card'])
+        @endif
+
         {{-- 関連記事(SEO内部リンク+滞在時間UP) --}}
         @if(!empty($relatedArticles) && $relatedArticles->count() > 0)
         <div class="section-card">

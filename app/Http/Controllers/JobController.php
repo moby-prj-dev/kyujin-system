@@ -440,7 +440,7 @@ class JobController extends Controller
             'plan'              => $newPlan,
             'plan_started_at'   => $newPlan === Job::PLAN_STANDARD ? now() : null,
             'plan_locked_until' => now()->addDays(Job::PLAN_LOCK_DAYS),
-            // 注目求人はスタンダード限定のため、ベーシック戻し時に解除
+            // 旧・注目求人オプション(販売終了)のフラグ掃除: ベーシック戻し時に解除
             ...($newPlan === Job::PLAN_BASIC ? ['is_featured' => false, 'featured_started_at' => null] : []),
         ];
         Job::where(function ($q) use ($job) {
@@ -449,7 +449,7 @@ class JobController extends Controller
 
         if ($newPlan === Job::PLAN_STANDARD) {
             $nextBilling = now()->copy()->addMonthNoOverflow()->startOfMonth();
-            $msg = 'スタンダードプランに切替しました。優先上位表示・複数求人掲載・分析画面がご利用いただけます。'
+            $msg = 'スタンダードプランに切替しました。優先上位表示・おすすめ求人(PR)掲載・複数求人掲載・応募通知の追加宛先・分析画面がご利用いただけます。'
                 . '月額 3,000円 の初回請求日は ' . $nextBilling->format('Y年n月j日') . ' となります(月中の切替は翌月起算)。';
         } else {
             $msg = 'ベーシックプランに戻しました。今月末までスタンダード機能は継続利用いただけます。翌月1日より月額料金は発生しません。';

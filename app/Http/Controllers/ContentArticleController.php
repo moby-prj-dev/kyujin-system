@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaStatistic;
 use App\Models\ContentArticle;
 use App\Models\Job;
+use App\Services\RecommendedJobFinder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -36,7 +37,15 @@ class ContentArticleController extends Controller
         $areaStats   = $this->fetchAreaStats($article);
         $publicStat  = $this->fetchPublicStat($article);
 
-        return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats', 'publicStat'));
+        // おすすめ求人(PR): 記事のエリア(必須)・職種に合うスタンダード求人
+        $recommendedJobs = app(RecommendedJobFinder::class)->forArticle($article, 3);
+        if ($recommendedJobs->isNotEmpty()) {
+            // 同じ求人がPR枠と通常のおすすめ枠に重複表示されないようにする
+            $prIds = $recommendedJobs->pluck('id')->all();
+            $relatedJobs = $relatedJobs->reject(fn($j) => in_array($j->id, $prIds, true))->values();
+        }
+
+        return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats', 'publicStat', 'recommendedJobs'));
     }
 
     /**

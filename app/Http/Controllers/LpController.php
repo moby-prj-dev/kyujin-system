@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ContentArticle;
 use App\Models\Job;
 use App\Models\LpView;
+use App\Services\RecommendedJobFinder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -54,7 +55,13 @@ class LpController extends Controller
 
         $relatedArticles = $this->findRelatedArticles($job);
 
-        return view('lp.show', compact('job', 'relatedArticles'));
+        // おすすめ求人(PR): ハローワーク求人ページのみ・同エリアのスタンダード求人(他エリア補完なし)
+        // ※自社求人(ベーシック/スタンダード)のページには他社広告を出さない
+        $recommendedJobs = $job->source === 'hellowork'
+            ? app(RecommendedJobFinder::class)->forJob($job, 3)
+            : collect();
+
+        return view('lp.show', compact('job', 'relatedArticles', 'recommendedJobs'));
     }
 
     /**

@@ -148,9 +148,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <label class="search__region-all">
                                 <input type="checkbox" data-region-all
                                     @checked($regionChecked > 0 && $regionChecked === $regionAreas->count())>
-                                {{ $region }}<span class="search__region-all-note">すべて</span>
+                                {{ $region }}<span class="search__area-num">({{ number_format($regionJobCounts[$region] ?? 0) }})</span><span class="search__region-all-note">すべて</span>
                             </label>
-                            <span class="search__region-count{{ $regionChecked ? '' : ' d-none' }}" data-region-count>{{ $regionChecked }}</span>
                             <button type="button" class="search__region-toggle" data-region-toggle
                                 aria-expanded="{{ $regionChecked ? 'true' : 'false' }}">
                                 市町村を選ぶ<i class="bi bi-chevron-down"></i>
@@ -158,10 +157,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                         <div class="search__check-group search__region-body{{ $regionChecked ? ' is-open' : '' }}" data-region-body>
                             @foreach($regionAreas as $area)
-                                <label class="search__check-label">
+                                @php $areaCount = $areaJobCounts[$area->id] ?? 0; @endphp
+                                <label class="search__check-label{{ $areaCount ? '' : ' is-empty' }}">
                                     <input type="checkbox" name="areas[]" value="{{ $area->slug }}"
                                         @checked(in_array($area->slug, $selectedAreaSlugs))>
-                                    {{ $area->name }}
+                                    {{ $area->name }}<span class="search__area-num">({{ number_format($areaCount) }})</span>
                                 </label>
                             @endforeach
                         </div>
@@ -409,6 +409,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
+{{-- ③-a おすすめ求人(PR) ※スタンダードプランの露出拡大枠・日替わり(料金表記の「おすすめ求人(PR)」と名称を揃える) --}}
+@if(!empty($featuredJobs) && $featuredJobs->isNotEmpty())
+<section style="background:#fff;padding:56px 0;border-top:1px solid #e5e9f0;">
+    <div class="container">
+        <p class="articles-section__eyebrow">PICK UP</p>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h2 class="articles-section__heading mb-0">
+                おすすめ求人
+                <span style="display:inline-block;font-size:0.7rem;font-weight:700;color:#6b7280;border:1px solid #c4c9d2;border-radius:3px;padding:0 6px;line-height:1.6;vertical-align:middle;">PR</span>
+            </h2>
+            <a href="{{ route('seo.jobs.okinawa') }}" class="articles-section__more">
+                求人をすべて見る <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        @include('partials.recommended_jobs', ['jobs' => $featuredJobs, 'wrap' => 'none', 'layout' => 'grid'])
+    </div>
+</section>
+@endif
+
 {{-- ③-b お役立ち記事 --}}
 @if($articles->isNotEmpty())
 <section class="articles-section">
@@ -576,19 +595,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         cbs.forEach(cb => cb.addEventListener('change', update));
     });
 
-    // エリア：地域ごと一括選択・件数バッジ・市町村の開閉
+    // エリア：地域ごと一括選択・市町村の開閉
     document.querySelectorAll('#searchAreas [data-region]').forEach(region => {
         const allCb  = region.querySelector('[data-region-all]');
         const cbs    = region.querySelectorAll('input[name="areas[]"]');
-        const cntEl  = region.querySelector('[data-region-count]');
         const body   = region.querySelector('[data-region-body]');
         const toggle = region.querySelector('[data-region-toggle]');
         const sync = () => {
             const n = Array.from(cbs).filter(cb => cb.checked).length;
             allCb.checked       = n === cbs.length;
             allCb.indeterminate = n > 0 && n < cbs.length;
-            cntEl.textContent = n;
-            cntEl.classList.toggle('d-none', n === 0);
         };
         allCb.addEventListener('change', () => {
             cbs.forEach(cb => { cb.checked = allCb.checked; });

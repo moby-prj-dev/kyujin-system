@@ -160,8 +160,9 @@
                                 @if($job->isStandard())
                                     <br><span class="badge bg-info text-dark mt-1" style="font-size:0.66rem;"><i class="bi bi-star-fill"></i> Std</span>
                                 @endif
+                                {{-- 旧・注目求人オプション(販売終了)のフラグが残っている求人の目印 --}}
                                 @if($job->is_featured)
-                                    <br><span class="badge bg-warning text-dark mt-1" style="font-size:0.66rem;"><i class="bi bi-megaphone-fill"></i> 注目</span>
+                                    <br><span class="badge bg-warning text-dark mt-1" style="font-size:0.66rem;" title="旧・注目求人オプションのフラグ(販売終了)"><i class="bi bi-megaphone-fill"></i> 旧注目</span>
                                 @endif
                             @endif
                         </td>
@@ -238,25 +239,6 @@
                                         </button>
                                     @endif
                                 </form>
-                                {{-- 注目求人切替(スタンダード限定の有料オプション・1市町村2枠) --}}
-                                @if($job->is_featured || ($job->source === 'care_entry' && $job->isStandard()))
-                                <form method="POST"
-                                      action="{{ route('admin.jobs.toggle_featured', $job) }}">
-                                    @csrf @method('PATCH')
-                                    @if($job->is_featured)
-                                        <button type="submit" class="btn btn-xs btn-warning text-dark"
-                                                title="{{ $job->featured_started_at ? '開始: ' . $job->featured_started_at->format('Y/n/j') : '' }}"
-                                                onclick="return confirm('注目求人を解除しますか？')">
-                                            <i class="bi bi-star-fill me-1"></i>注目解除
-                                        </button>
-                                    @else
-                                        <button type="submit" class="btn btn-xs btn-outline-warning"
-                                                onclick="return confirm('注目求人オプション(月{{ number_format(\App\Models\Job::FEATURED_MONTHLY_FEE) }}円)を設定しますか？\n検索結果でトップ表示されます(翌月1日より請求対象)')">
-                                            <i class="bi bi-star me-1"></i>注目
-                                        </button>
-                                    @endif
-                                </form>
-                                @endif
                                 {{-- 永久無料切替 --}}
                                 <form method="POST"
                                       action="{{ route('admin.jobs.toggle_permanently_free', $job) }}">
@@ -273,6 +255,17 @@
                                         </button>
                                     @endif
                                 </form>
+                                {{-- 旧・注目求人フラグの解除(販売終了・解除専用。フラグが残っている求人のみ表示) --}}
+                                @if($job->is_featured)
+                                <form method="POST"
+                                      action="{{ route('admin.jobs.toggle_featured', $job) }}">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="btn btn-xs btn-warning"
+                                            onclick="return confirm('旧・注目求人フラグを解除しますか？(検索結果の最上位固定が外れ、他のスタンダード求人と同列になります)')">
+                                        <i class="bi bi-megaphone-fill me-1"></i>旧注目解除
+                                    </button>
+                                </form>
+                                @endif
                                 {{-- プラン切替 (basic <-> standard) --}}
                                 @if($job->source === 'care_entry')
                                 <form method="POST"
@@ -280,12 +273,12 @@
                                     @csrf @method('PATCH')
                                     @if($job->isStandard())
                                         <button type="submit" class="btn btn-xs btn-primary"
-                                                onclick="return confirm('スタンダードプランを解除してベーシックに戻しますか？(同じ連絡先の全求人が対象・注目求人も解除されます)')">
+                                                onclick="return confirm('スタンダードプランを解除してベーシックに戻しますか？(同じ連絡先の全求人が対象・優先上位表示とおすすめ求人(PR)掲載が終了します)')">
                                             <i class="bi bi-star-fill me-1"></i>Std
                                         </button>
                                     @else
                                         <button type="submit" class="btn btn-xs btn-outline-primary"
-                                                onclick="return confirm('スタンダードプランに切替しますか?(同じ連絡先の全求人が対象・優先上位表示と分析画面が有効になります)')">
+                                                onclick="return confirm('スタンダードプランに切替しますか?(同じ連絡先の全求人が対象・優先上位表示・おすすめ求人(PR)掲載・分析画面が有効になります)')">
                                             <i class="bi bi-star me-1"></i>Std
                                         </button>
                                     @endif

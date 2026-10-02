@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 
 class SeoJobController extends Controller
 {
-    // 表示順: 注目(スタンダード限定オプション) → スタンダード → ベーシック → ハローワーク
+    // 表示順: (旧・注目フラグ) → スタンダード(露出拡大・PR表記) → ベーシック → ハローワーク
     private const RANK_ORDER_SQL = "CASE
         WHEN is_featured = 1 AND plan = 'standard' AND source = 'care_entry' THEN 0
         WHEN plan = 'standard' AND source = 'care_entry' THEN 1

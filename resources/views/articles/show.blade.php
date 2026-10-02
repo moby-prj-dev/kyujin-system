@@ -335,6 +335,9 @@
                 </div>
                 @endif
 
+                {{-- おすすめ求人(PR) ※スタンダードプランの露出拡大枠 --}}
+                @include('partials.recommended_jobs', ['jobs' => $recommendedJobs ?? collect(), 'heading' => ($article->area ? $article->area->name . 'の' : '') . 'おすすめ求人', 'wrap' => 'box'])
+
                 {{-- CTA --}}
                 <div class="cta-box">
                     <h3>介護・福祉の求人を探してみませんか?</h3>

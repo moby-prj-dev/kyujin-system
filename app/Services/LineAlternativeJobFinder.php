@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 class LineAlternativeJobFinder
 {
+    // スタンダード(露出拡大)の自社求人を各パス内で優先
+    private const STANDARD_FIRST_SQL = "CASE WHEN plan = 'standard' AND source = 'care_entry' THEN 0 ELSE 1 END";
+
     public function find(Job $excludeJob, array $searchConditions, int $limit = 3): Collection
     {
         $jobTypeIds = array_map('intval', $searchConditions['job_type_ids'] ?? []);
@@ -15,8 +18,10 @@ class LineAlternativeJobFinder
         $base = fn() => Job::active()
             ->whereNotNull('email_verified_at')
             ->where('is_admin_hidden', false)
+            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
             ->where('id', '!=', $excludeJob->id)
-            ->with(['jobAreas.area', 'jobJobTypes.jobType']);
+            ->with(['jobAreas.area', 'jobJobTypes.jobType'])
+            ->orderByRaw(self::STANDARD_FIRST_SQL);
 
         // 1st pass: same job type
         if (!empty($jobTypeIds)) {
