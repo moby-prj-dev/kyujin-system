@@ -7,22 +7,28 @@
       $heading 見出し(省略可)
       $wrap    'section-card'(LPページ) / 'box'(記事ページ) / 'none'(見出しは呼び出し側)
       $layout  'list'(縦並び) / 'grid'(トップページ用カードグリッド)
+      $pr      true(既定: 有料枠・PR表記あり) / false(ベーシックの直接応募枠・PR表記なし)
+      $lead    見出し下の説明文(省略可)
 --}}
 @php
     $jobs    = $jobs ?? collect();
     $heading = $heading ?? 'おすすめ求人';
     $wrap    = $wrap ?? 'section-card';
     $layout  = $layout ?? 'list';
+    $pr      = $pr ?? true;
+    $lead    = $lead ?? null;
+    $icon    = $pr ? 'bi-star-fill' : 'bi-send-check-fill';
     $prBadge = '<span style="display:inline-block;font-size:0.62rem;font-weight:700;color:#6b7280;background:#fff;border:1px solid #c4c9d2;border-radius:3px;padding:0 5px;line-height:1.55;letter-spacing:0.04em;vertical-align:middle;">PR</span>';
 @endphp
 @if($jobs->isNotEmpty())
     @if($wrap === 'section-card')
     <div class="section-card">
-        <div class="section-title"><i class="bi bi-star-fill"></i> {{ $heading }} {!! $prBadge !!}</div>
+        <div class="section-title"><i class="bi {{ $icon }}"></i> {{ $heading }} @if($pr){!! $prBadge !!}@endif</div>
+        @if($lead)<p style="font-size:0.8rem;color:#555;margin:0.25rem 0 0;">{{ $lead }}</p>@endif
     @elseif($wrap === 'box')
     <div style="margin-top:2rem;padding:1.25rem;background:#fffdf6;border:1px solid #f1e3b8;border-radius:8px;">
         <p style="font-weight:800;font-size:1rem;color:#1a1a2e;margin-bottom:0.85rem;">
-            <i class="bi bi-star-fill me-1" style="color:#e0a100;"></i>{{ $heading }} {!! $prBadge !!}
+            <i class="bi {{ $icon }} me-1" style="color:#e0a100;"></i>{{ $heading }} @if($pr){!! $prBadge !!}@endif
         </p>
     @endif
 
@@ -39,7 +45,7 @@
                onmouseover="this.style.borderColor='#1a73e8';this.style.boxShadow='0 2px 8px rgba(26,115,232,0.15)';"
                onmouseout="this.style.borderColor='#e5e9f0';this.style.boxShadow='none';">
                 <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                    {!! $prBadge !!}
+                    @if($pr){!! $prBadge !!}@endif
                     @if($recJob->company_name)<span style="font-size:0.75rem;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $recJob->company_name }}</span>@endif
                 </div>
                 <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $recJob->seo_title ?: $recJob->title }}</div>
@@ -56,7 +62,7 @@
             @if($layout === 'grid')</div>@endif
         @endforeach
     </div>
-    <p style="font-size:0.68rem;color:#999;margin:0.5rem 0 0;">※「PR」表示の求人は掲載事業所の広告枠として表示しています。</p>
+    @if($pr)<p style="font-size:0.68rem;color:#999;margin:0.5rem 0 0;">※「PR」表示の求人は掲載事業所の広告枠として表示しています。</p>@endif
 
     @if($wrap === 'section-card' || $wrap === 'box')
     </div>

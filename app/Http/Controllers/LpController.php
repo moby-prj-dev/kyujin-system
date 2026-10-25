@@ -61,7 +61,12 @@ class LpController extends Controller
             ? app(RecommendedJobFinder::class)->forJob($job, 3)
             : collect();
 
-        return view('lp.show', compact('job', 'relatedArticles', 'recommendedJobs'));
+        // 直接応募できる求人(ベーシック・PRなし): HW求人ページの閲覧者を自社求人へ送客。PR枠より下に表示
+        $directJobs = $job->source === 'hellowork'
+            ? app(RecommendedJobFinder::class)->forJobDirect($job, 3)
+            : collect();
+
+        return view('lp.show', compact('job', 'relatedArticles', 'recommendedJobs', 'directJobs'));
     }
 
     /**
