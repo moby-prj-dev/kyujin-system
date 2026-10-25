@@ -684,7 +684,63 @@ class ArticleGeneratorService
             ['slug' => 'yakin-teate-souba-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['夜勤手当', '相場', '介護職', '施設形態別', '月収', '沖縄']],
             ['slug' => 'kaigo-taishokukin-fukushi-kyousai-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '退職金', '社会福祉施設職員等退職手当共済', '中退共', '確認方法']],
             ['slug' => 'kaigo-rousai-youtsu-hoshou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '労災', '腰痛', '申請', '補償', '職場の対応']],
-            ['slug' => 'fukushi-tenshoku-kaisuu-hyouka-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護・福祉職', '転職回数', '面接', '評価', '伝え方', '沖縄']],
+        ];
+    }
+
+    /**
+     * Phase 9: 個別テーマ第2弾(2026-10-25 追加・47本)。介護・福祉限定
+     * A:職場選び / B:給与・制度 / C:介護技術 / D:障害福祉・児童 / E:沖縄ならでは / F:働き続ける
+     */
+    public static function curatedDefinitions2(): array
+    {
+        return [
+            ['slug' => 'kaigo-shisetsu-kengaku-check-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護施設', '見学', 'チェックポイント', '職場選び', '質問', '沖縄']],
+            ['slug' => 'kaigo-kyujinhyou-yomikata-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護', '求人票', '読み方', '基本給', '手当', '注意点']],
+            ['slug' => 'hitori-yakin-kakunin-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['1人夜勤', '介護施設', '夜勤体制', '確認方法', '面接', '沖縄']],
+            ['slug' => 'kaigo-kyouiku-taisei-preceptor-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護', '教育体制', 'プリセプター', '新人研修', '職場選び', '沖縄']],
+            ['slug' => 'shafuku-iryou-kabushiki-chigai-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => null, 'keywords' => ['社会福祉法人', '医療法人', '株式会社', '違い', '介護', '働き方']],
+            ['slug' => 'shinki-open-shisetsu-hataraku-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['新規オープン', '介護施設', 'オープニングスタッフ', 'メリット', '注意点', '沖縄']],
+            ['slug' => 'heisetsu-gata-shisetsu-tokuchou-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['併設型', '介護施設', 'デイサービス併設', '特徴', '働き方', '沖縄']],
+            ['slug' => 'kaigo-yukyu-toriyasusa-miwake-okinawa', 'category' => 'beginner', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '有給休暇', '取りやすさ', '見極め方', '職場選び']],
+            ['slug' => 'shogu-kaizen-kyuyo-meisai-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['処遇改善', '給与明細', '手当', '見方', '介護職', '2024年改定']],
+            ['slug' => 'kaigo-shoyo-souba-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '賞与', 'ボーナス', '相場', '施設形態別', '沖縄']],
+            ['slug' => 'kaigo-shikaku-teate-souba-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_welfare_worker', 'keywords' => ['介護', '資格手当', '相場', '介護福祉士', '実務者研修', '沖縄']],
+            ['slug' => 'okinawa-yachin-jutaku-teate-kaigo', 'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['沖縄', '家賃', '住宅手当', '介護職', '一人暮らし', '生活費']],
+            ['slug' => 'kaigo-part-fuyou-kabe-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護パート', '106万円の壁', '130万円の壁', '扶養', '働き方']],
+            ['slug' => 'kaigo-nenshu-ageru-houhou-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '年収', '上げる方法', '資格', '役職', '転職']],
+            ['slug' => 'kaigo-seishain-part-hikaku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '正社員', 'パート', '比較', '給与', '働き方']],
+            ['slug' => 'shokuji-kaijo-kotsu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['食事介助', 'コツ', '誤嚥予防', '姿勢', '介護職']],
+            ['slug' => 'nyuyoku-kaijo-kotsu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['入浴介助', 'コツ', '安全', 'ヒートショック', '介護職']],
+            ['slug' => 'haisetsu-kaijo-kotsu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['排泄介助', 'おむつ交換', 'トイレ誘導', '尊厳', '介護職']],
+            ['slug' => 'koukuu-care-kihon-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['口腔ケア', '基本', '誤嚥性肺炎', '手順', '介護職']],
+            ['slug' => 'jokusou-yobou-taii-henkan-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['床ずれ', '褥瘡予防', '体位変換', 'ポジショニング', '介護職']],
+            ['slug' => 'vital-sokutei-kihon-kaigo', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['バイタル測定', '体温', '血圧', '脈拍', '介護職', '基本']],
+            ['slug' => 'fukuyaku-kaijo-iryoukoui-han-i', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['服薬介助', '医療行為', '範囲', '介護職', '注意点']],
+            ['slug' => 'tentou-goen-kinkyu-taiou-kaigo', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['転倒', '誤嚥', '緊急時対応', '介護施設', '初動']],
+            ['slug' => 'kaigo-recreation-neta-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['レクリエーション', 'ネタ', '高齢者', 'デイサービス', '介護職', '沖縄']],
+            ['slug' => 'ninchisho-kaiwa-kihon-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['認知症', '会話', 'コミュニケーション', '基本', '介護職']],
+            ['slug' => 'kyoudo-koudou-shogai-kenshu-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'intensive_behavioral_support', 'keywords' => ['強度行動障害支援者養成研修', '内容', '取り方', '障害福祉', '沖縄']],
+            ['slug' => 'koudou-engo-doukou-engo-shigoto-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'behavioral_guidance_worker', 'keywords' => ['行動援護', '同行援護', '仕事内容', '資格', '違い', '沖縄']],
+            ['slug' => 'guide-helper-idou-shien-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'accompanying_guidance_worker', 'keywords' => ['ガイドヘルパー', '移動支援', '仕事内容', '資格', '働き方', '沖縄']],
+            ['slug' => 'juushin-shien-shigoto-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'life_support_worker', 'keywords' => ['重症心身障害児者', '支援', '仕事内容', '医療的ケア', '沖縄']],
+            ['slug' => 'shuro-ikou-shien-shigoto-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'employment_support_worker', 'keywords' => ['就労移行支援', '仕事内容', '職業指導員', '就労支援員', '沖縄']],
+            ['slug' => 'jiritsu-kunren-seikatsu-kunren-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'life_support_worker', 'keywords' => ['自立訓練', '生活訓練', '仕事内容', '障害福祉', '沖縄']],
+            ['slug' => 'tanki-nyusho-short-stay-hataraku-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['短期入所', 'ショートステイ', '働き方', '仕事内容', '介護職', '沖縄']],
+            ['slug' => 'shogai-shien-shisetsu-yakin-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'life_support_worker', 'keywords' => ['障害者支援施設', '夜勤', '仕事内容', '生活支援員', '沖縄']],
+            ['slug' => 'naha-hokubu-kaigo-hatarakikata-chigai', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['那覇', '北部', '介護職', '働き方', '違い', '沖縄']],
+            ['slug' => 'okinawa-tsukin-jikan-shokuba-erabi', 'category' => 'area', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['沖縄', '通勤時間', '職場選び', '介護職', '渋滞', '車通勤']],
+            ['slug' => 'okinawa-kyubon-nenmatsu-shift-kaigo', 'category' => 'area', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['旧盆', '年末年始', 'シフト', '介護施設', '沖縄']],
+            ['slug' => 'okinawa-shokubunka-kaigoshoku', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['沖縄', '食文化', '介護食', '高齢者', '郷土料理']],
+            ['slug' => 'okinawa-ijuu-shien-kaigoshoku', 'category' => 'area', 'area' => null, 'job_type' => null, 'keywords' => ['沖縄', '移住支援', '介護職', '住まい', '仕事探し']],
+            ['slug' => 'okinawa-koureisha-kurashi-zaitaku-service', 'category' => 'area', 'area' => null, 'job_type' => 'home_helper', 'keywords' => ['沖縄', '高齢者', '暮らし', '在宅サービス', '訪問介護']],
+            ['slug' => 'kaigo-harassment-taiou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', 'ハラスメント', '利用者', '家族', '対応', '相談先']],
+            ['slug' => 'kaigo-burnout-yobou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '燃え尽き症候群', '予防', 'セルフケア', '職場']],
+            ['slug' => 'kaigo-kyushoku-fukushoku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '休職', '復職', '手続き', '職場との相談']],
+            ['slug' => 'kaigo-blank-fukushoku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', 'ブランク', '復職', '不安', '職場選び', '沖縄']],
+            ['slug' => 'kosodate-kaigoshoku-ryouritsu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['子育て', '介護職', '両立', 'シフト', '託児所', '沖縄']],
+            ['slug' => 'hitorioya-kaigoshoku-shien-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['ひとり親', '介護職', '支援制度', '資格取得', '沖縄']],
+            ['slug' => '60dai-kaigoshoku-hataraku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['60代', '介護職', '働き方', '体力', '求人', '沖縄']],
+            ['slug' => 'kaigo-hyouka-seido-career-mendan', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '評価制度', 'キャリア面談', 'キャリアパス', '昇給']],
         ];
     }
 
