@@ -586,7 +586,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
                         <li><i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>ベーシックの内容に加えて</strong></li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>地域の検索結果で優先上位表示</strong></li>
-                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>ハローワーク求人ページ・お役立ち記事・トップページに「おすすめ求人(PR)」として掲載</strong></li>
+                        <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>サイト内の求人ページ・お役立ち記事・トップページに「おすすめ求人(PR)」として掲載</strong></li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 複数求人掲載(最大3件)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募通知の追加宛先(複数名同時通知)</li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> 応募データ分析画面</li>

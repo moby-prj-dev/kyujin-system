@@ -231,7 +231,7 @@
         <p class="small text-muted mb-3">月額 3,000円で以下の機能が使えます:</p>
         <ul class="small mb-3" style="line-height:1.8;">
             <li>地域の検索結果での<strong>優先上位表示</strong>(ベーシック求人より上に表示)</li>
-            <li>ハローワーク求人ページ・お役立ち記事・トップページに<strong>「おすすめ求人(PR)」</strong>として掲載</li>
+            <li>サイト内の求人ページ・お役立ち記事・トップページに<strong>「おすすめ求人(PR)」</strong>として掲載</li>
             <li>複数求人掲載(最大3件)</li>
             <li>応募通知の追加宛先(採用担当複数へ)</li>
             <li>応募データ分析画面</li>
