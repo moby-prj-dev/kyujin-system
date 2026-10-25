@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>サービス紹介 Care Entry ver2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* FAX・白黒印刷前提: 色は使わず、黒・グレー・太字・罫線で強弱をつける */
+  @page { size: A4; margin: 12mm 14mm 12mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', 'IPAexGothic', sans-serif;
+    color: #000; background: #fff;
+    font-size: 9.6pt; line-height: 1.55;
+  }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  .head { text-align: center; padding-bottom: 7px; border-bottom: 2px solid #000; }
+  .head .sub { font-size: 10pt; margin: 0 0 2px; letter-spacing: .05em; }
+  .head h1 { font-size: 19pt; font-weight: 700; margin: 0; letter-spacing: .02em; }
+  .lead { text-align: center; font-size: 9.8pt; margin: 8px 0 12px; }
+  .lead b { font-weight: 900; }
+
+  h2 { font-size: 11.5pt; font-weight: 700; margin: 13px 0 7px; }
+  h2::before { content: '■ '; }
+
+  .feature { display: flex; gap: 10px; margin: 0 0 9px 8px; }
+  .feature .num {
+    flex: 0 0 26px; height: 26px; background: #000; color: #fff;
+    font-weight: 700; font-size: 11pt; display: flex; align-items: center; justify-content: center;
+  }
+  .feature .t { font-size: 11pt; font-weight: 700; margin: 0 0 1px; }
+  .feature .s { font-size: 8.8pt; font-weight: 700; margin: 0 0 1px; }
+  .feature p { margin: 0; font-size: 9pt; }
+
+  table { width: 100%; border-collapse: collapse; }
+  .stats td, .stats th { border: 1px solid #000; text-align: center; }
+  .stats th { background: #000; color: #fff; font-weight: 500; font-size: 8.8pt; padding: 3px 4px; line-height: 1.35; }
+  .stats td { font-size: 17pt; font-weight: 700; padding: 3px 4px; }
+  .stats td small { font-size: 10pt; font-weight: 500; }
+  .note { font-size: 7.8pt; margin: 4px 0 0; line-height: 1.5; }
+
+  .cmp th, .cmp td, .plan th, .plan td { border: 1px solid #000; padding: 3.5px 6px; font-size: 8.8pt; text-align: center; }
+  .cmp th, .plan th { background: #000; color: #fff; font-weight: 500; }
+  .cmp td:first-child, .plan td:first-child { text-align: left; }
+  .cmp .ce { font-weight: 700; font-size: 9.6pt; border-left: 2.5px solid #000; border-right: 2.5px solid #000; }
+  .cmp tr:last-child .ce { border-bottom: 2.5px solid #000; }
+  .plan .std { font-weight: 700; border-left: 2.5px solid #000; border-right: 2.5px solid #000; }
+  .plan tr:last-child .std { border-bottom: 2.5px solid #000; }
+  /* 強調行: 白黒でも目立つよう太線・太字(網掛けはFAXでつぶれるため使わない) */
+  .plan tr.hl td { border-top: 2.5px solid #000; border-bottom: 2.5px solid #000; font-weight: 700; }
+  .plan tr.hl td:first-child { border-left: 2.5px solid #000; }
+  .plan td small { display: block; font-size: 7.4pt; font-weight: 400; line-height: 1.35; }
+
+  ul.fn { list-style: none; padding: 0; margin: 0; }
+  ul.fn li { margin: 0 0 4px; font-size: 9pt; }
+  ul.fn li b { font-weight: 700; }
+  ul.fn li b::before { content: '● '; }
+
+  .box { border: 1.5px solid #000; padding: 7px 10px; margin-top: 8px; font-size: 9pt; }
+  .box b { font-weight: 700; }
+
+  .apply { display: flex; border: 2px solid #000; margin-top: 2px; }
+  .apply > div { padding: 9px 12px; }
+  .apply .web { flex: 1.25; border-right: 1px solid #000; }
+  .apply .tel { flex: 1; }
+  .apply .ttl { font-weight: 700; margin: 0 0 5px; font-size: 10pt; }
+  .apply p { margin: 0 0 4px; font-size: 9.2pt; }
+  .apply .big { font-size: 19pt; font-weight: 700; letter-spacing: .02em; margin: 4px 0 2px; }
+  .apply .min { font-size: 7.8pt; }
+
+  .contact { border: 1px solid #000; padding: 8px 12px; margin-top: 10px; font-size: 9pt; line-height: 1.6; }
+  .ver { text-align: right; font-size: 7pt; margin-top: 6px; color: #333; }
+</style>
+</head>
+<body>
+
+<!-- 1ページ目 -->
+<section class="page">
+  <div class="head">
+    <p class="sub">沖縄の介護・福祉求人サイト</p>
+    <h1>Care Entry（ケアエントリー）</h1>
+  </div>
+  <p class="lead">介護・福祉・保育・看護に特化。<b>「応募がなければ、掲載料は0円」</b>の成果報酬型。<br>沖縄県内の求職者へ、貴施設の求人を確実に届けます。</p>
+
+  <h2>Care Entry 3つの特徴</h2>
+
+  <div class="feature">
+    <div class="num">1</div>
+    <div>
+      <p class="t">応募がなければ、掲載料は0円</p>
+      <p class="s">★ 採用が決まっても料金は0円 ★</p>
+      <p>ベーシックプランなら初期費用・月額費用ともにゼロ。費用がかかるのは応募があったときだけです（1件3,000円・税別）。契約期間の縛りもありません。</p>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="num">2</div>
+    <div>
+      <p class="t">LINEから応募できる</p>
+      <p>求職者は普段使っているLINEから、そのまま応募できます。フォーム入力が苦手な方や若い方の応募につながります。</p>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="num">3</div>
+    <div>
+      <p class="t">沖縄県内でGoogle検索の上位に表示</p>
+      <p>「沖縄 介護 求人」「八重瀬 介護 求人」など、求職者が実際に検索するキーワードで表示されます。Googleの求人検索（しごと検索）にも自動的に掲載されます。</p>
+    </div>
+  </div>
+
+  <h2>Care Entry のGoogle検索での実績</h2>
+  <table class="stats">
+    <tr>
+      <th>Google検索で<br>表示された回数</th>
+      <th>求職者に<br>クリックされた回数</th>
+    </tr>
+    <tr>
+      <td>24,600 <small>回</small></td>
+      <td>1,288 <small>回</small></td>
+    </tr>
+  </table>
+  <p class="note">※ 2026年6月30日〜9月28日（直近3ヶ月）のGoogle Search Consoleのデータ。「スクールソーシャルワーカー 求人」「沖縄 児童養護施設 求人」「金武町 求人」など、1,000通り以上の検索キーワードで表示されました。</p>
+
+  <h2>他社との比較（1採用あたりのコスト目安）</h2>
+  <table class="cmp">
+    <tr><th style="width:27%">項目</th><th style="width:25%">Care Entry</th><th>大手求人サイト</th><th>人材紹介会社</th></tr>
+    <tr><td>月額の掲載料</td><td class="ce">0円</td><td>0〜数万円</td><td>0円</td></tr>
+    <tr><td>応募があった時の料金</td><td class="ce">3,000円/件</td><td>0円</td><td>0円</td></tr>
+    <tr><td>採用が決まった時の料金</td><td class="ce">0円</td><td>10万〜30万円</td><td>20万〜60万円</td></tr>
+    <tr><td>沖縄県内の求人に特化</td><td class="ce">○</td><td>△（全国対応）</td><td>△（全国対応）</td></tr>
+    <tr><td>条件が合わない応募</td><td class="ce">少ない（事前確認で絞込）</td><td>多い</td><td>少ない</td></tr>
+    <tr><td>1名採用にかかる総額</td><td class="ce">3千円〜1万円</td><td>10万〜30万円</td><td>20万〜60万円</td></tr>
+  </table>
+  <p class="note">※ 各業界の一般的な相場をもとにした比較モデル（Care Entryはベーシックプランの場合）。実際の料金は各社プランにより異なります。</p>
+
+  <h2>その他の便利機能</h2>
+  <ul class="fn">
+    <li><b>条件の合わない応募を減らす応募設計</b> ── 求職者は応募前に希望条件を確認し、合う求人にだけ応募します。事業所様独自の選考質問（最大3問）も設定でき、スパムやいたずら応募を防ぎます。</li>
+    <li><b>AIが求人ページを自動作成</b> ── フォームに入力するだけで、AIが求人ページの文章を作成します。</li>
+    <li><b>運営者を介さず・24時間いつでも操作可能</b> ── 掲載申込み・編集・停止・プラン変更・解約まで、すべてご自身で完結できます。</li>
+    <li><b>応募があるとすぐにメールでお知らせ</b> ── 応募者の氏名・電話番号・希望条件・質問への回答が、担当者様のメールに届きます。</li>
+  </ul>
+</section>
+
+<!-- 2ページ目 -->
+<section class="page">
+  <h2 style="margin-top:0">料金プラン</h2>
+  <table class="plan">
+    <tr><th style="width:40%">項目</th><th style="width:30%">ベーシック</th><th>スタンダード</th></tr>
+    <tr><td>月額の掲載料</td><td>¥0</td><td class="std">¥3,000（税別）</td></tr>
+    <tr><td>応募があった時の料金</td><td>3,000円/件（税別）</td><td class="std">3,000円/件（税別）</td></tr>
+    <tr><td>採用が決まった時の料金</td><td>0円</td><td class="std">0円</td></tr>
+    <tr><td>パソコン・スマホからの応募</td><td>○</td><td class="std">○</td></tr>
+    <tr><td>LINEからの応募</td><td>○</td><td class="std">○</td></tr>
+    <tr class="hl"><td>★「おすすめ求人」として掲載</td><td>─</td><td class="std">○<small>サイト内の求人ページ・お役立ち記事・トップページに表示</small></td></tr>
+    <tr><td>同時に掲載できる求人数</td><td>1件</td><td class="std">最大3件</td></tr>
+    <tr><td>地域の検索結果での上位表示</td><td>─</td><td class="std">○</td></tr>
+    <tr><td>応募お知らせメールの宛先</td><td>1宛先</td><td class="std">複数宛先</td></tr>
+    <tr><td>応募データの分析画面</td><td>─</td><td class="std">○</td></tr>
+  </table>
+  <p class="note">※ スタンダードの月額料金は、お切替えの翌月分から発生します。「おすすめ求人」は広告枠として「PR」と表示されます。</p>
+
+  <div class="box">
+    <b>まずはベーシック（月額0円）から。</b> 応募の状況を見てから、管理画面でいつでもスタンダードに切り替えられます（プラン変更後30日間は再変更できません）。
+  </div>
+
+  <h2>ご請求について</h2>
+  <p style="margin:0 0 3px;font-size:9pt;">・応募が発生した月の月末締めで請求書をメールでお送りします。翌月末までに指定口座へお振込みください。</p>
+  <p style="margin:0;font-size:9pt;">・応募が発生しなかった月は、ベーシックプランなら請求はございません。費用ゼロで掲載を続けられます。</p>
+
+  <h2>お申込み方法（いずれかで）</h2>
+  <div class="apply">
+    <div class="web">
+      <p class="ttl">方法1：パソコン・スマホから</p>
+      <p>① Google・Yahoo! で <b>「ケアエントリー」</b> と検索</p>
+      <p>② 検索結果の当サイト（care-entry.net）を開く</p>
+      <p>③ 画面右上の <b>「求人掲載をお考えの方」</b> をクリック</p>
+      <p class="min">所要10〜15分・その場で掲載開始</p>
+    </div>
+    <div class="tel">
+      <p class="ttl">方法2：お電話で</p>
+      <p>下記まで直接お電話ください。</p>
+      <p class="big">070-6401-9492</p>
+      <p class="min">平日 10:00〜18:00　担当：岸本</p>
+    </div>
+  </div>
+
+  <div class="contact">
+    <b>■ お問い合わせ</b><br>
+    Care Entry（ケアエントリー） 運営 / 沖縄デジタルワークス　代表 岸本 安史<br>
+    TEL：070-6401-9492（平日 10:00〜18:00） / Email：careentry.info@gmail.com<br>
+    URL：https://care-entry.net
+  </div>
+  <p class="ver">サービス紹介 ver.2（2026年10月）</p>
+</section>
+
+</body>
+</html>
