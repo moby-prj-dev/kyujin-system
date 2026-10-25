@@ -29,3 +29,4 @@ Thumbs.db
 
 # 営業リスト(個人情報保護のため git 管理外)
 eigyou_target_*.xlsx
+__pycache__/
