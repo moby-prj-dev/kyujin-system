@@ -357,19 +357,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         @php $qs = request()->getQueryString() ? '?' . request()->getQueryString() : ''; @endphp
         @if($job->source === 'hellowork' && $job->hw_job_url)
             <a href="{{ $job->hw_job_url }}" target="_blank" rel="noopener"
-               class="btn-line-apply" style="background:#e65100;">
+               class="btn-line-apply" style="background:#e65100;" data-track="hw_apply">
                 <i class="bi bi-box-arrow-up-right"></i>
                 ハローワークで応募する
             </a>
             <p class="cta-note"><i class="bi bi-info-circle me-1"></i>ハローワークインターネットサービスのページに移動します</p>
         @else
             @if($job->canUseLine() && config('line.liff_id'))
-                <a href="https://liff.line.me/{{ config('line.liff_id') }}/{{ $job->token }}" class="btn-line-apply">
+                <a href="https://liff.line.me/{{ config('line.liff_id') }}/{{ $job->token }}" class="btn-line-apply" data-track="line_apply">
                     <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.057 2 11.08c0 4.512 3.996 8.29 9.39 9.04.366.078.862.24.987.551.113.281.074.722.036 1.007l-.16.957c-.05.28-.228 1.098.964.599 1.193-.5 6.43-3.785 8.77-6.48C23.24 14.87 24 13.06 24 11.08 24 6.057 19.523 2 12 2z"/></svg>
                     LINEで応募する
                 </a>
             @endif
-            <a href="{{ route('lp.apply', $job->token) }}{{ $qs }}" class="btn-form-apply">
+            <a href="{{ route('lp.apply', $job->token) }}{{ $qs }}" class="btn-form-apply" data-track="form_apply">
                 <i class="bi bi-pencil-square"></i>フォームで応募する
             </a>
             <p class="cta-note"><i class="bi bi-lock-fill me-1"></i>個人情報は安全に管理されます</p>
@@ -378,5 +378,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<span hidden data-page-type="lp" data-page-job="{{ $job->id }}"></span>
+@include('partials.click_tracker')
 </body>
 </html>

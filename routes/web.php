@@ -152,3 +152,6 @@ Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])
 Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'send'])
     ->middleware('throttle:5,1')
     ->name('contact.send');
+
+// クリック計測(求人ページ・記事・トップの応募ボタン/送客枠)
+Route::post('/t/click', [\App\Http\Controllers\ClickTrackController::class, 'store'])->middleware('throttle:120,1')->name('click.track');

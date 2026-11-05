@@ -80,6 +80,7 @@ class HomeController extends Controller
                 ->where('j.status', 'active')
                 ->whereNotNull('j.email_verified_at')
                 ->where('j.is_admin_hidden', false)
+                ->where(fn($q) => $q->whereNull('j.expires_at')->orWhere('j.expires_at', '>', now()))
                 ->whereNull('j.deleted_at')
                 ->where('a.prefecture', '沖縄県');
 

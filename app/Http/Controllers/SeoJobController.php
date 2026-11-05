@@ -23,6 +23,8 @@ class SeoJobController extends Controller
         return Job::active()
             ->whereNotNull('email_verified_at')
             ->where('is_admin_hidden', false)
+            // 掲載期限切れ(毎朝の期限切れ処理より前の時間帯)は出さない
+            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
             ->with(['jobAreas.area', 'jobJobTypes.jobType']);
     }
 

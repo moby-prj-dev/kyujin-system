@@ -40,7 +40,7 @@
                 $recSalary  = $recJob->salaryText();
             @endphp
             @if($layout === 'grid')<div class="col-sm-6 col-lg-4">@endif
-            <a href="{{ route('lp.show', $recJob->token) }}"
+            <a href="{{ route('lp.show', $recJob->token) }}" data-track="{{ $pr ? 'pr_job' : 'direct_job' }}" data-target-job="{{ $recJob->id }}"
                style="display:block;{{ $layout === 'grid' ? 'height:100%;' : '' }}padding:12px 14px;background:#fff;border:1px solid #e5e9f0;border-radius:8px;text-decoration:none;color:#1a1a2e;transition:.15s;"
                onmouseover="this.style.borderColor='#1a73e8';this.style.boxShadow='0 2px 8px rgba(26,115,232,0.15)';"
                onmouseout="this.style.borderColor='#e5e9f0';this.style.boxShadow='none';">
@@ -62,6 +62,7 @@
             @if($layout === 'grid')</div>@endif
         @endforeach
     </div>
+    @include('partials.click_tracker')
     @if($pr)<p style="font-size:0.68rem;color:#999;margin:0.5rem 0 0;">※「PR」表示の求人は掲載事業所の広告枠として表示しています。</p>@endif
 
     @if($wrap === 'section-card' || $wrap === 'box')

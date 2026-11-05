@@ -750,3 +750,8 @@ body {
     .hero { padding: 72px 0 60px; }
     .search { padding: 48px 0; }
 }
+
+/* スマホ: g-5(3rem)の行間がコンテナ余白(0.75rem)を超えて横スクロールが出るのを防ぐ */
+@media (max-width: 575.98px) {
+    .row.g-5 { --bs-gutter-x: 1.5rem; }
+}
