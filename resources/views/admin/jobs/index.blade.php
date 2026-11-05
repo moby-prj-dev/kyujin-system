@@ -29,10 +29,18 @@
     <form method="GET" action="{{ route('admin.jobs.index') }}" class="card mb-3">
         <div class="card-body py-3">
             <div class="row g-2 align-items-end">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label small fw-bold mb-1">会社名・タイトル</label>
                     <input type="text" name="search" class="form-control form-control-sm"
                            value="{{ request('search') }}" placeholder="キーワード検索">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold mb-1">掲載元</label>
+                    <select name="source" class="form-select form-select-sm">
+                        <option value="">すべて</option>
+                        <option value="care_entry" {{ request('source') === 'care_entry' ? 'selected' : '' }}>Care Entry</option>
+                        <option value="hellowork"  {{ request('source') === 'hellowork'  ? 'selected' : '' }}>ハローワーク</option>
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold mb-1">公開ステータス</label>
@@ -62,7 +70,7 @@
                         <option value="1" {{ request('continued') === '1' ? 'selected' : '' }}>継続済み</option>
                     </select>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
+                <div class="col-md-2 d-flex gap-2">
                     <button type="submit" class="btn btn-primary btn-sm px-3">
                         <i class="bi bi-search me-1"></i>絞り込み
                     </button>

@@ -33,6 +33,15 @@ class JobController extends Controller
             $jobsQuery->where('status', $request->status);
         }
 
+        // 掲載元: Care Entry(自社=ハローワーク以外。古い求人は source が空のことがある) / ハローワーク
+        if ($request->filled('source')) {
+            match ($request->source) {
+                'hellowork'  => $jobsQuery->where('source', 'hellowork'),
+                'care_entry' => $jobsQuery->where(fn($q) => $q->whereNull('source')->orWhere('source', '<>', 'hellowork')),
+                default      => null,
+            };
+        }
+
         if ($request->filled('trial_status')) {
             match ($request->trial_status) {
                 'ended'       => $jobsQuery->where('expires_at', '<', now()),
