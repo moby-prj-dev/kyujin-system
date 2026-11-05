@@ -409,7 +409,16 @@
                         <td class="text-end fw-bold {{ $billingAmount > 0 ? 'text-danger' : 'text-muted' }}">
                             {{ $billingAmount > 0 ? '¥' . number_format($billingAmount) : '—' }}
                         </td>
-                        <td class="text-center text-muted">{{ $c->listing_count }}</td>
+                        <td class="text-center">
+                            @if((int) $c->listing_count > 0)
+                                <button type="button" class="btn btn-xs btn-outline-primary" data-bs-toggle="collapse"
+                                        data-bs-target="#company-jobs-{{ $loop->index }}" aria-expanded="false">
+                                    {{ $c->listing_count }}件 <i class="bi bi-chevron-down"></i>
+                                </button>
+                            @else
+                                <span class="text-muted">0</span>
+                            @endif
+                        </td>
                         <td class="text-center">
                             @if((int) $c->listing_count === 0)
                                 <form method="POST" action="{{ route('admin.companies.destroy') }}" class="d-inline"
@@ -427,6 +436,51 @@
                             @endif
                         </td>
                     </tr>
+                    {{-- 掲載求人の一覧(求人数ボタンで開閉) --}}
+                    @if((int) $c->listing_count > 0)
+                    <tr class="collapse" id="company-jobs-{{ $loop->index }}">
+                        <td colspan="10" class="bg-light px-4 py-2">
+                            <table class="table table-sm table-borderless mb-0" style="font-size:0.82rem;">
+                                <thead class="text-muted">
+                                    <tr><th>求人タイトル</th><th>状態</th><th>プラン</th><th>掲載開始</th><th>掲載期限</th><th class="text-center">応募</th><th>操作</th></tr>
+                                </thead>
+                                <tbody>
+                                @foreach(($companyJobs[$c->contact_email] ?? collect()) as $cj)
+                                    @php
+                                        [$cjLabel, $cjClass] = [
+                                            'active'  => ['公開中',   'bg-success'],
+                                            'pending' => ['審査待ち', 'bg-warning text-dark'],
+                                            'paused'  => ['一時停止', 'bg-warning text-dark'],
+                                            'expired' => ['期限切れ', 'bg-danger'],
+                                            'closed'  => ['終了',     'bg-secondary'],
+                                            'draft'   => ['下書き',   'bg-light text-dark'],
+                                        ][$cj->status] ?? ['不明', 'bg-secondary'];
+                                    @endphp
+                                    <tr>
+                                        <td style="max-width:420px;">
+                                            @if($cj->status === 'active')
+                                                <a href="{{ route('lp.show', $cj->token) }}" target="_blank">{{ $cj->seo_title ?: $cj->title }}</a>
+                                            @else
+                                                {{ $cj->seo_title ?: $cj->title }}
+                                            @endif
+                                        </td>
+                                        <td><span class="badge {{ $cjClass }}">{{ $cjLabel }}</span></td>
+                                        <td>{{ $cj->plan === 'standard' ? 'スタンダード' : 'ベーシック' }}</td>
+                                        <td class="text-nowrap">{{ $cj->email_verified_at?->format('Y/m/d') ?? '—' }}</td>
+                                        <td class="text-nowrap">{{ $cj->expires_at?->format('Y/m/d') ?? '—' }}</td>
+                                        <td class="text-center">{{ $cj->applications_count }}</td>
+                                        <td class="text-nowrap">
+                                            <a href="{{ route('jobs.manage', ['token' => $cj->token]) }}" target="_blank" class="btn btn-xs btn-outline-primary">
+                                                <i class="bi bi-pencil"></i> 管理ページ
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    @endif
                     @empty
                     <tr><td colspan="10" class="text-center text-muted py-4">データがありません</td></tr>
                     @endforelse

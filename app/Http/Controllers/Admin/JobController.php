@@ -62,7 +62,16 @@ class JobController extends Controller
 
         $companies = $this->getCompanies();
 
-        return view('admin.jobs.index', compact('jobs', 'companies'));
+        // 企業一覧で展開表示する各企業の掲載求人(自社求人のみ・メールアドレス単位)
+        $companyJobs = Job::query()
+            ->whereIn('contact_email', $companies->pluck('contact_email'))
+            ->where(fn($q) => $q->whereNull('source')->orWhere('source', '<>', 'hellowork'))
+            ->withCount('applications')
+            ->orderByDesc('created_at')
+            ->get(['id', 'contact_email', 'title', 'seo_title', 'status', 'plan', 'token', 'email_verified_at', 'expires_at', 'created_at'])
+            ->groupBy('contact_email');
+
+        return view('admin.jobs.index', compact('jobs', 'companies', 'companyJobs'));
     }
 
     public function toggleHidden(Job $job)
