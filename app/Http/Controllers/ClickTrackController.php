@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class ClickTrackController extends Controller
 {
     private const TYPES = ['hw_apply', 'line_apply', 'form_apply', 'pr_job', 'direct_job'];
-    private const PAGES = ['lp', 'article', 'top'];
+    private const PAGES = ['lp', 'article', 'top', 'search'];
 
     public function store(Request $request)
     {

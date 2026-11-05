@@ -153,19 +153,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         $isHw = $job->source === 'hellowork';
                         // NEWバッジは自社(care_entry)求人のみ・HW求人には表示しない
                         $isNew = !$isHw && $job->created_at && $job->created_at->gte(now()->subDays(7));
+                        // スタンダードプラン(露出拡大)のカード。ステマ規制対応でPR表記は必須(掲載期限切れ等の対象外求人は通常表示)
+                        $isPr = !$isHw && $job->isPrEligible();
                     @endphp
-                    <div class="job-card">
+                    <div class="job-card{{ $isPr ? ' job-card--pr' : '' }}">
+                        @if($isPr)
+                            <div class="job-card__pr-head">
+                                <span class="job-card__pr-label"><i class="bi bi-star-fill"></i> おすすめ求人</span>
+                                <span class="job-card__pr-mark">PR</span>
+                            </div>
+                        @endif
                         <p class="job-card__company">{{ $job->company_name }}</p>
                         <p class="job-card__title">
-                            <a href="{{ route('lp.show', $job->token) }}">
+                            <a href="{{ route('lp.show', $job->token) }}"@if($isPr) data-track="pr_job" data-target-job="{{ $job->id }}"@endif>
                                 {{ $job->seo_title ?: $job->title }}
                             </a>
                         </p>
                         <div class="job-card__tags">
-                            {{-- スタンダードプラン(露出拡大・優先上位表示)はステマ規制対応でPR表記(掲載期限切れ等の対象外求人には付けない) --}}
-                            @if(!$isHw && $job->isPrEligible())
-                                <span class="job-card__tag" style="background:#fff;color:#6b7280;border:1px solid #c4c9d2;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.5px;">PR</span>
-                            @endif
                             @if($isNew)
                                 <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>
                             @endif
@@ -188,10 +192,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </p>
                         @endif
                         <div class="job-card__actions">
-                            <a href="{{ route('lp.show', $job->token) }}" class="btn-card-detail">
+                            <a href="{{ route('lp.show', $job->token) }}" class="btn-card-detail"@if($isPr) data-track="pr_job" data-target-job="{{ $job->id }}"@endif>
                                 <i class="bi bi-arrow-right-circle"></i>詳細を見る
                             </a>
                         </div>
+                        @if($isPr)
+                            <p class="job-card__pr-note"><i class="bi bi-chat-dots-fill"></i> LINE・フォームから事業所に直接応募できます</p>
+                        @endif
                     </div>
                 @empty
                     <div class="no-jobs">
@@ -313,5 +320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<span hidden data-page-type="search"></span>
+@include('partials.click_tracker')
 </body>
 </html>

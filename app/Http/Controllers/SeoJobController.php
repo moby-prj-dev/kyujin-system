@@ -109,6 +109,8 @@ class SeoJobController extends Controller
             ->latest()
             ->paginate(20)->withQueryString();
 
+        $this->logPrImpressions($jobs);
+
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
             ->orderBy('sort_order')
@@ -151,6 +153,8 @@ class SeoJobController extends Controller
             ->latest()
             ->paginate(20)->withQueryString();
 
+        $this->logPrImpressions($jobs);
+
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
             ->orderBy('sort_order')
@@ -192,6 +196,8 @@ class SeoJobController extends Controller
             ->orderByRaw(self::RANK_ORDER_SQL)
             ->latest()
             ->paginate(20)->withQueryString();
+
+        $this->logPrImpressions($jobs);
 
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
@@ -283,5 +289,12 @@ class SeoJobController extends Controller
                 'emp_breakdown' => $empBreakdown,
             ];
         });
+    }
+
+    /** 検索結果に表示されたスタンダード(おすすめ求人・PR)カードの表示回数を記録 */
+    private function logPrImpressions($jobs): void
+    {
+        $prJobs = collect($jobs->items())->filter(fn($j) => $j->source !== 'hellowork' && $j->isPrEligible());
+        app(\App\Services\RecommendationImpressionLogger::class)->log($prJobs, 'pr_job', 'search');
     }
 }

@@ -146,6 +146,48 @@ body {
     box-shadow: 0 4px 16px rgba(26,115,232,.1);
     transform: translateY(-1px);
 }
+/* スタンダード(おすすめ求人・PR)のカード: 枠と背景で目立たせる */
+.job-card--pr {
+    background: #fffbeb;
+    border: 1.5px solid #f6c453;
+    border-left: 6px solid #f59e0b;
+    box-shadow: 0 2px 10px rgba(245,158,11,.12);
+}
+.job-card--pr:hover { box-shadow: 0 6px 18px rgba(245,158,11,.22); }
+.job-card__pr-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.job-card__pr-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f59e0b;
+    color: #fff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .04em;
+}
+.job-card__pr-mark {
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #6b7280;
+    background: #fff;
+    border: 1px solid #c4c9d2;
+    border-radius: 3px;
+    padding: 0 5px;
+    line-height: 1.6;
+}
+.job-card__pr-note {
+    margin: 10px 0 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #b45309;
+}
 .job-card__company {
     font-size: 0.8rem;
     color: var(--color-muted);
