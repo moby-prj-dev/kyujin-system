@@ -442,7 +442,11 @@
                         <td colspan="10" class="bg-light px-4 py-2">
                             <table class="table table-sm table-borderless mb-0" style="font-size:0.82rem;">
                                 <thead class="text-muted">
-                                    <tr><th>求人タイトル</th><th>状態</th><th>プラン</th><th>掲載開始</th><th>掲載期限</th><th class="text-center">応募</th><th>操作</th></tr>
+                                    <tr><th>求人タイトル</th><th>状態</th><th>プラン</th><th>掲載開始</th><th>掲載期限</th>
+                                        <th class="text-center" title="求人ページの閲覧数(ボット除外)">閲覧<br><small>30日 / 累計</small></th>
+                                        <th class="text-center" title="おすすめ求人(PR)・直接応募の枠に表示された回数">枠表示<br><small>30日</small></th>
+                                        <th class="text-center" title="おすすめ求人(PR)・直接応募の枠からのクリック数">枠クリック<br><small>30日</small></th>
+                                        <th class="text-center">応募</th><th>操作</th></tr>
                                 </thead>
                                 <tbody>
                                 @foreach(($companyJobs[$c->contact_email] ?? collect()) as $cj)
@@ -468,6 +472,10 @@
                                         <td>{{ $cj->plan === 'standard' ? 'スタンダード' : 'ベーシック' }}</td>
                                         <td class="text-nowrap">{{ $cj->email_verified_at?->format('Y/m/d') ?? '—' }}</td>
                                         <td class="text-nowrap">{{ $cj->expires_at?->format('Y/m/d') ?? '—' }}</td>
+                                        @php $m = $jobMetrics[$cj->id] ?? ['views30'=>0,'viewsTotal'=>0,'impressions30'=>0,'clicks30'=>0]; @endphp
+                                        <td class="text-center text-nowrap">{{ number_format($m['views30']) }} / {{ number_format($m['viewsTotal']) }}</td>
+                                        <td class="text-center">{{ number_format($m['impressions30']) }}</td>
+                                        <td class="text-center">{{ number_format($m['clicks30']) }}</td>
                                         <td class="text-center">{{ $cj->applications_count }}</td>
                                         <td class="text-nowrap">
                                             <a href="{{ route('jobs.manage', ['token' => $cj->token]) }}" target="_blank" class="btn btn-xs btn-outline-primary">

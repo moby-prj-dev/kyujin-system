@@ -41,6 +41,17 @@ class ClickReport extends Command
         $this->info("直近{$days}日のクリック数(bot除外)");
         $this->table(['項目', '合計', 'ページ別'], $rows);
 
+        // 送客枠の表示回数とクリック率(表示はボットを記録時点で除外済み)
+        $imp = DB::table('lp_impressions')->where('shown_at', '>=', $since)
+            ->selectRaw('slot, COUNT(*) c')->groupBy('slot')->pluck('c', 'slot');
+        $clk = $counts->whereIn('type', ['pr_job', 'direct_job'])->groupBy('type')->map(fn($g) => $g->sum('c'));
+        $this->info('送客枠の表示とクリック率');
+        $this->table(['枠', '表示', 'クリック', 'クリック率'], collect(['pr_job', 'direct_job'])->map(function ($slot) use ($imp, $clk, $labels) {
+            $i = (int) ($imp[$slot] ?? 0);
+            $c = (int) ($clk[$slot] ?? 0);
+            return [$labels[$slot], $i, $c, $i > 0 ? round($c / $i * 100, 1) . '%' : '—'];
+        })->all());
+
         $targets = $base()->whereIn('type', ['pr_job', 'direct_job'])->whereNotNull('target_job_id')
             ->join('job_listings as j', 'j.id', '=', 'lp_clicks.target_job_id')
             ->selectRaw('j.company_name, lp_clicks.type, COUNT(*) c')

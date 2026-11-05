@@ -48,6 +48,7 @@ class HomeController extends Controller
 
         // おすすめ求人(PR): スタンダードプランの露出拡大枠・沖縄全域から日替わり最大6件
         $featuredJobs = app(RecommendedJobFinder::class)->forTop(6);
+        app(\App\Services\RecommendationImpressionLogger::class)->log($featuredJobs, 'pr_job', 'top');
 
         [$areaJobCounts, $regionJobCounts] = $this->areaJobCounts();
 

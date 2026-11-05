@@ -71,7 +71,9 @@ class JobController extends Controller
             ->get(['id', 'contact_email', 'title', 'seo_title', 'status', 'plan', 'token', 'email_verified_at', 'expires_at', 'created_at'])
             ->groupBy('contact_email');
 
-        return view('admin.jobs.index', compact('jobs', 'companies', 'companyJobs'));
+        $jobMetrics = $this->jobMetrics($companyJobs->flatten()->pluck('id')->all());
+
+        return view('admin.jobs.index', compact('jobs', 'companies', 'companyJobs', 'jobMetrics'));
     }
 
     public function toggleHidden(Job $job)
@@ -280,5 +282,45 @@ class JobController extends Controller
         if ($monitorEnd && now()->lessThanOrEqualTo($monitorEnd) && (int) $c->valid_count < 3) return 'monitor';
 
         return 'normal';
+    }
+
+    /**
+     * 自社求人ごとの露出・反応の数字(ボット除外)。プリミティブ配列で返す
+     * - views30 / viewsTotal: 求人ページの閲覧数
+     * - impressions30: 送客枠(おすすめ求人PR/直接応募)に表示された回数
+     * - clicks30: 送客枠からのクリック数
+     *
+     * @param int[] $ids
+     * @return array<int, array{views30:int, viewsTotal:int, impressions30:int, clicks30:int}>
+     */
+    private function jobMetrics(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        $bot   = 'bot|crawl|spider|slurp|preview|facebookexternalhit|curl|python|headless';
+        $human = fn($q, $col) => $q->where(fn($w) => $w->whereNull($col)->orWhere($col, 'not regexp', $bot));
+        $since = now()->subDays(30);
+
+        $viewsTotal = $human(DB::table('lp_views')->whereIn('job_id', $ids), 'user_agent')
+            ->selectRaw('job_id, COUNT(*) c')->groupBy('job_id')->pluck('c', 'job_id');
+        $views30 = $human(DB::table('lp_views')->whereIn('job_id', $ids)->where('viewed_at', '>=', $since), 'user_agent')
+            ->selectRaw('job_id, COUNT(*) c')->groupBy('job_id')->pluck('c', 'job_id');
+        $impressions30 = DB::table('lp_impressions')->whereIn('target_job_id', $ids)->where('shown_at', '>=', $since)
+            ->selectRaw('target_job_id, COUNT(*) c')->groupBy('target_job_id')->pluck('c', 'target_job_id');
+        $clicks30 = $human(DB::table('lp_clicks')->whereIn('target_job_id', $ids)->whereIn('type', ['pr_job', 'direct_job'])->where('clicked_at', '>=', $since), 'user_agent')
+            ->selectRaw('target_job_id, COUNT(*) c')->groupBy('target_job_id')->pluck('c', 'target_job_id');
+
+        $out = [];
+        foreach ($ids as $id) {
+            $out[$id] = [
+                'views30'       => (int) ($views30[$id] ?? 0),
+                'viewsTotal'    => (int) ($viewsTotal[$id] ?? 0),
+                'impressions30' => (int) ($impressions30[$id] ?? 0),
+                'clicks30'      => (int) ($clicks30[$id] ?? 0),
+            ];
+        }
+        return $out;
     }
 }

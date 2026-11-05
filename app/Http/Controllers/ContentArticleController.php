@@ -45,6 +45,8 @@ class ContentArticleController extends Controller
             $relatedJobs = $relatedJobs->reject(fn($j) => in_array($j->id, $prIds, true))->values();
         }
 
+        app(\App\Services\RecommendationImpressionLogger::class)->log($recommendedJobs, 'pr_job', 'article');
+
         return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats', 'publicStat', 'recommendedJobs'));
     }
 
