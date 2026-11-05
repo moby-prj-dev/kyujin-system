@@ -63,6 +63,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 @endif
 
+{{-- お知らせ: お問い合わせフォーム不具合のお詫び(2026-12-05まで表示・控えめに1行) --}}
+@if(now()->lt(\Carbon\Carbon::parse('2026-12-06 00:00:00')))
+<div style="background:#fff8e1;border-bottom:1px solid #f1e3b8;padding:6px 0;text-align:center;font-size:0.8rem;">
+    <a href="{{ route('contact.show') }}#notice-contact-form" style="color:#7a5b00;text-decoration:none;">
+        <i class="bi bi-info-circle me-1"></i>お知らせ：2026年5月〜10月30日にお問い合わせフォームから送信された内容が届いていませんでした（詳細）
+    </a>
+</div>
+@endif
+
 {{-- ① ファーストビュー --}}
 <section class="hero">
     <div class="container">

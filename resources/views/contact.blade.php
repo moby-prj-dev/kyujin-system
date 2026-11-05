@@ -13,6 +13,15 @@
 <div class="row justify-content-center">
 <div class="col-lg-8 py-2">
 
+    {{-- お問い合わせフォーム不具合のお詫び(2026-12-05まで表示) --}}
+    @if(now()->lt(\Carbon\Carbon::parse('2026-12-06 00:00:00')))
+    <div id="notice-contact-form" class="alert alert-warning mb-3" style="font-size:0.88rem;line-height:1.8;">
+        <strong><i class="bi bi-exclamation-triangle me-1"></i>【お詫び】お問い合わせフォームの不具合について</strong><br>
+        2026年5月〜10月30日の間、お問い合わせフォームから送信いただいた内容が、システムの不具合により当方に届いておりませんでした。ご迷惑をおかけし、誠に申し訳ございません。<br>
+        お手数ですが、再度お問い合わせいただくか、<a href="mailto:careentry.info@gmail.com">careentry.info@gmail.com</a> までご連絡ください。（現在は復旧しております）
+    </div>
+    @endif
+
     <div class="form-section">
         <p class="mb-3" style="font-size:0.93rem; line-height:1.9;">
             サービスに関するご質問・ご相談は、以下のフォームよりお気軽にお問い合わせください。<br>
