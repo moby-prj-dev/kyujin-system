@@ -934,18 +934,17 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 </div>
 </div>
 
-{{-- 再開時トライアル終了確認モーダル --}}
+{{-- 掲載再開時の料金確認モーダル --}}
 <div class="modal fade" id="reopenTrialModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold">
-                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>無料掲載期間の終了
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>掲載の再開
                 </h5>
             </div>
             <div class="modal-body pt-2">
-                <p class="mb-3">この求人は無料掲載期間が終了しています。</p>
-                <p class="mb-3">掲載は可能ですが、<br>応募が発生した場合に課金が発生します。</p>
+                <p class="mb-3">求人の掲載を再開します。<br>応募があった場合は、以下の料金が発生します。</p>
                 <div class="alert alert-warning py-2 mb-2" style="font-size:0.93rem;">
                     <strong>・1応募：¥3,000（税別）</strong>
                 </div>
@@ -966,7 +965,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
 document.getElementById('continueBtn')?.addEventListener('click', function() {
-    if (confirm('掲載を継続しますか？\n\n無料掲載期間終了後は、有効応募1件につき3,000円（税別）が発生します。\n応募がない場合は料金は発生しません。\n\nOKを押すと掲載継続として反映されます。')) {
+    if (confirm('掲載を継続しますか？\n\n有効応募1件につき3,000円（税別）が発生します。\n応募がない場合は料金は発生しません。\n\nOKを押すと掲載継続として反映されます。')) {
         this.disabled = true;
         document.getElementById('continueForm').submit();
     }
