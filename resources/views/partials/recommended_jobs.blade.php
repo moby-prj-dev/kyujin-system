@@ -40,14 +40,27 @@
                 $recSalary  = $recJob->salaryText();
             @endphp
             @if($layout === 'grid')<div class="col-sm-6 col-lg-4">@endif
+            {{-- PR(スタンダード)は検索結果の job-card--pr と同じデザイン(薄い黄色・オレンジ線・★おすすめ求人ラベル)。直接応募(ベーシック)は白 --}}
+            @php
+                $cardStyle = $pr
+                    ? 'background:#fffbeb;border:1.5px solid #f6c453;border-left:5px solid #f59e0b;'
+                    : 'background:#fff;border:1px solid #e5e9f0;';
+                $hoverOn  = $pr ? "this.style.boxShadow='0 4px 14px rgba(245,158,11,0.25)';" : "this.style.borderColor='#1a73e8';this.style.boxShadow='0 2px 8px rgba(26,115,232,0.15)';";
+                $hoverOff = $pr ? "this.style.boxShadow='none';" : "this.style.borderColor='#e5e9f0';this.style.boxShadow='none';";
+            @endphp
             <a href="{{ route('lp.show', $recJob->token) }}" data-track="{{ $pr ? 'pr_job' : 'direct_job' }}" data-target-job="{{ $recJob->id }}"
-               style="display:block;{{ $layout === 'grid' ? 'height:100%;' : '' }}padding:12px 14px;background:#fff;border:1px solid #e5e9f0;border-radius:8px;text-decoration:none;color:#1a1a2e;transition:.15s;"
-               onmouseover="this.style.borderColor='#1a73e8';this.style.boxShadow='0 2px 8px rgba(26,115,232,0.15)';"
-               onmouseout="this.style.borderColor='#e5e9f0';this.style.boxShadow='none';">
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                    @if($pr){!! $prBadge !!}@endif
-                    @if($recJob->company_name)<span style="font-size:0.75rem;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $recJob->company_name }}</span>@endif
+               style="display:block;{{ $layout === 'grid' ? 'height:100%;' : '' }}padding:12px 14px;{{ $cardStyle }}border-radius:8px;text-decoration:none;color:#1a1a2e;transition:.15s;"
+               onmouseover="{{ $hoverOn }}"
+               onmouseout="{{ $hoverOff }}">
+                @if($pr)
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <span style="display:inline-flex;align-items:center;gap:3px;background:#f59e0b;color:#fff;font-size:0.68rem;font-weight:800;padding:2px 9px;border-radius:20px;letter-spacing:.04em;"><i class="bi bi-star-fill"></i> おすすめ求人</span>
+                    {!! $prBadge !!}
                 </div>
+                @endif
+                @if($recJob->company_name)
+                <div style="font-size:0.75rem;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px;">{{ $recJob->company_name }}</div>
+                @endif
                 <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $recJob->displayTitle() }}</div>
                 <div style="font-size:0.76rem;color:#666;line-height:1.5;">
                     @if($recAreas)<i class="bi bi-geo-alt-fill me-1"></i>{{ $recAreas }}@endif
