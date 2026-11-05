@@ -216,6 +216,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     {{ $jobs->links() }}
                 @endif
 
+                {{-- 近くのエリアのおすすめ求人(PR): 同じ地域の別市町村のスタンダード求人。一覧・件数とは別枠 --}}
+                @include('partials.recommended_jobs', ['jobs' => $nearbyJobs ?? collect(), 'heading' => '近くのエリアのおすすめ求人', 'wrap' => 'box'])
+
                 {{-- エリアページなら職種別リンク網を表示(内部リンク強化) --}}
                 @if($currentArea && !($currentJobType ?? null))
                     @php

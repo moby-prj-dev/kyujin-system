@@ -56,6 +56,65 @@ class RecommendedJobFinder
     }
 
     /**
+     * 検索結果ページ用「近くのエリアのおすすめ求人(PR)」: 選択エリアと同じ地域の“別の市町村”のスタンダード求人
+     * - 選択エリア内の求人は一覧の上位に出ているため除外(重複させない)
+     * - 職種指定があれば同職種を優先
+     *
+     * @param int[] $areaIds    検索で選ばれた市町村
+     * @param int[] $jobTypeIds 検索で選ばれた職種(任意)
+     */
+    public function forNearbyAreas(array $areaIds, array $jobTypeIds = [], int $limit = 2): Collection
+    {
+        $areaIds = array_values(array_unique(array_map('intval', $areaIds)));
+        if (empty($areaIds) || $limit <= 0) {
+            return new Collection();
+        }
+
+        $nearbyAreaIds = MasterArea::whereIn('region', MasterArea::whereIn('id', $areaIds)->pluck('region'))
+            ->where('prefecture', '沖縄県')
+            ->whereNotIn('id', $areaIds)
+            ->pluck('id')->map(fn($v) => (int) $v)->all();
+        if (empty($nearbyAreaIds)) {
+            return new Collection();
+        }
+
+        sort($areaIds);
+        sort($jobTypeIds);
+        $today = now()->toDateString();
+        $key = 'recommended_jobs:nearby:v1:' . $today . ':' . md5(json_encode([$areaIds, $jobTypeIds]));
+
+        // 候補ID(プリミティブ)のみキャッシュ
+        $ids = Cache::remember($key, now()->addMinutes(self::CACHE_TTL_MINUTES), function () use ($areaIds, $jobTypeIds, $nearbyAreaIds, $today) {
+            $base = fn() => $this->baseQuery()
+                ->whereHas('jobAreas', fn($q) => $q->whereIn('area_id', $nearbyAreaIds))
+                ->whereDoesntHave('jobAreas', fn($q) => $q->whereIn('area_id', $areaIds));
+
+            $tiers = [];
+            if (!empty($jobTypeIds)) {
+                $tiers[] = $base()->whereHas('jobJobTypes', fn($q) => $q->whereIn('job_type_id', $jobTypeIds));
+            }
+            $tiers[] = $base();
+
+            $result = [];
+            foreach ($tiers as $query) {
+                $tierIds = array_values(array_diff($query->limit(200)->pluck('id')->map(fn($v) => (int) $v)->all(), $result));
+                $result  = array_merge($result, $this->dailyShuffle($tierIds, $today));
+            }
+            return $result;
+        });
+
+        $ids = array_slice($ids, 0, $limit);
+        if (empty($ids)) {
+            return new Collection();
+        }
+
+        $jobs = $this->baseQuery()->whereIn('id', $ids)
+            ->with(['jobAreas.area', 'jobJobTypes.jobType'])->get()->keyBy('id');
+
+        return new Collection(collect($ids)->map(fn($id) => $jobs->get($id))->filter()->values()->all());
+    }
+
+    /**
      * 記事ページ用: area_id があればエリア一致必須、職種のみなら沖縄全域で職種一致
      */
     public function forArticle(ContentArticle $article, int $limit = 3): Collection
