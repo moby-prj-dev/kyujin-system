@@ -124,4 +124,11 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    // 送信元(info@care-entry.net)は受信できない(MXなし)ため、返信先未指定のメールは受信用Gmailを返信先にする
+    // (AppServiceProvider の MessageSending リスナーで付与。問い合わせ通知など個別に返信先を指定したメールはそのまま)
+    'default_reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS', 'careentry.info@gmail.com'),
+        'name' => env('MAIL_REPLY_TO_NAME', 'Care Entry（ケアエントリー）'),
+    ],
+
 ];
