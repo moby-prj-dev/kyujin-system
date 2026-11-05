@@ -120,26 +120,10 @@
             <span class="fw-bold">{{ $job->created_at->format('Y/m/d') }}</span>
         </div>
         <div>
-            <span class="text-muted small">無料掲載</span><br>
-            @if($trialEnded)
-                <span class="fw-bold text-danger">終了（応募時課金）</span>
-                <br><span class="text-muted" style="font-size:0.78rem;">※応募が発生した場合のみ課金されます</span>
-            @elseif($job->expires_at)
-                @php $daysLeft = (int)now()->diffInDays($job->expires_at); @endphp
-                @if($job->expires_at->diffInDays(now()) <= 14)
-                    <span class="fw-bold text-warning">{{ $job->expires_at->format('Y/m/d') }}まで（残り{{ $daysLeft }}日）</span>
-                @else
-                    <span class="fw-bold text-success">{{ $job->expires_at->format('Y/m/d') }}まで（残り{{ $daysLeft }}日）</span>
-                @endif
-            @else
-                <span class="text-muted">—</span>
-            @endif
-        </div>
-        <div>
             <span class="text-muted small d-flex align-items-center gap-1">
                 応募件数
                 <span tabindex="0" data-bs-toggle="tooltip"
-                      title="有効応募数をもとに無料掲載・課金判定を行っています"
+                      title="有効応募数をもとに課金判定を行っています"
                       style="cursor:default; color:#adb5bd; font-size:0.8rem;">
                     <i class="bi bi-question-circle"></i>
                 </span>
