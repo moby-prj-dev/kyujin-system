@@ -280,7 +280,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div>
                     <div class="apply-method-title">LINEで応募する</div>
-                    <div class="apply-method-desc">LINEアプリを使って簡単に応募できます。担当者と直接やり取りが可能です。</div>
+                    <div class="apply-method-desc">普段お使いのLINEで、案内に沿ってお名前と電話番号を送るだけで応募できます。</div>
                 </div>
             </div>
             @endif
