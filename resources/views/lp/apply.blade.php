@@ -535,7 +535,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </p>
         @foreach($alternatives as $alt)
             <a href="{{ route('lp.show', $alt->token) }}" class="alt-card">
-                <p class="alt-card__title">{{ $alt->seo_title ?: $alt->title }}</p>
+                <p class="alt-card__title">{{ $alt->displayTitle() }}</p>
                 <div class="alt-card__tags">
                     @foreach($alt->jobAreas->take(2) as $ja)
                         @if($ja->area)

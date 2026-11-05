@@ -79,6 +79,16 @@ class Job extends Model
             ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()));
     }
 
+    /**
+     * カード・一覧・メール等に表示する求人タイトル
+     * seo_title はページの<title>用で末尾に「｜Care Entry」が付くため、表示時は省く
+     */
+    public function displayTitle(): string
+    {
+        $title = $this->seo_title ?: $this->title;
+        return trim(preg_replace('/\s*[｜|]\s*Care Entry\s*$/u', '', (string) $title));
+    }
+
     /** LINE応募は全プランで利用可(ハローワーク求人は対象外) */
     public function canUseLine(): bool { return $this->source !== 'hellowork'; }
 

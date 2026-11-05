@@ -472,9 +472,9 @@
                                     <tr>
                                         <td style="max-width:420px;">
                                             @if($cj->status === 'active')
-                                                <a href="{{ route('lp.show', $cj->token) }}" target="_blank">{{ $cj->seo_title ?: $cj->title }}</a>
+                                                <a href="{{ route('lp.show', $cj->token) }}" target="_blank">{{ $cj->displayTitle() }}</a>
                                             @else
-                                                {{ $cj->seo_title ?: $cj->title }}
+                                                {{ $cj->displayTitle() }}
                                             @endif
                                         </td>
                                         <td><span class="badge {{ $cjClass }}">{{ $cjLabel }}</span></td>

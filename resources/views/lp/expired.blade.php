@@ -125,7 +125,7 @@
         @foreach($similarJobs as $s)
             <a href="{{ route('lp.show', $s->token) }}" class="job-card">
                 <p class="job-card__company">{{ $s->company_name }}</p>
-                <p class="job-card__title">{{ $s->seo_title ?: $s->title }}</p>
+                <p class="job-card__title">{{ $s->displayTitle() }}</p>
                 <div class="job-card__tags">
                     @foreach($s->jobAreas->take(2) as $ja)
                         @if($ja->area)

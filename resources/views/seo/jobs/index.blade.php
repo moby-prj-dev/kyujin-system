@@ -35,7 +35,7 @@
             '@' . 'type'    => 'ListItem',
             'position' => $i + 1,
             'url'      => route('lp.show', $j->token),
-            'name'     => $j->seo_title ?: $j->title,
+            'name'     => $j->displayTitle(),
         ])->all(),
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
     </script>
@@ -166,7 +166,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <p class="job-card__company">{{ $job->company_name }}</p>
                         <p class="job-card__title">
                             <a href="{{ route('lp.show', $job->token) }}"@if($isPr) data-track="pr_job" data-target-job="{{ $job->id }}"@endif>
-                                {{ $job->seo_title ?: $job->title }}
+                                {{ $job->displayTitle() }}
                             </a>
                         </p>
                         <div class="job-card__tags">

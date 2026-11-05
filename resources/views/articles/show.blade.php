@@ -328,7 +328,7 @@
                                style="display:block;padding:12px 14px;background:#fff;border:1px solid #d6e4f7;border-radius:6px;text-decoration:none;color:#1a1a2e;transition:.15s;"
                                onmouseover="this.style.borderColor='#1a73e8';this.style.boxShadow='0 2px 8px rgba(26,115,232,0.15)';"
                                onmouseout="this.style.borderColor='#d6e4f7';this.style.boxShadow='none';">
-                                <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $j->seo_title ?: $j->title }}</div>
+                                <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $j->displayTitle() }}</div>
                                 <div style="font-size:0.78rem;color:#666;">
                                     @foreach($j->jobAreas->take(1) as $ja)@if($ja->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}@endif @endforeach
                                     @foreach($j->jobJobTypes->take(1) as $jt)@if($jt->jobType)・{{ $jt->jobType->name }}@endif @endforeach
@@ -366,7 +366,7 @@
                     </p>
                     @foreach($relatedJobs as $j)
                         <a href="{{ route('lp.show', $j->token) }}" class="related-card mb-3" style="border-left:3px solid #06C755;">
-                            <p class="related-card__title">{{ $j->seo_title ?: $j->title }}</p>
+                            <p class="related-card__title">{{ $j->displayTitle() }}</p>
                             <p class="related-card__meta mb-0">
                                 @foreach($j->jobAreas->take(1) as $ja)@if($ja->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}@endif @endforeach
                                 @foreach($j->jobJobTypes->take(1) as $jt)@if($jt->jobType)・{{ $jt->jobType->name }}@endif @endforeach

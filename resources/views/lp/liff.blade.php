@@ -158,7 +158,7 @@ const THANKS_URL = @json(route('liff.thanks', ['token' => $job->token]));
 const LP_URL     = @json(route('lp.show', ['token' => $job->token]));
 
 const JOB = {
-    title:   @json($job->seo_title ?: $job->title),
+    title:   @json($job->displayTitle()),
     company: @json($job->company_name),
     areas:   @json($areaNames),
     types:   @json($typeNames),
