@@ -71,7 +71,11 @@ class JobController extends Controller
             ->get(['id', 'contact_email', 'title', 'seo_title', 'status', 'plan', 'token', 'email_verified_at', 'expires_at', 'created_at'])
             ->groupBy('contact_email');
 
-        $jobMetrics = $this->jobMetrics($companyJobs->flatten()->pluck('id')->all());
+        // 企業一覧の展開行 + 求人一覧(表示中のページ分)の露出・反応の数字
+        $jobMetrics = $this->jobMetrics(array_values(array_unique(array_merge(
+            $companyJobs->flatten()->pluck('id')->all(),
+            $jobs->pluck('id')->all()
+        ))));
 
         return view('admin.jobs.index', compact('jobs', 'companies', 'companyJobs', 'jobMetrics'));
     }

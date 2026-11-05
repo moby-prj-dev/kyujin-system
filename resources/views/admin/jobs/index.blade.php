@@ -100,6 +100,7 @@
                         <th class="text-center" style="width:90px;">公開状態</th>
                         <th class="text-center" style="width:90px;">料金区分</th>
                         <th class="text-center" style="width:60px;">応募数</th>
+                        <th class="text-center" style="width:92px;" title="直近30日・ボット除外。閲覧=求人ページの閲覧数 / 枠表示=おすすめ求人(PR)・直接応募枠に表示された回数 / 枠クリック=その枠からのクリック数">閲覧・枠<br><small class="fw-normal">30日</small></th>
                         <th class="text-center" style="width:85px;">登録日</th>
                         <th class="text-center" style="width:85px;">掲載終了</th>
                         <th class="text-center" style="width:200px;">操作</th>
@@ -195,6 +196,14 @@
                                 <br><span class="text-danger">課金 {{ (int)$job->billable_count_sub }}</span>
                                 @endif
                             </div>
+                            @endif
+                        </td>
+                        <td class="text-center" style="font-size:0.75rem;line-height:1.5;white-space:nowrap;">
+                            @php $lm = $jobMetrics[$job->id] ?? ['views30'=>0,'impressions30'=>0,'clicks30'=>0]; @endphp
+                            <span title="求人ページの閲覧(30日)">閲覧 <strong>{{ number_format($lm['views30']) }}</strong></span>
+                            @if($job->source !== 'hellowork')
+                                <br><span class="text-muted" title="送客枠への表示(30日)">枠表示 {{ number_format($lm['impressions30']) }}</span>
+                                <br><span class="text-muted" title="送客枠からのクリック(30日)">枠クリック {{ number_format($lm['clicks30']) }}</span>
                             @endif
                         </td>
                         <td class="text-center text-nowrap" style="font-size:0.82rem;">
@@ -316,7 +325,7 @@
                     </tr>
                     {{-- メモ展開行 --}}
                     <tr class="collapse {{ $job->admin_memo ? 'show' : '' }}" id="memo-{{ $job->id }}">
-                        <td colspan="11" class="py-2 px-4 bg-light">
+                        <td colspan="12" class="py-2 px-4 bg-light">
                             <form method="POST"
                                   action="{{ route('admin.jobs.memo', $job) }}"
                                   class="d-flex align-items-start gap-2">
@@ -337,7 +346,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-4">
+                        <td colspan="12" class="text-center text-muted py-4">
                             <i class="bi bi-inbox me-1"></i>条件に一致する求人はありません
                         </td>
                     </tr>
