@@ -200,6 +200,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <p class="job-card__pr-note"><i class="bi bi-chat-dots-fill"></i> LINE・フォームから事業所に直接応募できます</p>
                         @endif
                     </div>
+
+                    {{-- 近くのエリアのおすすめ求人(PR): 一覧の3件目の後に差し込む(一覧・件数とは別枠) --}}
+                    @if($loop->iteration === 3 && ($nearbyJobs ?? collect())->isNotEmpty())
+                        <div style="margin:-1rem 0 14px;">
+                            @include('partials.recommended_jobs', ['jobs' => $nearbyJobs, 'heading' => '近くのエリアのおすすめ求人', 'wrap' => 'box'])
+                        </div>
+                    @endif
                 @empty
                     <div class="no-jobs">
                         <i class="bi bi-search"></i>
@@ -211,13 +218,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 @endforelse
 
+                {{-- 一覧が3件未満(0件含む)のページは一覧の直後に表示 --}}
+                @if($jobs->count() < 3)
+                    @include('partials.recommended_jobs', ['jobs' => $nearbyJobs ?? collect(), 'heading' => '近くのエリアのおすすめ求人', 'wrap' => 'box'])
+                @endif
+
                 {{-- ページネーション --}}
                 @if($jobs->hasPages())
                     {{ $jobs->links() }}
                 @endif
-
-                {{-- 近くのエリアのおすすめ求人(PR): 同じ地域の別市町村のスタンダード求人。一覧・件数とは別枠 --}}
-                @include('partials.recommended_jobs', ['jobs' => $nearbyJobs ?? collect(), 'heading' => '近くのエリアのおすすめ求人', 'wrap' => 'box'])
 
                 {{-- エリアページなら職種別リンク網を表示(内部リンク強化) --}}
                 @if($currentArea && !($currentJobType ?? null))
