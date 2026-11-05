@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AdminJobNotificationMail;
+use App\Mail\JobManageLinkMail;
 use App\Models\AuditLog;
 use App\Models\Job;
 use App\Models\Setting;
 use App\Services\SeoGeneratorService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class JobVerificationController extends Controller
@@ -16,7 +18,12 @@ class JobVerificationController extends Controller
     {
         $job = Job::where('email_verification_token', $verificationToken)
             ->where('status', Job::STATUS_PENDING)
-            ->firstOrFail();
+            ->first();
+
+        // 使用済み(2回目のクリック)・無効なリンクは 404 ではなく案内ページへ(編集用リンクの再送導線)
+        if (! $job) {
+            return response()->view('jobs.verify_invalid', [], 404);
+        }
 
         DB::transaction(function () use ($job, $seoGenerator) {
             $job->update([
@@ -43,9 +50,21 @@ class JobVerificationController extends Controller
             ]);
         });
 
+        // 編集用リンクを掲載者にメールで送る(認証直後の画面を閉じると管理URLが分からなくなるため)
+        try {
+            Mail::to($job->contact_email)->send(new JobManageLinkMail($job));
+        } catch (\Throwable $e) {
+            Log::error('編集用リンクメール送信失敗(認証後): ' . $e->getMessage(), ['job_id' => $job->id]);
+        }
+
+        // 管理者通知の失敗で掲載者に500を見せない(公開処理はコミット済み)
         $adminEmail = config('mail.admin_email');
         if ($adminEmail) {
-            Mail::to($adminEmail)->send(new AdminJobNotificationMail($job));
+            try {
+                Mail::to($adminEmail)->send(new AdminJobNotificationMail($job));
+            } catch (\Throwable $e) {
+                Log::error('管理者通知メール送信失敗(認証後): ' . $e->getMessage(), ['job_id' => $job->id]);
+            }
         }
 
         return redirect()->route('jobs.manage', ['token' => $job->token])

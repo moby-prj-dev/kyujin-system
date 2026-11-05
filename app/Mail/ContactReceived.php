@@ -27,7 +27,8 @@ class ContactReceived extends Mailable
     {
         return new Content(
             view: 'emails.contact_received',
-            with: $this->data,
+            // $message はLaravelのメール予約変数(Illuminate\Mail\Message)と衝突するため inquiry に渡す
+            with: [...collect($this->data)->except('message')->all(), 'inquiry' => $this->data['message'] ?? ''],
         );
     }
 }
