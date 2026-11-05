@@ -46,12 +46,12 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small fw-bold mb-1">トライアル状態</label>
+                    <label class="form-label small fw-bold mb-1">掲載期限</label>
                     <select name="trial_status" class="form-select form-select-sm">
                         <option value="">すべて</option>
-                        <option value="active"       {{ request('trial_status') === 'active'       ? 'selected' : '' }}>無料掲載中</option>
-                        <option value="ending_soon"  {{ request('trial_status') === 'ending_soon'  ? 'selected' : '' }}>終了間近</option>
-                        <option value="ended"        {{ request('trial_status') === 'ended'        ? 'selected' : '' }}>終了済み</option>
+                        <option value="active"       {{ request('trial_status') === 'active'       ? 'selected' : '' }}>期限内</option>
+                        <option value="ending_soon"  {{ request('trial_status') === 'ending_soon'  ? 'selected' : '' }}>7日以内に期限切れ</option>
+                        <option value="ended"        {{ request('trial_status') === 'ended'        ? 'selected' : '' }}>期限切れ</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -90,7 +90,7 @@
                         <th style="width:160px;">メール</th>
                         <th class="text-center" style="width:70px;">ソース</th>
                         <th class="text-center" style="width:90px;">公開状態</th>
-                        <th class="text-center" style="width:80px;">トライアル</th>
+                        <th class="text-center" style="width:90px;">料金区分</th>
                         <th class="text-center" style="width:60px;">応募数</th>
                         <th class="text-center" style="width:85px;">登録日</th>
                         <th class="text-center" style="width:85px;">掲載終了</th>
@@ -113,16 +113,15 @@
                         $validSub      = (int) ($job->valid_count_sub ?? 0);
                         $expiresAt     = $job->expires_at;
                         $monitorEndsAt = $job->monitor_ends_at;
-                        $globalMonitorOff = \App\Models\Setting::isMonitorDisabled() || now()->greaterThan(\App\Models\Setting::monitorCutoffDate());
-                        // is_monitor=false もしくはグローバル解除中の求人はトライアル対象外
-                        if (!$monitorEndsAt || !$job->is_monitor || $globalMonitorOff) {
-                            $trialLabel = '—'; $trialClass = 'bg-secondary';
-                        } elseif (now()->greaterThan($monitorEndsAt) || $validSub >= 3) {
-                            $trialLabel = '終了済み'; $trialClass = 'bg-secondary';
-                        } elseif ($monitorEndsAt->diffInDays(now(), false) >= -7) {
-                            $trialLabel = '終了間近'; $trialClass = 'bg-warning text-dark';
+                        // 料金区分(請求判定と同じ考え方): 永久無料 / モニター(終了日前かつ有効応募3件未満) / 通常
+                        if ($job->source === 'hellowork') {
+                            $trialLabel = '—'; $trialClass = 'bg-light text-muted';
+                        } elseif ($job->is_permanently_free) {
+                            $trialLabel = '永久無料'; $trialClass = 'bg-danger';
+                        } elseif ($monitorEndsAt && now()->lessThanOrEqualTo($monitorEndsAt) && $validSub < 3) {
+                            $trialLabel = 'モニター〜' . $monitorEndsAt->format('n/j'); $trialClass = 'trial-active';
                         } else {
-                            $trialLabel = '無料期間内'; $trialClass = 'bg-success';
+                            $trialLabel = '通常'; $trialClass = 'bg-secondary';
                         }
                     @endphp
                     <tr class="{{ $job->is_admin_hidden ? 'table-secondary opacity-75' : '' }}">
@@ -363,8 +362,7 @@
                         <th>会社名</th>
                         <th>メール</th>
                         <th>掲載開始</th>
-                        <th>トライアル状態</th>
-                        <th>トライアル終了</th>
+                        <th>料金区分</th>
                         <th class="text-center">有効応募</th>
                         <th class="text-center">無効応募</th>
                         <th class="text-center">請求対象</th>
@@ -377,13 +375,11 @@
                     @forelse($companies as $c)
                     @php
                         $stMap = [
-                            'permanently_free' => ['永久無料',         'bg-danger'],
-                            'active'           => ['無料期間内',       'trial-active'],
-                            'ending_soon'      => ['終了まで7日以内',  'trial-ending-soon'],
-                            'ended'            => ['無料期間終了',     'trial-ended'],
-                            'billing'          => ['請求対象あり',     'trial-billing'],
+                            'permanently_free' => ['永久無料', 'bg-danger'],
+                            'monitor'          => ['モニター〜' . ($c->trial_ends_at ? \Carbon\Carbon::parse($c->trial_ends_at)->format('Y/n/j') : ''), 'trial-active'],
+                            'normal'           => ['通常', 'bg-secondary'],
                         ];
-                        [$stLabel, $stClass] = $stMap[$c->trial_status] ?? ['—', 'trial-active'];
+                        [$stLabel, $stClass] = $stMap[$c->pricing] ?? ['通常', 'bg-secondary'];
                         $billingAmount = ($c->billable_count ?? 0) * 3000;
                     @endphp
                     <tr>
@@ -396,9 +392,6 @@
                             <span class="badge {{ $stClass }}" style="font-size:0.78rem; padding:4px 8px;">
                                 {{ $stLabel }}
                             </span>
-                        </td>
-                        <td class="text-nowrap" style="font-size:0.82rem;">
-                            {{ $c->trial_ends_at ? \Carbon\Carbon::parse($c->trial_ends_at)->format('Y/m/d') : '—' }}
                         </td>
                         <td class="text-center fw-bold text-success">{{ $c->valid_count }}</td>
                         <td class="text-center text-danger">{{ $c->invalid_count }}</td>
@@ -427,7 +420,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="11" class="text-center text-muted py-4">データがありません</td></tr>
+                    <tr><td colspan="10" class="text-center text-muted py-4">データがありません</td></tr>
                     @endforelse
                 </tbody>
             </table>

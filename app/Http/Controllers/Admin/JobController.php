@@ -184,7 +184,7 @@ class JobController extends Controller
         ");
 
         return collect($rows)->map(function ($c) {
-            $c->trial_status = $this->companyTrialStatus($c);
+            $c->pricing = $this->companyPricing($c);
             return $c;
         });
     }
@@ -248,18 +248,19 @@ class JobController extends Controller
             ->with('success', "「{$email}」の企業データを完全に削除しました。");
     }
 
-    private function companyTrialStatus(object $c): string
+    /**
+     * 企業の料金区分(請求判定 ApplicationValidationService::isBillable と同じ考え方)
+     * - permanently_free: 永久無料
+     * - monitor: モニター期間中(終了日前 かつ 有効応募3件未満)= 応募は無料
+     * - normal: 通常(応募があれば請求対象)
+     */
+    private function companyPricing(object $c): string
     {
-        $billable = (int) $c->billable_count;
-        $valid    = (int) $c->valid_count;
-        $trialEnd = $c->trial_ends_at ? Carbon::parse($c->trial_ends_at) : null;
+        $monitorEnd = $c->trial_ends_at ? Carbon::parse($c->trial_ends_at) : null;
 
-        if ((bool) $c->is_permanently_free)                       return 'permanently_free';
-        if ($billable > 0)                                        return 'billing';
-        if (!$trialEnd)                                           return 'active';
-        if (now()->greaterThan($trialEnd) || $valid >= 3)         return 'ended';
-        if ($trialEnd->diffInDays(now(), false) >= -7)            return 'ending_soon';
+        if ((bool) $c->is_permanently_free) return 'permanently_free';
+        if ($monitorEnd && now()->lessThanOrEqualTo($monitorEnd) && (int) $c->valid_count < 3) return 'monitor';
 
-        return 'active';
+        return 'normal';
     }
 }
