@@ -26,6 +26,7 @@ class GenerateContentArticles extends Command
                 ArticleGeneratorService::practicalDefinitions(),
                 ArticleGeneratorService::curatedDefinitions(),
                 ArticleGeneratorService::curatedDefinitions2(),
+                ArticleGeneratorService::curatedDefinitions3(),
             );
             $definitions = array_values(array_filter($all, fn($d) => $d['slug'] === $slug));
             if (empty($definitions)) {
@@ -50,6 +51,7 @@ class GenerateContentArticles extends Command
                     ArticleGeneratorService::practicalDefinitions(),    // Phase 7: 面接・履歴書等 実用トピック
                     ArticleGeneratorService::curatedDefinitions(),      // Phase 8: 個別テーマ(介護・福祉限定)
                     ArticleGeneratorService::curatedDefinitions2(),     // Phase 9: 個別テーマ第2弾
+                    ArticleGeneratorService::curatedDefinitions3(),     // Phase 10: 個別テーマ第3弾
                 );
                 $definitions = array_values(array_filter($merged, fn($d) => !in_array($d['slug'], $existingSlugs)));
             }

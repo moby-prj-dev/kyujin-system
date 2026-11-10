@@ -744,6 +744,58 @@ class ArticleGeneratorService
         ];
     }
 
+    /**
+     * Phase 10: 個別テーマ第3弾(2026-11-10 追加・42本)。介護・福祉限定
+     * A:制度の基本 / B:仕事の1日 / C:季節・健康 / D:コミュニケーション / E:キャリアの応用 / F:障害・児童福祉
+     */
+    public static function curatedDefinitions3(): array
+    {
+        return [
+            ['slug' => 'youkaigodo-towa-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['要介護度', '要支援', '認定', '区分', '介護職', '基礎知識']],
+            ['slug' => 'kaigohoken-service-shurui-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['介護保険サービス', '種類', '在宅', '施設', '地域密着型', '仕事選び']],
+            ['slug' => 'care-plan-dekirumade-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_manager', 'keywords' => ['ケアプラン', '作成の流れ', 'アセスメント', 'サービス担当者会議', 'ケアマネジャー']],
+            ['slug' => 'chiiki-houkatsu-center-yakuwari-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'social_welfare_worker', 'keywords' => ['地域包括支援センター', '役割', '社会福祉士', '保健師', '主任ケアマネ', '沖縄']],
+            ['slug' => 'shogai-fukushi-service-riyou-nagare-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'consultation_support_specialist', 'keywords' => ['障害福祉サービス', '利用の流れ', '受給者証', 'サービス等利用計画', '相談支援']],
+            ['slug' => 'shogai-shien-kubun-towa-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => null, 'keywords' => ['障害支援区分', '認定調査', '区分', '障害福祉サービス', '基礎知識']],
+            ['slug' => 'seinen-kouken-fukushishoku-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'social_welfare_worker', 'keywords' => ['成年後見制度', '後見人', '福祉職', '関わり方', '社会福祉士']],
+            ['slug' => 'kaigo-houshu-kyuryo-kankei-okinawa', 'category' => 'industry', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護報酬', '処遇改善', '給料', '仕組み', '介護職']],
+            ['slug' => 'tokuyou-yakin-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['特養', '夜勤', '1日の流れ', '仕事内容', '介護職員']],
+            ['slug' => 'houmon-helper-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'home_helper', 'keywords' => ['訪問介護', 'ヘルパー', '1日の流れ', '移動', '仕事内容']],
+            ['slug' => 'day-seikatsu-soudanin-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'life_consultant', 'keywords' => ['デイサービス', '生活相談員', '1日の流れ', '仕事内容', '送迎調整']],
+            ['slug' => 'care-manager-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'care_manager', 'keywords' => ['ケアマネジャー', '1日の流れ', '訪問', '書類', '仕事内容']],
+            ['slug' => 'houkago-day-shidouin-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'child_guidance_worker', 'keywords' => ['放課後等デイサービス', '児童指導員', '1日の流れ', '送迎', '療育']],
+            ['slug' => 'grouphome-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['グループホーム', '認知症', '1日の流れ', '介護職員', '家事支援']],
+            ['slug' => 'shuro-b-shienin-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'employment_support_worker', 'keywords' => ['就労継続支援B型', '支援員', '1日の流れ', '作業支援', '工賃']],
+            ['slug' => 'fukushi-shisetsu-kangoshi-ichinichi-okinawa', 'category' => 'job_type', 'area' => null, 'job_type' => 'nurse_welfare_facility', 'keywords' => ['福祉施設', '看護師', '1日の流れ', '健康管理', '服薬']],
+            ['slug' => 'koureisha-necchuusho-taisaku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['沖縄', '夏', '高齢者', '熱中症対策', '水分補給', '介護職']],
+            ['slug' => 'taifuu-zengo-houmon-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'home_helper', 'keywords' => ['台風', '前後', '訪問介護', '準備', '安否確認', '沖縄']],
+            ['slug' => 'kansenshou-ryuukouki-hatarakikata-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['冬', '感染症', '流行期', 'インフルエンザ', '介護職', '働き方']],
+            ['slug' => 'kaigo-youtsu-taisou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '腰痛', '体操', 'ストレッチ', '予防']],
+            ['slug' => 'yakin-ake-sugoshikata-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['夜勤明け', '過ごし方', '睡眠', '生活リズム', '介護職']],
+            ['slug' => 'kaigo-shokuseikatsu-taichou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護職', '食生活', '体調管理', 'シフト勤務', '健康']],
+            ['slug' => 'keichou-kihon-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['傾聴', '基本', 'コミュニケーション', '高齢者', '介護職']],
+            ['slug' => 'riyousha-kyorikan-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['利用者', '距離感', '信頼関係', '馴れ合い', '介護職']],
+            ['slug' => 'nanchou-kaiwa-kotsu-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['難聴', '耳が聞こえにくい', '会話', 'コツ', '高齢者', '介護職']],
+            ['slug' => 'kotobazukai-keigo-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['言葉遣い', '敬語', 'タメ口', '高齢者', '介護職', '接遇']],
+            ['slug' => 'team-hourensou-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['報連相', '報告', '連絡', '相談', 'チーム', '介護施設']],
+            ['slug' => 'shinjin-oshiekata-kaigo-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['新人', '教え方', 'OJT', '介護職', '指導']],
+            ['slug' => 'kaigofukushishi-tsugi-shikaku-okinawa', 'category' => 'qualification', 'area' => null, 'job_type' => 'care_welfare_worker', 'keywords' => ['介護福祉士', '次の資格', 'ケアマネ', '認定介護福祉士', 'キャリアアップ']],
+            ['slug' => 'shakai-seishin-hoken-fukushishi-chigai-okinawa', 'category' => 'qualification', 'area' => null, 'job_type' => 'social_welfare_worker', 'keywords' => ['社会福祉士', '精神保健福祉士', '違い', '仕事内容', '資格']],
+            ['slug' => 'satsekin-caremane-chigai-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'service_provision_manager', 'keywords' => ['サービス提供責任者', 'ケアマネジャー', '違い', '役割', '訪問介護']],
+            ['slug' => 'kaigo-keiken-ikasu-shigoto-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護経験', '活かせる仕事', '福祉用具', '介護事務', '相談員', '転職']],
+            ['slug' => 'kaigo-leader-naattara-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_staff_facility', 'keywords' => ['介護リーダー', '役割', '悩み', 'チームづくり', '介護施設']],
+            ['slug' => 'kaigo-tenshoku-kyuyo-koushou-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護職', '転職', '給与交渉', '面接', '条件確認']],
+            ['slug' => 'jitsumu-keiken-shoumeisho-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'care_welfare_worker', 'keywords' => ['実務経験証明書', 'もらい方', '介護福祉士', '受験', '手続き']],
+            ['slug' => 'kaigo-management-nyumon-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['介護', 'マネジメント', '入門', '管理者', '人材育成']],
+            ['slug' => 'seishin-shogai-shien-kihon-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'psychiatric_social_worker', 'keywords' => ['精神障害', '支援', '基本', '関わり方', '福祉職']],
+            ['slug' => 'chiteki-shogai-communication-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'life_support_worker', 'keywords' => ['知的障害', 'コミュニケーション', '支援', '関わり方', '生活支援員']],
+            ['slug' => 'shogaisha-shuro-shien-genba-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'employment_support_worker', 'keywords' => ['障害者', '就労支援', '現場', '仕事内容', 'やりがい']],
+            ['slug' => 'futoukou-school-social-worker-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => 'social_welfare_worker', 'keywords' => ['不登校', '子ども', 'スクールソーシャルワーカー', '支援', '学校']],
+            ['slug' => 'kodomo-shokudou-fukushishoku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['子ども食堂', '福祉職', '地域', '関わり方', '沖縄']],
+            ['slug' => 'shuwa-tenji-kihon-fukushishoku-okinawa', 'category' => 'practical', 'area' => null, 'job_type' => null, 'keywords' => ['手話', '点字', '基本', '福祉職', 'コミュニケーション']],
+        ];
+    }
+
     // 管理画面からの手動生成
     public function generateFromInput(string $slug, array $keywords, string $category, ?int $areaId = null, ?int $jobTypeId = null): ContentArticle
     {
