@@ -18,7 +18,8 @@ class ClickTrackController extends Controller
     public function store(Request $request)
     {
         $type = (string) $request->input('type');
-        if (! in_array($type, self::TYPES, true)) {
+        // 運営者自身のクリックは記録しない
+        if (\App\Support\InternalVisitor::check() || ! in_array($type, self::TYPES, true)) {
             return response()->noContent();
         }
 

@@ -21,6 +21,11 @@ class RecommendationImpressionLogger
             return;
         }
 
+        // 運営者自身のアクセスは記録しない
+        if (\App\Support\InternalVisitor::check()) {
+            return;
+        }
+
         $ua = request()->userAgent() ?? '';
         if ($ua === '' || preg_match(self::BOT_UA, $ua)) {
             return;

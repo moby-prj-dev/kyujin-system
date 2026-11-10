@@ -29,6 +29,7 @@ class AuthController extends Controller
             $request->input('password') === $adminPassword
         ) {
             session(['admin_authenticated' => true]);
+            \App\Support\InternalVisitor::mark();
             return redirect()->route('admin.jobs.index');
         }
 

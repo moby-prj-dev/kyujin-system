@@ -43,14 +43,17 @@ class LpController extends Controller
             ], 410);
         }
 
-        try {
-            LpView::create([
-                'job_id'     => $job->id,
-                'ip_address' => $request->ip(),
-                'user_agent' => substr($request->userAgent() ?? '', 0, 500),
-            ]);
-        } catch (\Exception $e) {
-            \Log::warning('lp_view記録失敗: ' . $e->getMessage());
+        // 運営者自身の閲覧は数えない
+        if (! \App\Support\InternalVisitor::check()) {
+            try {
+                LpView::create([
+                    'job_id'     => $job->id,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => substr($request->userAgent() ?? '', 0, 500),
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning('lp_view記録失敗: ' . $e->getMessage());
+            }
         }
 
         $relatedArticles = $this->findRelatedArticles($job);
