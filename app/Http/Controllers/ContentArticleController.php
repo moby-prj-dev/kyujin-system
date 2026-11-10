@@ -46,6 +46,7 @@ class ContentArticleController extends Controller
         }
 
         app(\App\Services\RecommendationImpressionLogger::class)->log($recommendedJobs, 'pr_job', 'article');
+        $this->recordView($article);
 
         return view('articles.show', compact('article', 'related', 'relatedJobs', 'areaStats', 'publicStat', 'recommendedJobs'));
     }
@@ -239,5 +240,23 @@ class ContentArticleController extends Controller
         }
 
         return $fallbackLatest();
+    }
+
+    /** 記事の閲覧を記録(ボット・運営者は除外。失敗してもページ表示は妨げない) */
+    private function recordView(ContentArticle $article): void
+    {
+        $ua = request()->userAgent() ?? '';
+        if ($ua === '' || preg_match(\App\Services\RecommendationImpressionLogger::BOT_UA, $ua) || \App\Support\InternalVisitor::check()) {
+            return;
+        }
+        try {
+            \Illuminate\Support\Facades\DB::table('article_views')->insert([
+                'article_id' => $article->id,
+                'ip_address' => request()->ip(),
+                'viewed_at'  => now(),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('article_view記録失敗: ' . $e->getMessage());
+        }
     }
 }

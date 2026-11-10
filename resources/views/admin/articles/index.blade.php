@@ -124,6 +124,13 @@
                     <p class="mb-0 small">まだ記事がありません。左のフォームから生成してください。</p>
                 </div>
             @else
+                <div class="px-3 pt-2 d-flex align-items-center gap-2" style="font-size:.78rem;">
+                    <span class="text-muted">並び順:</span>
+                    <a href="{{ route('admin.articles.index') }}" class="{{ $sort === 'updated' ? 'fw-bold text-dark' : '' }}">更新日順</a>
+                    <span class="text-muted">/</span>
+                    <a href="{{ route('admin.articles.index', ['sort' => 'views']) }}" class="{{ $sort === 'views' ? 'fw-bold text-dark' : '' }}">閲覧数順(30日)</a>
+                    <span class="text-muted ms-auto" title="ボット・運営者のアクセスは除外">閲覧は2026/11/10から記録</span>
+                </div>
                 <div class="p-3" style="max-height:680px;overflow-y:auto;">
                     @foreach($articles as $article)
                     @php [$label, $color, $icon] = $categoryLabels[$article->category] ?? [$article->category, 'secondary', 'bi-file-text']; @endphp
@@ -136,6 +143,9 @@
                                 </span>
                                 <span class="text-muted" style="font-size:.72rem;">
                                     {{ $article->updated_at->format('m/d H:i') }}
+                                </span>
+                                <span class="ms-auto text-nowrap" style="font-size:.72rem;" title="閲覧数(30日 / 累計)">
+                                    <i class="bi bi-eye"></i> <strong>{{ number_format($views30[$article->id] ?? 0) }}</strong> / {{ number_format($viewsTotal[$article->id] ?? 0) }}
                                 </span>
                             </div>
                             <a href="{{ route('articles.show', $article->slug) }}" target="_blank"

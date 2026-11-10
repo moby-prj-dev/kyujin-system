@@ -8,18 +8,30 @@ use App\Models\MasterArea;
 use App\Models\MasterJobType;
 use App\Services\ArticleGeneratorService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 class ArticleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $articles = ContentArticle::with(['area', 'jobType'])
             ->orderByDesc('updated_at')
             ->get();
 
+        // 閲覧数(ボット・運営者は記録時点で除外済み)
+        $views30    = DB::table('article_views')->where('viewed_at', '>=', now()->subDays(30))
+            ->selectRaw('article_id, COUNT(*) c')->groupBy('article_id')->pluck('c', 'article_id')->map(fn($c) => (int) $c)->all();
+        $viewsTotal = DB::table('article_views')
+            ->selectRaw('article_id, COUNT(*) c')->groupBy('article_id')->pluck('c', 'article_id')->map(fn($c) => (int) $c)->all();
+
+        $sort = $request->query('sort') === 'views' ? 'views' : 'updated';
+        if ($sort === 'views') {
+            $articles = $articles->sortByDesc(fn($a) => [$views30[$a->id] ?? 0, $viewsTotal[$a->id] ?? 0])->values();
+        }
+
         $areas    = MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get();
         $jobTypes = MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category');
 
-        return view('admin.articles.index', compact('articles', 'areas', 'jobTypes'));
+        return view('admin.articles.index', compact('articles', 'areas', 'jobTypes', 'views30', 'viewsTotal', 'sort'));
     }
 
     public function generate(Request $request, ArticleGeneratorService $service)
