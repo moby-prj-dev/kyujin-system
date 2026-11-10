@@ -186,6 +186,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 @endif
                             @endforeach
                         </div>
+                        @if($isPr && ($prTags = $job->highlightTags(3)))
+                            <div class="job-card__pr-tags">
+                                @foreach($prTags as $tag)
+                                    <span><i class="bi bi-check2"></i> {{ $tag }}</span>
+                                @endforeach
+                            </div>
+                        @endif
                         @if($job->salary_type && $job->salary_min)
                             <p class="job-card__salary">
                                 <span>{{ $job->salaryText() }}</span>

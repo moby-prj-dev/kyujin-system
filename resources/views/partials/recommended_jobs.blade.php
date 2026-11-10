@@ -66,6 +66,13 @@
                     @if($recAreas)<i class="bi bi-geo-alt-fill me-1"></i>{{ $recAreas }}@endif
                     @if($recJobType)@if($recAreas)・@endif{{ $recJobType }}@endif
                 </div>
+                @if($pr && ($recTags = $recJob->highlightTags(3)))
+                <div style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px;">
+                    @foreach($recTags as $tag)
+                        <span style="font-size:0.7rem;font-weight:700;color:#92400e;background:#fff;border:1px solid #f6c453;border-radius:12px;padding:1px 8px;"><i class="bi bi-check2"></i> {{ $tag }}</span>
+                    @endforeach
+                </div>
+                @endif
                 @if($recSalary !== '')
                 <div style="font-size:0.8rem;font-weight:700;color:#d35400;margin-top:2px;">
                     <i class="bi bi-currency-yen"></i>{{ $recSalary }}

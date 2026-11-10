@@ -90,6 +90,30 @@ class Job extends Model
         return trim(preg_replace('/\s*[｜|]\s*Care Entry\s*$/u', '', (string) $title));
     }
 
+    /** カードで目立たせるアピールポイント(求職者に響きやすい順) */
+    private const HIGHLIGHT_TAGS = [
+        '未経験OK', '無資格OK', '日勤のみ', '残業ほぼなし', '土日休み', '高時給', '賞与あり',
+        'ブランクOK', '扶養内勤務OK', '短時間勤務OK', 'シフト相談OK', '週1日〜OK', '週2日〜OK', '週3日〜OK',
+        '車通勤OK', 'マイカー通勤OK', '寮・社宅あり', '資格取得支援あり', '処遇改善手当あり', '新規オープン施設',
+        '正社員登用あり', '研修充実', '交通費全額支給', '社会保険完備',
+    ];
+
+    /**
+     * PRカード等に出すアピールポイント(最大$limit個)。優先リストに一致するものを先に、足りなければ登録順で補う
+     *
+     * @return string[]
+     */
+    public function highlightTags(int $limit = 3): array
+    {
+        $tags = array_values(array_filter((array) ($this->lp_tags ?? []), 'is_string'));
+        if (empty($tags)) {
+            return [];
+        }
+        $picked = array_values(array_intersect(self::HIGHLIGHT_TAGS, $tags));
+        $rest   = array_values(array_diff($tags, $picked));
+        return array_slice(array_merge($picked, $rest), 0, $limit);
+    }
+
     /** LINE応募は全プランで利用可(ハローワーク求人は対象外) */
     public function canUseLine(): bool { return $this->source !== 'hellowork'; }
 
