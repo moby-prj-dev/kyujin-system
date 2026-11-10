@@ -20,6 +20,7 @@ class SendJobExpiredNotifications extends Command
             ->whereNull('deleted_at')
             ->whereNull('expired_notified_at')
             ->where('status', Job::STATUS_ACTIVE)
+            ->where(fn($q) => $q->whereNull('source')->orWhere('source', '<>', 'hellowork'))
             ->where('expires_at', '<=', now())
             ->get();
 

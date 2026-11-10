@@ -488,15 +488,8 @@ class JobController extends Controller
     {
         $job = Job::where('token', $token)->firstOrFail();
 
-        $expiresAt = $job->expires_at;
-        if ($job->paused_at && $expiresAt && $expiresAt->isFuture()) {
-            // 通常のケース: 一時停止中の期間を延長
-            $pausedSeconds = now()->diffInSeconds($job->paused_at);
-            $expiresAt = $expiresAt->addSeconds($pausedSeconds);
-        } elseif (!$expiresAt || $expiresAt->isPast()) {
-            // 期限切れ求人の再開: 掲載期間を3ヶ月新規化
-            $expiresAt = now()->addMonths(3);
-        }
+        // 自社求人は掲載期限なし(掲載者が停止するまで掲載)
+        $expiresAt = null;
 
         $job->update([
             'status'     => Job::STATUS_ACTIVE,

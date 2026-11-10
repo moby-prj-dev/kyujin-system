@@ -446,12 +446,11 @@
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold">
-                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>無料掲載期間の終了
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>料金についての確認
                 </h5>
             </div>
             <div class="modal-body pt-2">
-                <p class="mb-3">この求人は無料掲載期間が終了しています。</p>
-                <p class="mb-3">掲載は可能ですが、<br>応募が発生した場合に課金が発生します。</p>
+                <p class="mb-3">求人を掲載します。<br>応募があった場合は、以下の料金が発生します。</p>
                 <div class="alert alert-warning py-2 mb-2" style="font-size:0.93rem;">
                     <strong>・1応募：¥3,000（税別）</strong>
                 </div>

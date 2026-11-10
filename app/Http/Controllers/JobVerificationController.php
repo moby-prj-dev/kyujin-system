@@ -41,7 +41,7 @@ class JobVerificationController extends Controller
                 'status'          => Job::STATUS_ACTIVE,
                 'is_monitor'      => $isMonitor,
                 'monitor_ends_at' => $monitorEndsAt,
-                'expires_at'      => now()->addMonths(3),
+                // 自社求人は掲載期限なし(掲載者が停止するまで掲載)。募集継続は3か月ごとの確認メールで確認する
             ]);
 
             AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_CREATED, AuditLog::ACTOR_SYSTEM, [

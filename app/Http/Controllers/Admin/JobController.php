@@ -96,7 +96,6 @@ class JobController extends Controller
             $job->update([
                 'is_monitor'      => true,
                 'monitor_ends_at' => $monitorEndsAt,
-                'expires_at'      => $monitorEndsAt,
             ]);
             $msg = '無料モニターに設定しました。（' . $monitorEndsAt->format('Y/m/d') . 'まで無料）';
         } else {

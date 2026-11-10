@@ -102,7 +102,7 @@
                         <th class="text-center" style="width:60px;">応募数</th>
                         <th class="text-center" style="width:92px;" title="直近30日・ボット除外。閲覧=求人ページの閲覧数 / 枠表示=おすすめ求人(PR)・直接応募枠に表示された回数 / 枠クリック=その枠からのクリック数">閲覧・枠<br><small class="fw-normal">30日</small></th>
                         <th class="text-center" style="width:85px;">登録日</th>
-                        <th class="text-center" style="width:85px;">掲載終了</th>
+                        <th class="text-center" style="width:85px;" title="ハローワーク求人は紹介期限日。自社求人は期限なし(—)">掲載期限</th>
                         <th class="text-center" style="width:200px;">操作</th>
                     </tr>
                 </thead>
