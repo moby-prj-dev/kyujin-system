@@ -43,13 +43,14 @@ class LpController extends Controller
             ], 410);
         }
 
-        // 運営者自身の閲覧は数えない
+        // 運営者・掲載者自身の閲覧は数えない
         if (! \App\Support\InternalVisitor::check()) {
             try {
                 LpView::create([
                     'job_id'     => $job->id,
                     'ip_address' => $request->ip(),
-                    'user_agent' => substr($request->userAgent() ?? '', 0, 500),
+                    // lp_views.user_agent は255文字。長いUAで記録ごと失敗しないよう切り詰める
+                    'user_agent' => mb_substr($request->userAgent() ?? '', 0, 255),
                 ]);
             } catch (\Exception $e) {
                 \Log::warning('lp_view記録失敗: ' . $e->getMessage());

@@ -170,7 +170,10 @@
     </div>
 </div>
 
-{{-- 求人ページの反響(閲覧数・おすすめ枠) --}}
+{{-- 求人ページの反響(閲覧数・枠の表示/クリック)。枠はプランに対応するものだけ(スタンダード=PR枠 / ベーシック=直接応募枠) --}}
+@php
+    $slotName = $job->isStandard() ? 'おすすめ求人（PR）枠' : '「直接応募できる求人」枠';
+@endphp
 <div class="form-section mb-4">
     <h5><i class="bi bi-eye me-1"></i> 求人ページの反響</h5>
     <div class="row g-2">
@@ -186,31 +189,31 @@
                 <div class="fs-4 fw-bold">{{ number_format($metrics['viewsTotal']) }}<span class="small text-muted ms-1">回</span></div>
             </div>
         </div>
-        @if($job->isStandard() || $metrics['impressions30'] > 0)
         <div class="col-6 col-md-3">
             <div class="border rounded p-2 text-center h-100">
-                <div class="text-muted small">おすすめ枠に表示（30日）</div>
+                <div class="text-muted small">{{ $slotName }}に表示（30日）</div>
                 <div class="fs-4 fw-bold" style="color:#1a73e8;">{{ number_format($metrics['impressions30']) }}<span class="small text-muted ms-1">回</span></div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="border rounded p-2 text-center h-100">
-                <div class="text-muted small">おすすめ枠からのクリック（30日）</div>
+                <div class="text-muted small">{{ $slotName }}からのクリック（30日）</div>
                 <div class="fs-4 fw-bold" style="color:#1a73e8;">{{ number_format($metrics['clicks30']) }}<span class="small text-muted ms-1">回</span></div>
             </div>
         </div>
-        @endif
     </div>
     <div class="text-muted mt-2" style="font-size:0.8rem;">
-        ※ 検索エンジンのロボットや、この管理ページを開いたブラウザからの閲覧は数えていません。
-        @if($job->isStandard() || $metrics['impressions30'] > 0)
-        <br>※「おすすめ枠」は、トップページ・検索結果・ハローワーク求人のページ・お役立ち記事に「おすすめ求人（PR）」として表示される枠です。
+        ※ 検索エンジンのロボットや、この管理ページを開いたブラウザからの閲覧は数えていません。<br>
+        @if($job->isStandard())
+        ※「おすすめ求人（PR）枠」は、トップページ・検索結果・ハローワーク求人のページ・お役立ち記事に、広告として「PR」の表示付きで載る枠です。
+        @else
+        ※「直接応募できる求人」枠は、同じ地域のハローワーク求人のページに「この地域で直接応募できる求人」として載る枠です（PR表示なし）。
         @endif
     </div>
     @if(!$job->isStandard())
     <div class="mt-2 small">
         <i class="bi bi-lightbulb me-1 text-warning"></i>
-        スタンダードプランにすると、トップページや検索結果などに「おすすめ求人」として表示され、求人ページを見てもらえる機会が増えます。
+        スタンダードプランにすると、トップページ・検索結果・お役立ち記事にも「おすすめ求人（PR）」として表示され、求人ページを見てもらえる機会が増えます。
     </div>
     @endif
 </div>

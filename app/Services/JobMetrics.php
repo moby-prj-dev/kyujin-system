@@ -18,9 +18,10 @@ class JobMetrics
      * - clicks30: 送客枠からのクリック数
      *
      * @param int[] $ids
+     * @param string|null $slot 'pr_job'(おすすめ求人PR枠) / 'direct_job'(直接応募枠) で絞る。null は両方
      * @return array<int, array{views30:int, viewsTotal:int, impressions30:int, clicks30:int}>
      */
-    public static function forJobs(array $ids): array
+    public static function forJobs(array $ids, ?string $slot = null): array
     {
         if (empty($ids)) {
             return [];
@@ -28,14 +29,15 @@ class JobMetrics
 
         $human = fn($q, $col) => $q->where(fn($w) => $w->whereNull($col)->orWhere($col, 'not regexp', self::BOT));
         $since = now()->subDays(30);
+        $slots = $slot ? [$slot] : ['pr_job', 'direct_job'];
 
         $viewsTotal = $human(DB::table('lp_views')->whereIn('job_id', $ids), 'user_agent')
             ->selectRaw('job_id, COUNT(*) c')->groupBy('job_id')->pluck('c', 'job_id');
         $views30 = $human(DB::table('lp_views')->whereIn('job_id', $ids)->where('viewed_at', '>=', $since), 'user_agent')
             ->selectRaw('job_id, COUNT(*) c')->groupBy('job_id')->pluck('c', 'job_id');
-        $impressions30 = DB::table('lp_impressions')->whereIn('target_job_id', $ids)->where('shown_at', '>=', $since)
+        $impressions30 = DB::table('lp_impressions')->whereIn('target_job_id', $ids)->whereIn('slot', $slots)->where('shown_at', '>=', $since)
             ->selectRaw('target_job_id, COUNT(*) c')->groupBy('target_job_id')->pluck('c', 'target_job_id');
-        $clicks30 = $human(DB::table('lp_clicks')->whereIn('target_job_id', $ids)->whereIn('type', ['pr_job', 'direct_job'])->where('clicked_at', '>=', $since), 'user_agent')
+        $clicks30 = $human(DB::table('lp_clicks')->whereIn('target_job_id', $ids)->whereIn('type', $slots)->where('clicked_at', '>=', $since), 'user_agent')
             ->selectRaw('target_job_id, COUNT(*) c')->groupBy('target_job_id')->pluck('c', 'target_job_id');
 
         $out = [];

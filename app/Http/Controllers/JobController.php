@@ -268,8 +268,9 @@ class JobController extends Controller
             $analytics = $this->buildJobAnalytics($job);
         }
 
-        // 求人ページの反響(閲覧数・おすすめ枠)。管理画面と同じ集計
-        $metrics = \App\Services\JobMetrics::forJobs([$job->id])[$job->id];
+        // 求人ページの反響(閲覧数・枠の表示/クリック)。管理画面と同じ集計。
+        // 枠はプランに対応するもの(スタンダード=おすすめ求人PR枠 / ベーシック=直接応募枠)だけを数える
+        $metrics = \App\Services\JobMetrics::forJobs([$job->id], $job->isStandard() ? 'pr_job' : 'direct_job')[$job->id];
 
         // 掲載者が自分の求人ページを開いても閲覧数に数えないよう、このブラウザを計測対象外にする
         \App\Support\InternalVisitor::mark();
