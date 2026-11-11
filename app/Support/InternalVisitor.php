@@ -5,8 +5,8 @@ namespace App\Support;
 use Illuminate\Support\Facades\Cookie;
 
 /**
- * 運営者(管理画面にログインしたことのあるブラウザ)のアクセス判定
- * 閲覧数・送客枠の表示・クリックの計測から運営者自身のアクセスを除外するために使う
+ * 運営者(管理画面にログインしたことのあるブラウザ)と掲載者(自分の求人の管理ページを開いたブラウザ)のアクセス判定
+ * 閲覧数・送客枠の表示・クリックの計測から、求職者ではないアクセスを除外するために使う
  */
 class InternalVisitor
 {
@@ -18,7 +18,7 @@ class InternalVisitor
         return (bool) session('admin_authenticated') || request()->cookie(self::COOKIE) === '1';
     }
 
-    /** このブラウザを運営者として記録(管理画面ログイン時・管理画面アクセス時) */
+    /** このブラウザを計測対象外として記録(管理画面ログイン・アクセス時、掲載者の管理ページ表示時) */
     public static function mark(): void
     {
         if (request()->cookie(self::COOKIE) !== '1') {

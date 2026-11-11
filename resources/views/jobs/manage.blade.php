@@ -57,7 +57,7 @@
             <strong>無料掲載期間がまもなく終了します（残り{{ $daysLeft }}日）</strong><br>
             <span style="font-size:0.93rem;">掲載を継続する場合は、下の継続ボタンを押してください。</span>
             <div class="mt-2">
-                <form method="POST" action="{{ route('jobs.continue', ['token' => $job->token]) }}" id="continueForm">
+                <form method="POST" action="{{ route('jobs.continue', ['token' => $job->manage_token]) }}" id="continueForm">
                     @csrf
                     <button type="button" class="btn btn-warning btn-sm fw-bold" id="continueBtn">
                         <i class="bi bi-arrow-repeat me-1"></i>継続する
@@ -170,6 +170,51 @@
     </div>
 </div>
 
+{{-- 求人ページの反響(閲覧数・おすすめ枠) --}}
+<div class="form-section mb-4">
+    <h5><i class="bi bi-eye me-1"></i> 求人ページの反響</h5>
+    <div class="row g-2">
+        <div class="col-6 col-md-3">
+            <div class="border rounded p-2 text-center h-100">
+                <div class="text-muted small">閲覧数（直近30日）</div>
+                <div class="fs-4 fw-bold">{{ number_format($metrics['views30']) }}<span class="small text-muted ms-1">回</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="border rounded p-2 text-center h-100">
+                <div class="text-muted small">閲覧数（累計）</div>
+                <div class="fs-4 fw-bold">{{ number_format($metrics['viewsTotal']) }}<span class="small text-muted ms-1">回</span></div>
+            </div>
+        </div>
+        @if($job->isStandard() || $metrics['impressions30'] > 0)
+        <div class="col-6 col-md-3">
+            <div class="border rounded p-2 text-center h-100">
+                <div class="text-muted small">おすすめ枠に表示（30日）</div>
+                <div class="fs-4 fw-bold" style="color:#1a73e8;">{{ number_format($metrics['impressions30']) }}<span class="small text-muted ms-1">回</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="border rounded p-2 text-center h-100">
+                <div class="text-muted small">おすすめ枠からのクリック（30日）</div>
+                <div class="fs-4 fw-bold" style="color:#1a73e8;">{{ number_format($metrics['clicks30']) }}<span class="small text-muted ms-1">回</span></div>
+            </div>
+        </div>
+        @endif
+    </div>
+    <div class="text-muted mt-2" style="font-size:0.8rem;">
+        ※ 検索エンジンのロボットや、この管理ページを開いたブラウザからの閲覧は数えていません。
+        @if($job->isStandard() || $metrics['impressions30'] > 0)
+        <br>※「おすすめ枠」は、トップページ・検索結果・ハローワーク求人のページ・お役立ち記事に「おすすめ求人（PR）」として表示される枠です。
+        @endif
+    </div>
+    @if(!$job->isStandard())
+    <div class="mt-2 small">
+        <i class="bi bi-lightbulb me-1 text-warning"></i>
+        スタンダードプランにすると、トップページや検索結果などに「おすすめ求人」として表示され、求人ページを見てもらえる機会が増えます。
+    </div>
+    @endif
+</div>
+
 {{-- 現在のプラン & プラン変更 --}}
 <div class="form-section mb-4">
     <h5><i class="bi bi-award me-1"></i> ご契約プラン</h5>
@@ -233,7 +278,7 @@
             <i class="bi bi-info-circle me-1"></i>月3,000円は応募課金1件と同じ額です。応募が1件でも多く発生すれば元が取れる計算になります。<br>
             <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
         </p>
-        <form method="POST" action="{{ route('jobs.plan', ['token' => $job->token]) }}"
+        <form method="POST" action="{{ route('jobs.plan', ['token' => $job->manage_token]) }}"
               onsubmit="return confirm('スタンダードプランに切替します。よろしいですか?\n\n・月額 3,000円が翌月1日から請求対象になります\n・プラン変更後30日間は再変更できません')">
             @csrf @method('PATCH')
             <input type="hidden" name="plan" value="standard">
@@ -251,7 +296,7 @@
             複数求人掲載中の場合、2件目以降は自動的に掲載停止となります。<br>
             <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
         </p>
-        <form method="POST" action="{{ route('jobs.plan', ['token' => $job->token]) }}"
+        <form method="POST" action="{{ route('jobs.plan', ['token' => $job->manage_token]) }}"
               onsubmit="return confirm('ベーシックプランに変更します。よろしいですか?\n\n・スタンダード限定機能が使えなくなります\n・プラン変更後30日間は再変更できません')">
             @csrf @method('PATCH')
             <input type="hidden" name="plan" value="basic">
@@ -422,7 +467,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($app->is_valid && !$app->disputes()->where('status', '!=', 'rejected')->exists())
-                                        <a href="{{ route('disputes.create', [$job->token, $app]) }}"
+                                        <a href="{{ route('disputes.create', [$job->manage_token, $app]) }}"
                                            class="btn btn-outline-danger btn-sm" style="font-size:0.75rem;">
                                             <i class="bi bi-flag me-1"></i>無効申告
                                         </a>
@@ -564,7 +609,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
     <h5>掲載操作</h5>
     <div class="d-flex gap-3 flex-wrap align-items-center">
         @if($job->status === 'active')
-        <form method="POST" action="{{ route('jobs.close', ['token' => $job->token]) }}">
+        <form method="POST" action="{{ route('jobs.close', ['token' => $job->manage_token]) }}">
             @csrf @method('PATCH')
             <button type="submit" class="btn btn-warning"
                     onclick="return confirm('掲載を停止しますか？求職者からのLP表示ができなくなります。')">
@@ -578,7 +623,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
                 掲載再開
             </button>
         @else
-        <form method="POST" action="{{ route('jobs.reopen', ['token' => $job->token]) }}" id="reopenForm">
+        <form method="POST" action="{{ route('jobs.reopen', ['token' => $job->manage_token]) }}" id="reopenForm">
             @csrf @method('PATCH')
             <button type="button" class="btn btn-success" id="reopenBtn">
                 掲載再開
@@ -587,7 +632,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
         @endif
         @endif
 
-        <form method="POST" action="{{ route('jobs.destroy', ['token' => $job->token]) }}"
+        <form method="POST" action="{{ route('jobs.destroy', ['token' => $job->manage_token]) }}"
               class="ms-auto">
             @csrf @method('DELETE')
             <button type="submit" class="btn btn-outline-danger"
@@ -606,7 +651,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
         応募通知を採用担当者複数名に届けたい場合は、追加のメールアドレスを登録できます(最大5件)。<br>
         主連絡先 <strong>{{ $job->contact_email }}</strong> にも引き続き通知が届きます。
     </p>
-    <form method="POST" action="{{ route('jobs.notifications', ['token' => $job->token]) }}">
+    <form method="POST" action="{{ route('jobs.notifications', ['token' => $job->manage_token]) }}">
         @csrf
         @method('PATCH')
         @php $secondaryEmails = $job->secondary_emails ?? []; @endphp
@@ -632,7 +677,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
         応募者は求人応募前に以下の質問に必ず回答します。回答内容は応募通知メールに含まれるため、事前に応募者の適性を確認できます。<br>
         <strong>質問は最大3個まで</strong>設定できます。冷やかしや条件不一致の応募を減らす効果があります。
     </p>
-    <form method="POST" action="{{ route('jobs.screener', ['token' => $job->token]) }}">
+    <form method="POST" action="{{ route('jobs.screener', ['token' => $job->manage_token]) }}">
         @csrf
         @method('PATCH')
         @php $existingQuestions = $job->screener_questions ?? []; @endphp
@@ -699,7 +744,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 </div>
 @endif
 
-<form method="POST" action="{{ route('jobs.update', ['token' => $job->token]) }}" enctype="multipart/form-data" autocomplete="off">
+<form method="POST" action="{{ route('jobs.update', ['token' => $job->manage_token]) }}" enctype="multipart/form-data" autocomplete="off">
 @csrf
 @method('PUT')
 

@@ -301,7 +301,7 @@
                                 </form>
                                 @endif
                                 {{-- 編集 --}}
-                                <a href="{{ route('jobs.manage', ['token' => $job->token]) }}"
+                                <a href="{{ route('jobs.manage', ['token' => $job->manage_token]) }}"
                                    class="btn btn-xs btn-outline-primary" target="_blank">
                                     <i class="bi bi-pencil"></i>
                                 </a>
@@ -487,7 +487,7 @@
                                         <td class="text-center">{{ number_format($m['clicks30']) }}</td>
                                         <td class="text-center">{{ $cj->applications_count }}</td>
                                         <td class="text-nowrap">
-                                            <a href="{{ route('jobs.manage', ['token' => $cj->token]) }}" target="_blank" class="btn btn-xs btn-outline-primary">
+                                            <a href="{{ route('jobs.manage', ['token' => $cj->manage_token]) }}" target="_blank" class="btn btn-xs btn-outline-primary">
                                                 <i class="bi bi-pencil"></i> 管理ページ
                                             </a>
                                         </td>

@@ -67,7 +67,7 @@ class JobVerificationController extends Controller
             }
         }
 
-        return redirect()->route('jobs.manage', ['token' => $job->token])
+        return redirect()->route('jobs.manage', ['token' => $job->manage_token])
             ->with('verified', true);
     }
 }

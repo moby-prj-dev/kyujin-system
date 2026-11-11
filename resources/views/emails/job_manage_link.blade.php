@@ -22,12 +22,12 @@
         <p>ご登録済みの求人（{{ $job->title }}）の編集用リンクをお送りします。<br>
         以下のボタンから求人の確認・編集が行えます。</p>
 
-        <a href="{{ route('jobs.manage', $job->token) }}" class="btn">
+        <a href="{{ route('jobs.manage', $job->manage_token) }}" class="btn">
             求人を確認・編集する
         </a>
 
         <p>ボタンが機能しない場合は以下のURLをブラウザに貼り付けてください：<br>
-        <small>{{ route('jobs.manage', $job->token) }}</small></p>
+        <small>{{ route('jobs.manage', $job->manage_token) }}</small></p>
 
         <div class="note">
             <p>このメールに心当たりがない場合は無視してください。<br>

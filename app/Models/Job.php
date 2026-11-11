@@ -22,6 +22,9 @@ class Job extends Model
         'other'   => 'その他',
     ];
 
+    // 管理ページの鍵なので、配列・JSON化したときに出さない
+    protected $hidden = ['manage_token'];
+
     protected $casts = [
         'expires_at'            => 'datetime',
         'paused_at'             => 'datetime',
@@ -154,6 +157,8 @@ class Job extends Model
         parent::boot();
         static::creating(function (Job $job) {
             if (empty($job->token)) { $job->token = Str::random(32); }
+            // 管理ページ専用(公開の求人ページURLの token とは別にする)
+            if (empty($job->manage_token)) { $job->manage_token = Str::random(48); }
         });
     }
 

@@ -296,7 +296,7 @@ class LineWebhookController extends Controller
                 ? "■ 志望動機・自己PR\n{$application->lineDetail->appeal_message}\n"
                 : null,
             "■ 求人管理ページ",
-            url('/jobs/' . $job->token),
+            url('/jobs/' . $job->manage_token),
         ]));
 
         try {

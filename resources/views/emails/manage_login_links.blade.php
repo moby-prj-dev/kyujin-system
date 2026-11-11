@@ -32,7 +32,7 @@
             <div class="job">
                 <p class="t">{{ $job->displayTitle() }}</p>
                 <p class="s">状態：{{ $statusLabel }}</p>
-                <a href="{{ route('jobs.manage', $job->token) }}" class="btn">管理ページを開く</a>
+                <a href="{{ route('jobs.manage', $job->manage_token) }}" class="btn">管理ページを開く</a>
             </div>
         @endforeach
 

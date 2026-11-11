@@ -378,7 +378,7 @@ class ApplyController extends Controller
                         ? "■ 選考質問への回答\n" . collect($application->formDetail->screener_answers)->map(fn($qa, $i) => "Q" . ($i + 1) . ". {$qa['q']}\n → {$qa['a']}")->join("\n") . "\n"
                         : null,
                     "■ 求人管理ページ",
-                    url('/jobs/' . $job->token),
+                    url('/jobs/' . $job->manage_token),
                 ])),
                 fn($message) => $message
                     ->to($recipients)

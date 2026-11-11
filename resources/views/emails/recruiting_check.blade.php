@@ -34,7 +34,7 @@
         <p>すでに募集を終えている場合は、応募が届き続けないよう、管理ページの「掲載停止」ボタンから停止してください。
         募集内容（給与・勤務条件など）が変わった場合も、管理ページから編集できます。</p>
 
-        <a href="{{ route('jobs.manage', $job->token) }}" class="btn">管理ページを開く</a>
+        <a href="{{ route('jobs.manage', $job->manage_token) }}" class="btn">管理ページを開く</a>
 
         <p class="note">
             このメールは、掲載中の求人について3か月ごとにお送りしています。<br>

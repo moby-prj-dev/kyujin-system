@@ -214,8 +214,17 @@ class JobController extends Controller
     public function manage(string $token)
     {
         $job = Job::with(['jobAreas.area', 'jobJobTypes', 'jobEmploymentTypes', 'jobConditions', 'jobAppeals'])
-            ->where('token', $token)
-            ->firstOrFail();
+            ->where('manage_token', $token)
+            ->first();
+
+        if (! $job) {
+            // 2026-11 以前の管理ページURL(求人ページと同じ token)で来た人には、ログインし直す案内だけを出す。
+            // 求人の中身は一切表示しない
+            if (Job::where('token', $token)->where('source', 'care_entry')->exists()) {
+                return response()->view('jobs.manage_moved', [], 410);
+            }
+            abort(404);
+        }
 
         $areas           = MasterArea::active()->where('prefecture', '沖縄県')->orderBy('sort_order')->get()->groupBy('region');
         $jobTypes        = MasterJobType::active()->orderBy('sort_order')->get()->groupBy('category');
@@ -259,6 +268,12 @@ class JobController extends Controller
             $analytics = $this->buildJobAnalytics($job);
         }
 
+        // 求人ページの反響(閲覧数・おすすめ枠)。管理画面と同じ集計
+        $metrics = \App\Services\JobMetrics::forJobs([$job->id])[$job->id];
+
+        // 掲載者が自分の求人ページを開いても閲覧数に数えないよう、このブラウザを計測対象外にする
+        \App\Support\InternalVisitor::mark();
+
         return view('jobs.manage', compact(
             'job', 'areas', 'jobTypes', 'employmentTypes', 'conditions', 'appeals',
             'selectedAreas', 'selectedJobTypes', 'selectedEmploymentTypes',
@@ -266,7 +281,7 @@ class JobController extends Controller
             'billingSummaries', 'trialEnded', 'hasUnpaid', 'hasOverdue',
             'companyValidCount', 'companyBillableCount', 'freeQuotaRemaining',
             'jobValidCount', 'jobInvalidCount', 'jobBillableCount',
-            'monitorCutoff', 'analytics'
+            'monitorCutoff', 'analytics', 'metrics'
         ));
     }
 
@@ -300,7 +315,7 @@ class JobController extends Controller
 
     public function update(Request $request, string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         $request->validate([
             'company_name'       => ['required', 'string', 'max:100'],
@@ -374,7 +389,7 @@ class JobController extends Controller
 
     public function close(string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
         $job->update([
             'status'    => Job::STATUS_PAUSED,
             'paused_at' => now(),
@@ -389,7 +404,7 @@ class JobController extends Controller
 
     public function updateScreener(Request $request, string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         $request->validate([
             'questions'        => ['nullable', 'array', 'max:3'],
@@ -413,7 +428,7 @@ class JobController extends Controller
 
     public function updatePlan(Request $request, string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         $request->validate([
             'plan' => ['required', 'in:basic,standard'],
@@ -460,7 +475,7 @@ class JobController extends Controller
 
     public function updateNotifications(Request $request, string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         if (!$job->isStandard()) {
             return redirect()->route('jobs.manage', ['token' => $token])
@@ -486,7 +501,7 @@ class JobController extends Controller
 
     public function reopen(string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         // 自社求人は掲載期限なし(掲載者が停止するまで掲載)
         $expiresAt = null;
@@ -506,7 +521,7 @@ class JobController extends Controller
 
     public function continue(string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         // 二重継続防止
         if ($job->continued_at) {
@@ -578,7 +593,7 @@ class JobController extends Controller
 
     public function destroy(string $token)
     {
-        $job = Job::where('token', $token)->firstOrFail();
+        $job = Job::where('manage_token', $token)->firstOrFail();
 
         AuditLog::record(AuditLog::ENTITY_JOB, $job->id, AuditLog::ACTION_JOB_DELETED, AuditLog::ACTOR_SYSTEM, []);
 
