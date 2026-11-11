@@ -14,6 +14,15 @@
 <div class="row justify-content-center">
 <div class="col-lg-9">
 
+{{-- ブックマークの案内(管理ページはこのURLからのみ入れるため) --}}
+<div class="d-flex align-items-start gap-2 mb-3 px-3 py-2 rounded-2" style="background:#eef5ff;border:1px solid #cfe0f5;font-size:0.85rem;">
+    <i class="bi bi-bookmark-star-fill flex-shrink-0 mt-1" style="color:#1a73e8;"></i>
+    <span>
+        <strong>このページをブックマーク（お気に入り）に登録してください。</strong>パスワードはなく、このページのURLからのみ管理できます。<br>
+        URLが分からなくなったときは、<a href="{{ route('jobs.resend.show') }}">掲載企業ログイン</a>から登録メールアドレスを入力すると、ログインリンクを再送できます。
+    </span>
+</div>
+
 {{-- モニター期間中バナー --}}
 @if(now()->lte($monitorCutoff))
 <div class="d-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-2"

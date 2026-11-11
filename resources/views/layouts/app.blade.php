@@ -229,9 +229,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="/" class="brand">
             <img src="{{ asset('images/logo.svg') }}" alt="Care Entry ケア・エントリー" height="52">
         </a>
-        <a href="{{ route('jobs.create') }}" class="btn btn-primary btn-sm rounded-pill px-3">
-            <i class="bi bi-plus-circle me-1"></i>無料で掲載する
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('jobs.resend.show') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-box-arrow-in-right me-1"></i>掲載企業ログイン
+            </a>
+            <a href="{{ route('jobs.create') }}" class="btn btn-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-plus-circle me-1"></i>無料で掲載する
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -267,6 +272,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="/terms">利用規約</a>
             <a href="/legal">特定商取引法に基づく表記</a>
             <a href="/contact">お問い合わせ</a>
+            <a href="{{ route('jobs.resend.show') }}">掲載企業ログイン</a>
         </div>
         <p class="mb-0">&copy; {{ date('Y') }} Care Entry. All rights reserved.</p>
     </div>

@@ -488,6 +488,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="footer__links">
             <a href="{{ route('client') }}">求人掲載をお考えの方</a>
+            <a href="{{ route('jobs.resend.show') }}">掲載企業ログイン</a>
             <a href="{{ route('company') }}">運営者情報</a>
             <a href="{{ route('privacy-policy') }}">プライバシーポリシー</a>
             <a href="{{ route('terms') }}">利用規約</a>

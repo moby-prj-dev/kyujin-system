@@ -465,9 +465,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="{{ route('home') }}" class="nav__logo">
             <img src="/images/logo.svg" alt="Care Entry ケアエントリー">
         </a>
-        <a href="{{ route('home') }}" class="nav__link-seeker">
-            <i class="bi bi-search me-1"></i>お仕事を探している方はこちら
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('jobs.resend.show') }}" class="nav__link-seeker">
+                <i class="bi bi-box-arrow-in-right me-1"></i>掲載企業ログイン
+            </a>
+            <a href="{{ route('home') }}" class="nav__link-seeker d-none d-md-inline-flex">
+                <i class="bi bi-search me-1"></i>お仕事を探している方はこちら
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -766,6 +771,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="footer__links">
             <a href="{{ route('home') }}">お仕事を探している方</a>
+            <a href="{{ route('jobs.resend.show') }}">掲載企業ログイン</a>
             <a href="{{ route('company') }}">運営者情報</a>
             <a href="{{ route('privacy-policy') }}">プライバシーポリシー</a>
             <a href="{{ route('terms') }}">利用規約</a>
