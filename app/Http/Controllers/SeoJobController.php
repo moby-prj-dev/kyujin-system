@@ -104,9 +104,7 @@ class SeoJobController extends Controller
         $filterIds          = $this->applyFilters($query, $request);
         $searchConditionIds = [...$searchConditionIds, ...$filterIds];
 
-        $jobs = $query
-            ->orderByRaw(self::RANK_ORDER_SQL)
-            ->latest()
+        $jobs = $this->orderForListing($query)
             ->paginate(20)->withQueryString();
 
         $this->logPrImpressions($jobs);
@@ -150,9 +148,7 @@ class SeoJobController extends Controller
         $filterIds          = $this->applyFilters($query, $request);
         $searchConditionIds = ['area_ids' => [$currentArea->id], ...$filterIds];
 
-        $jobs = $query
-            ->orderByRaw(self::RANK_ORDER_SQL)
-            ->latest()
+        $jobs = $this->orderForListing($query)
             ->paginate(20)->withQueryString();
 
         $this->logPrImpressions($jobs);
@@ -203,9 +199,7 @@ class SeoJobController extends Controller
             ...$filterIds,
         ];
 
-        $jobs = $query
-            ->orderByRaw(self::RANK_ORDER_SQL)
-            ->latest()
+        $jobs = $this->orderForListing($query)
             ->paginate(20)->withQueryString();
 
         $this->logPrImpressions($jobs);
@@ -232,6 +226,20 @@ class SeoJobController extends Controller
             'searchConditionIds' => $searchConditionIds,
             'nearbyJobs'         => $nearbyJobs,
         ]);
+    }
+
+    /**
+     * 一覧の並び順: プラン(スタンダード→ベーシック→ハローワーク) → 登録日が新しい順 → 同じ日の中は日替わりで入れ替え。
+     * 登録時刻の順だと、最後に取り込んだ事業所の求人が先頭に固まる(例: 同じ施設の3件が並ぶ)ため、
+     * 同じ日の中は「求人ID+今日の日付」のハッシュ順にして事業所をばらけさせる。1日の間は順番が固定なのでページ送りも崩れない。
+     */
+    private function orderForListing($query)
+    {
+        return $query
+            ->orderByRaw(self::RANK_ORDER_SQL)
+            ->orderByRaw('DATE(job_listings.created_at) DESC')
+            ->orderByRaw('CRC32(CONCAT(job_listings.id, ?))', [now()->toDateString()])
+            ->orderByDesc('job_listings.id');
     }
 
     /**
@@ -365,9 +373,7 @@ class SeoJobController extends Controller
             return null;
         }
 
-        $jobs = $base->whereNotIn('job_listings.id', $excludeIds)
-            ->orderByRaw(self::RANK_ORDER_SQL)
-            ->latest()
+        $jobs = $this->orderForListing($base->whereNotIn('job_listings.id', $excludeIds))
             ->limit(10)
             ->get();
 
