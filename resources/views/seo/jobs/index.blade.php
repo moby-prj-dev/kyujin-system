@@ -108,13 +108,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span style="font-size:0.78rem;opacity:0.85;margin-left:0.5rem;">(自社 {{ $stats['own_count'] }}件 / ハローワーク {{ $stats['hw_count'] }}件)</span>
             @endif
         </p>
-        @if(!empty($stats['salary_median']))
-        <p style="font-size:0.88rem;opacity:0.92;margin-bottom:20px;">
-            <i class="bi bi-currency-yen me-1"></i>月給レンジ {{ number_format($stats['salary_min']) }}〜{{ number_format($stats['salary_max']) }}円(中央値 {{ number_format($stats['salary_median']) }}円)
-        </p>
-        @else
         <p style="margin-bottom:20px;"></p>
-        @endif
         @else
         <p style="font-size:1rem;font-weight:700;opacity:.95;margin-bottom:20px;">
             <i class="bi bi-briefcase-fill me-1"></i>現在 <span style="font-size:1.3rem;">{{ number_format(\App\Models\Job::active()->whereNotNull('email_verified_at')->where('is_admin_hidden',false)->whereHas('jobAreas.area',fn($q)=>$q->where('prefecture','沖縄県'))->count()) }}</span> 件の求人を掲載中
@@ -148,9 +142,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </h2>
                         <ul class="mb-2" style="padding-left:1.2rem;line-height:1.9;">
                             <li>掲載中の求人：<strong>{{ number_format($stats['total']) }}件</strong>@if($fullTime > 0)（うち正社員 {{ $fullTime }}件）@endif</li>
-                            @if(!empty($stats['salary_median']))
-                                <li>月給の目安：<strong>{{ number_format($stats['salary_median'] / 10000, 1) }}万円</strong>（中央値・{{ number_format($stats['salary_min'] / 10000, 1) }}万〜{{ number_format($stats['salary_max'] / 10000, 1) }}万円）</li>
-                            @endif
                             @if(count($empRows) > 0)
                                 <li>雇用形態：{{ collect($empRows)->map(fn($r) => $r['name'] . ' ' . $r['count'] . '件')->implode('／') }}</li>
                             @endif
@@ -166,7 +157,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 @endforeach
                             </div>
                         @endif
-                        <p class="text-muted mt-2 mb-0" style="font-size:0.75rem;">※ 当サイトに掲載中の求人（ハローワーク求人を含む）から自動で集計しています。月給の目安は月給制の求人の下限額をもとにしています。</p>
+                        <p class="text-muted mt-2 mb-0" style="font-size:0.75rem;">※ 当サイトに掲載中の求人（ハローワーク求人を含む）から自動で集計しています。</p>
                     </div>
                 @endif
 

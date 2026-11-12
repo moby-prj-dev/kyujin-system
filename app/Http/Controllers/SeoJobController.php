@@ -180,7 +180,7 @@ class SeoJobController extends Controller
             'areas'              => $areas,
             'stats'              => $stats,
             'pageTitle'          => "【沖縄県{$currentArea->name}】介護・福祉の求人・転職情報 " . ($total > 0 ? "{$total}件" : '募集'),
-            'pageDesc'           => "沖縄県{$currentArea->name}の介護・福祉の求人・転職情報" . ($total > 0 ? "を{$total}件掲載中。月給の目安や職種の内訳も掲載" : "") . "。介護職員・ヘルパー・看護・保育など職種から絞り込めます。応募がなければ掲載料無料のCare Entry(ケアエントリー)。",
+            'pageDesc'           => "沖縄県{$currentArea->name}の介護・福祉の求人・転職情報" . ($total > 0 ? "を{$total}件掲載中。職種や雇用形態の内訳も掲載" : "") . "。介護職員・ヘルパー・看護・保育など職種から絞り込めます。応募がなければ掲載料無料のCare Entry(ケアエントリー)。",
             'searchConditionIds' => $searchConditionIds,
             'nearbyJobs'         => $nearbyJobs,
             'surrounding'        => $surrounding,
@@ -239,7 +239,7 @@ class SeoJobController extends Controller
      */
     private function statsFor(MasterArea $area, ?MasterJobType $jobType): array
     {
-        $key = "seo_jobs_stats:v2:a{$area->id}:" . ($jobType ? "j{$jobType->id}" : 'jall');
+        $key = "seo_jobs_stats:v3:a{$area->id}:" . ($jobType ? "j{$jobType->id}" : 'jall');
         return Cache::remember($key, now()->addHour(), function () use ($area, $jobType) {
             $base = Job::active()
                 ->whereNotNull('email_verified_at')
@@ -256,26 +256,6 @@ class SeoJobController extends Controller
             $total    = (clone $base)->count();
             $hwCount  = (clone $base)->where('source', 'hellowork')->count();
             $ownCount = $total - $hwCount;
-
-            // 月給統計
-            $salaries = (clone $base)
-                ->where('salary_type', 'monthly')
-                ->whereNotNull('salary_min')
-                ->where('salary_min', '>', 0)
-                ->pluck('salary_min')
-                ->map(fn($v) => (int) $v)
-                ->sort()
-                ->values();
-
-            $salaryMin = $salaryMax = $salaryMedian = null;
-            if ($salaries->count() >= 3) {
-                $salaryMin    = (int) $salaries->min();
-                $salaryMax    = (int) $salaries->max();
-                $n = $salaries->count();
-                $salaryMedian = $n % 2 === 0
-                    ? (int) (($salaries[(int) ($n/2) - 1] + $salaries[(int) ($n/2)]) / 2)
-                    : (int) $salaries[(int) ($n/2)];
-            }
 
             // 雇用形態内訳(プリミティブ配列)
             $empBreakdown = [];
@@ -316,9 +296,6 @@ class SeoJobController extends Controller
                 'total'         => $total,
                 'own_count'     => $ownCount,
                 'hw_count'      => $hwCount,
-                'salary_min'    => $salaryMin,
-                'salary_max'    => $salaryMax,
-                'salary_median' => $salaryMedian,
                 'emp_breakdown' => $empBreakdown,
                 'type_breakdown' => $typeBreakdown,
             ];
