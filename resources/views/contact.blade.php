@@ -82,6 +82,8 @@
                 <label for="website">Website</label>
                 <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
             </div>
+            {{-- 表示した時刻(暗号化)。ページを開かずに直接送るボットや、数秒で送るボットを見分ける --}}
+            <input type="hidden" name="_ts" value="{{ encrypt(now()->timestamp) }}">
 
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary btn-lg px-5">
