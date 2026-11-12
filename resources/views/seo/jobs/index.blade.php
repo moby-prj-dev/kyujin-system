@@ -135,6 +135,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="row g-4">
             {{-- 求人一覧 --}}
             <div class="col-lg-8">
+                {{-- データで見る〇〇の介護・福祉求人(エリアページのみ・掲載中の求人から自動集計) --}}
+                @if($currentArea && !($currentJobType ?? null) && !empty($stats) && $stats['total'] > 0)
+                    @php
+                        $empRows  = $stats['emp_breakdown'] ?? [];
+                        $typeRows = $stats['type_breakdown'] ?? [];
+                        $fullTime = collect($empRows)->firstWhere('name', '正社員')['count'] ?? 0;
+                    @endphp
+                    <div class="seo-supplement mb-4">
+                        <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:.75rem;">
+                            <i class="bi bi-bar-chart-fill text-primary me-1"></i>データで見る{{ $currentArea->name }}の介護・福祉求人
+                        </h2>
+                        <ul class="mb-2" style="padding-left:1.2rem;line-height:1.9;">
+                            <li>掲載中の求人：<strong>{{ number_format($stats['total']) }}件</strong>@if($fullTime > 0)（うち正社員 {{ $fullTime }}件）@endif</li>
+                            @if(!empty($stats['salary_median']))
+                                <li>月給の目安：<strong>{{ number_format($stats['salary_median'] / 10000, 1) }}万円</strong>（中央値・{{ number_format($stats['salary_min'] / 10000, 1) }}万〜{{ number_format($stats['salary_max'] / 10000, 1) }}万円）</li>
+                            @endif
+                            @if(count($empRows) > 0)
+                                <li>雇用形態：{{ collect($empRows)->map(fn($r) => $r['name'] . ' ' . $r['count'] . '件')->implode('／') }}</li>
+                            @endif
+                        </ul>
+                        @if(count($typeRows) > 0)
+                            <p class="mb-1 small fw-bold">職種の内訳</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach($typeRows as $tr)
+                                    <a href="{{ route('seo.jobs.area_jobtype', [$currentArea->slug, $tr['slug']]) }}"
+                                       style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff;border:1px solid #d6e4f7;border-radius:16px;text-decoration:none;color:#1a1a2e;font-size:0.82rem;">
+                                        {{ $tr['name'] }} <strong>{{ $tr['count'] }}</strong>件
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+                        <p class="text-muted mt-2 mb-0" style="font-size:0.75rem;">※ 当サイトに掲載中の求人（ハローワーク求人を含む）から自動で集計しています。月給の目安は月給制の求人の下限額をもとにしています。</p>
+                    </div>
+                @endif
+
                 @php $hasFilters = request()->hasAny(['job_types', 'employment_types', 'condition_ids', 'appeal_ids', 'area', 'areas']); @endphp
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                     <p class="result-count mb-0">
@@ -149,64 +184,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 @php $entryBaseParams = $searchConditionIds ?? []; @endphp
                 @forelse($jobs as $job)
-                    @php
-                        $isHw = $job->source === 'hellowork';
-                        // NEWバッジは自社(care_entry)求人のみ・HW求人には表示しない
-                        $isNew = !$isHw && $job->created_at && $job->created_at->gte(now()->subDays(7));
-                        // スタンダードプラン(露出拡大)のカード。ステマ規制対応でPR表記は必須(掲載期限切れ等の対象外求人は通常表示)
-                        $isPr = !$isHw && $job->isPrEligible();
-                    @endphp
-                    <div class="job-card{{ $isPr ? ' job-card--pr' : '' }}">
-                        @if($isPr)
-                            <div class="job-card__pr-head">
-                                <span class="job-card__pr-label"><i class="bi bi-star-fill"></i> おすすめ求人</span>
-                                <span class="job-card__pr-mark">PR</span>
-                            </div>
-                        @endif
-                        <p class="job-card__company">{{ $job->company_name }}</p>
-                        <p class="job-card__title">
-                            <a href="{{ route('lp.show', $job->token) }}"@if($isPr) data-track="pr_job" data-target-job="{{ $job->id }}"@endif>
-                                {{ $job->displayTitle() }}
-                            </a>
-                        </p>
-                        <div class="job-card__tags">
-                            @if($isNew)
-                                <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>
-                            @endif
-                            @foreach($job->jobAreas->take(2) as $ja)
-                                @if($ja->area)
-                                    <span class="job-card__tag job-card__tag--area">
-                                        <i class="bi bi-geo-alt-fill"></i> {{ $ja->area->name }}
-                                    </span>
-                                @endif
-                            @endforeach
-                            @foreach($job->jobJobTypes->take(2) as $jt)
-                                @if($jt->jobType)
-                                    <span class="job-card__tag job-card__tag--job-type">{{ $jt->jobType->name }}</span>
-                                @endif
-                            @endforeach
-                        </div>
-                        @if($isPr && ($prTags = $job->highlightTags(3)))
-                            <div class="job-card__pr-tags">
-                                @foreach($prTags as $tag)
-                                    <span><i class="bi bi-check2"></i> {{ $tag }}</span>
-                                @endforeach
-                            </div>
-                        @endif
-                        @if($job->salary_type && $job->salary_min)
-                            <p class="job-card__salary">
-                                <span>{{ $job->salaryText() }}</span>
-                            </p>
-                        @endif
-                        <div class="job-card__actions">
-                            <a href="{{ route('lp.show', $job->token) }}" class="btn-card-detail"@if($isPr) data-track="pr_job" data-target-job="{{ $job->id }}"@endif>
-                                <i class="bi bi-arrow-right-circle"></i>詳細を見る
-                            </a>
-                        </div>
-                        @if($isPr)
-                            <p class="job-card__pr-note"><i class="bi bi-chat-dots-fill"></i> LINE・フォームから事業所に直接応募できます</p>
-                        @endif
-                    </div>
+                    @include('seo.jobs._job_card', ['job' => $job])
 
                     {{-- 近くのエリアのおすすめ求人(PR): 一覧の3件目の後に差し込む(一覧・件数とは別枠) --}}
                     @if($loop->iteration === 3 && ($nearbyJobs ?? collect())->isNotEmpty())
@@ -233,6 +211,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 {{-- ページネーション --}}
                 @if($jobs->hasPages())
                     {{ $jobs->links() }}
+                @endif
+
+                {{-- 周辺エリアの求人(掲載が少ない市町村のみ)。一覧の件数とは別に表示 --}}
+                @if(!empty($surrounding))
+                    <div class="mt-4">
+                        <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:.25rem;">
+                            <i class="bi bi-geo-alt-fill text-primary me-1"></i>{{ $currentArea->name }}周辺（{{ $surrounding['region'] }}エリア）の介護・福祉求人
+                        </h2>
+                        <p class="small text-muted mb-3">
+                            {{ $currentArea->name }}の近くの市町村（{{ collect($surrounding['areas'])->pluck('name')->implode('・') }}）に{{ number_format($surrounding['total']) }}件の求人があります。@if($surrounding['total'] > $surrounding['jobs']->count())そのうち{{ $surrounding['jobs']->count() }}件を表示しています。@endif
+                        </p>
+                        @foreach($surrounding['jobs'] as $job)
+                            @include('seo.jobs._job_card', ['job' => $job])
+                        @endforeach
+                        @if($surrounding['total'] > $surrounding['jobs']->count())
+                            <div class="text-center mb-3">
+                                <a href="{{ route('seo.jobs.okinawa', ['areas' => collect($surrounding['areas'])->pluck('slug')->all()]) }}" class="btn btn-outline-primary btn-sm">
+                                    周辺の市町村の求人をすべて見る（{{ number_format($surrounding['total']) }}件）
+                                </a>
+                            </div>
+                        @endif
+                    </div>
                 @endif
 
                 {{-- エリアページなら職種別リンク網を表示(内部リンク強化) --}}

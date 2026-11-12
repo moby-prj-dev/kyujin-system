@@ -168,16 +168,22 @@ class SeoJobController extends Controller
         $total = $stats['total'] ?? 0;
         $nearbyJobs = $this->nearbyJobs($searchConditionIds);
 
+        // 求人が少ない市町村は、同じ地域の周辺市町村の求人も並べる(絞り込みなしのときだけ)
+        $surrounding = empty($filterIds)
+            ? $this->surroundingJobs($currentArea, $total, $nearbyJobs->pluck('id')->all())
+            : null;
+
         return view('seo.jobs.index', [
             'jobs'               => $jobs,
             'currentArea'        => $currentArea,
             'currentJobType'     => null,
             'areas'              => $areas,
             'stats'              => $stats,
-            'pageTitle'          => "【沖縄県{$currentArea->name}】介護・福祉の求人 " . ($total > 0 ? "{$total}件" : '募集'),
-            'pageDesc'           => "沖縄県{$currentArea->name}の介護・福祉求人" . ($total > 0 ? "を{$total}件掲載中" : "の最新募集情報") . "。介護職員・ヘルパー・看護・保育など職種から絞り込み可能。応募がなければ掲載料無料のCare Entry(ケアエントリー)。",
+            'pageTitle'          => "【沖縄県{$currentArea->name}】介護・福祉の求人・転職情報 " . ($total > 0 ? "{$total}件" : '募集'),
+            'pageDesc'           => "沖縄県{$currentArea->name}の介護・福祉の求人・転職情報" . ($total > 0 ? "を{$total}件掲載中。月給の目安や職種の内訳も掲載" : "") . "。介護職員・ヘルパー・看護・保育など職種から絞り込めます。応募がなければ掲載料無料のCare Entry(ケアエントリー)。",
             'searchConditionIds' => $searchConditionIds,
             'nearbyJobs'         => $nearbyJobs,
+            'surrounding'        => $surrounding,
         ]);
     }
 
@@ -221,7 +227,7 @@ class SeoJobController extends Controller
             'currentJobType'     => $currentJobType,
             'areas'              => $areas,
             'stats'              => $stats,
-            'pageTitle'          => "【沖縄県{$currentArea->name}】{$currentJobType->name}の求人 " . ($total > 0 ? "{$total}件" : '募集'),
+            'pageTitle'          => "【沖縄県{$currentArea->name}】{$currentJobType->name}の求人・転職情報 " . ($total > 0 ? "{$total}件" : '募集'),
             'pageDesc'           => "沖縄県{$currentArea->name}の{$currentJobType->name}求人" . ($total > 0 ? "を{$total}件掲載中" : "の最新募集情報") . "。給与・雇用形態(正社員・パート・契約社員)から絞り込み検索が可能。応募がなければ掲載料無料のCare Entry。",
             'searchConditionIds' => $searchConditionIds,
             'nearbyJobs'         => $nearbyJobs,
@@ -233,7 +239,7 @@ class SeoJobController extends Controller
      */
     private function statsFor(MasterArea $area, ?MasterJobType $jobType): array
     {
-        $key = "seo_jobs_stats:v1:a{$area->id}:" . ($jobType ? "j{$jobType->id}" : 'jall');
+        $key = "seo_jobs_stats:v2:a{$area->id}:" . ($jobType ? "j{$jobType->id}" : 'jall');
         return Cache::remember($key, now()->addHour(), function () use ($area, $jobType) {
             $base = Job::active()
                 ->whereNotNull('email_verified_at')
@@ -273,6 +279,7 @@ class SeoJobController extends Controller
 
             // 雇用形態内訳(プリミティブ配列)
             $empBreakdown = [];
+            $jobIds = null;
             if ($total > 0) {
                 $jobIds = (clone $base)->pluck('job_listings.id');
                 $rows = \DB::table('job_employment_types')
@@ -287,6 +294,24 @@ class SeoJobController extends Controller
                 }
             }
 
+            // 職種の内訳(エリアページのみ・上位6職種)
+            $typeBreakdown = [];
+            if ($total > 0 && ! $jobType) {
+                $jobIds = $jobIds ?? (clone $base)->pluck('job_listings.id');
+                $rows = \DB::table('job_job_types')
+                    ->join('master_job_types', 'job_job_types.job_type_id', '=', 'master_job_types.id')
+                    ->whereIn('job_job_types.job_id', $jobIds)
+                    ->where('master_job_types.is_active', true)
+                    ->groupBy('master_job_types.id', 'master_job_types.name', 'master_job_types.slug')
+                    ->orderByDesc(\DB::raw('COUNT(*)'))
+                    ->limit(6)
+                    ->select('master_job_types.name', 'master_job_types.slug', \DB::raw('COUNT(*) as count'))
+                    ->get();
+                foreach ($rows as $r) {
+                    $typeBreakdown[] = ['name' => $r->name, 'slug' => $r->slug, 'count' => (int) $r->count];
+                }
+            }
+
             return [
                 'total'         => $total,
                 'own_count'     => $ownCount,
@@ -295,6 +320,7 @@ class SeoJobController extends Controller
                 'salary_max'    => $salaryMax,
                 'salary_median' => $salaryMedian,
                 'emp_breakdown' => $empBreakdown,
+                'type_breakdown' => $typeBreakdown,
             ];
         });
     }
@@ -322,5 +348,61 @@ class SeoJobController extends Controller
         app(\App\Services\RecommendationImpressionLogger::class)->log($jobs, 'pr_job', 'search');
 
         return $jobs;
+    }
+
+    /** 周辺エリアの求人を並べる対象: 掲載がこの件数未満の市町村 */
+    private const SURROUNDING_THRESHOLD = 10;
+
+    /**
+     * 「〇〇周辺(北部エリア)の求人」: 掲載が少ない市町村ページで、同じ地域の別市町村の求人を最大10件。
+     * 求人が数件しかないページは検索エンジンに薄いページと見なされやすく、検索した人にとっても選択肢が少ないため。
+     * 離島(石垣・宮古・久米島)は互いに通勤圏ではないので出さない。
+     *
+     * @param int[] $excludeIds すでに「近くのエリアのおすすめ求人」に出している求人
+     * @return array{jobs: \Illuminate\Support\Collection, total: int, region: string, areas: array}|null
+     */
+    private function surroundingJobs(MasterArea $area, int $total, array $excludeIds): ?array
+    {
+        if ($total >= self::SURROUNDING_THRESHOLD || $area->region === '離島' || ! $area->region) {
+            return null;
+        }
+
+        $neighbors = MasterArea::active()
+            ->where('prefecture', $area->prefecture)
+            ->where('region', $area->region)
+            ->where('id', '!=', $area->id)
+            ->orderBy('sort_order')
+            ->get(['id', 'name', 'slug']);
+        if ($neighbors->isEmpty()) {
+            return null;
+        }
+        $neighborIds = $neighbors->pluck('id')->all();
+
+        $base = $this->visibleJobs()
+            ->whereHas('jobAreas', fn($q) => $q->whereIn('area_id', $neighborIds))
+            // この市町村の求人(一覧に出ている)は除く
+            ->whereDoesntHave('jobAreas', fn($q) => $q->where('area_id', $area->id));
+
+        $count = (clone $base)->count();
+        if ($count === 0) {
+            return null;
+        }
+
+        $jobs = $base->whereNotIn('job_listings.id', $excludeIds)
+            ->orderByRaw(self::RANK_ORDER_SQL)
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        // スタンダード(PR表記あり)のカードは表示回数を記録
+        $prJobs = $jobs->filter(fn($j) => $j->source !== 'hellowork' && $j->isPrEligible());
+        app(\App\Services\RecommendationImpressionLogger::class)->log($prJobs, 'pr_job', 'search');
+
+        return [
+            'jobs'   => $jobs,
+            'total'  => $count,
+            'region' => $area->region,
+            'areas'  => $neighbors->map(fn($a) => ['name' => $a->name, 'slug' => $a->slug])->all(),
+        ];
     }
 }
