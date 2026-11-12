@@ -327,35 +327,8 @@ PROMPT;
 
     private function matchJobType($jobTypes, string $jobTitle): ?MasterJobType
     {
-        $map = [
-            '介護福祉士'   => '介護福祉士',
-            'ケアマネ'     => 'ケアマネジャー（介護支援専門員）',
-            '訪問介護'     => 'ホームヘルパー（訪問介護員）',
-            'ヘルパー'     => 'ホームヘルパー（訪問介護員）',
-            '生活相談'     => '生活相談員',
-            '保育士'       => '保育士',
-            '児童指導員'   => '児童指導員',
-            '生活支援員'   => '生活支援員',
-            '就労支援'     => '就労支援員',
-            'サービス管理' => 'サービス管理責任者（サビ管）',
-            '社会福祉士'   => '社会福祉士',
-            '精神保健'     => '精神保健福祉士（PSW）',
-            '相談支援'     => '相談支援専門員',
-            '看護師'       => '看護師（福祉施設勤務）',
-            '理学療法士'   => '理学療法士（PT）',
-            '作業療法士'   => '作業療法士（OT）',
-            '言語聴覚士'   => '言語聴覚士（ST）',
-            '栄養士'       => '管理栄養士（施設）',
-            '介護事務'     => '介護事務',
-            '医療事務'     => '医療事務',
-            '介護'         => '介護職員（施設）',
-        ];
-        foreach ($map as $keyword => $name) {
-            if (str_contains($jobTitle, $keyword)) {
-                return $jobTypes->firstWhere('name', $name);
-            }
-        }
-        return null;
+        $name = \App\Support\HwJobTypeMatcher::match($jobTitle);
+        return $name ? $jobTypes->firstWhere('name', $name) : null;
     }
 
     private function matchEmploymentType($types, string $empType): ?MasterEmploymentType
