@@ -33,7 +33,7 @@
     <meta name="twitter:image" content="{{ url('/images/ogp.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/welcome.css">
+    <link rel="stylesheet" href="/css/welcome.css?v={{ filemtime(public_path('css/welcome.css')) }}">
 </head>
 <body>
 @if(app()->environment('production'))
@@ -178,11 +178,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 @endforeach
             </div>
 
-            {{-- 詳細条件トグル --}}
+            {{-- 詳細条件トグル(エリアの「市町村を選ぶ」と見分けがつくよう、枠付きのボタンにする) --}}
+            @php
+                $detailSelected = count(array_filter((array) request('job_types', [])))
+                    + count(array_filter((array) request('employment_types', [])))
+                    + count(array_filter(array_map('intval', (array) request('condition_ids', []))));
+            @endphp
             <div>
                 <button type="button" class="search__detail-toggle" data-bs-toggle="collapse" data-bs-target="#searchDetail" aria-expanded="false">
-                    <i class="bi bi-sliders me-1"></i>職種・雇用形態・勤務条件で絞り込む
-                    <i class="bi bi-chevron-down"></i>
+                    <i class="bi bi-sliders"></i>職種・雇用形態などで絞り込む
+                    @if($detailSelected > 0)
+                        <span class="search__detail-badge" title="選択中の条件">{{ $detailSelected }}件</span>
+                    @endif
+                    <i class="bi bi-chevron-down search__detail-chevron"></i>
                 </button>
             </div>
 
