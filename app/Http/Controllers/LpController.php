@@ -72,7 +72,45 @@ class LpController extends Controller
 
         // 送客枠の表示回数は、カードが画面に映ったときにブラウザから記録する(partials/click_tracker)
 
-        return view('lp.show', compact('job', 'relatedArticles', 'recommendedJobs', 'directJobs'));
+        $browse = $this->browseLinks($job);
+
+        return view('lp.show', compact('job', 'relatedArticles', 'recommendedJobs', 'directJobs', 'browse'));
+    }
+
+    /**
+     * 「ほかの求人を探す」用: この求人の市町村・職種の一覧ページと件数。
+     * Google検索から求人ページに直接来た人は「戻る」で検索結果に戻ってしまうため、サイト内の一覧への導線を置く。
+     * 件数は1時間キャッシュ(プリミティブのみ)
+     *
+     * @return array{area: ?array{name:string, slug:string, count:int}, type: ?array{name:string, slug:string, count:int}, total: int}
+     */
+    private function browseLinks(Job $job): array
+    {
+        $area = $job->jobAreas->first()?->area;
+        $type = $job->jobJobTypes->first()?->jobType;
+
+        $visible = fn() => Job::active()
+            ->whereNotNull('email_verified_at')
+            ->where('is_admin_hidden', false)
+            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()));
+
+        $key = 'lp_browse:v1:a' . ($area->id ?? 0) . ':t' . ($type->id ?? 0);
+        $counts = \Illuminate\Support\Facades\Cache::remember($key, now()->addHour(), function () use ($visible, $area, $type) {
+            return [
+                'area'  => $area ? $visible()->whereHas('jobAreas', fn($q) => $q->where('area_id', $area->id))->count() : 0,
+                'type'  => ($area && $type) ? $visible()
+                    ->whereHas('jobAreas', fn($q) => $q->where('area_id', $area->id))
+                    ->whereHas('jobJobTypes', fn($q) => $q->where('job_type_id', $type->id))->count() : 0,
+                'total' => $visible()->whereHas('jobAreas.area', fn($q) => $q->where('prefecture', '沖縄県'))->count(),
+            ];
+        });
+
+        return [
+            'area'  => ($area && $area->prefecture === '沖縄県') ? ['name' => $area->name, 'slug' => $area->slug, 'count' => $counts['area']] : null,
+            // 同じ市町村×職種の求人が他にもあるときだけ出す(この求人1件だけのページへの導線は意味がない)
+            'type'  => ($area && $type && $area->prefecture === '沖縄県' && $counts['type'] > 1) ? ['name' => $type->name, 'slug' => $type->slug, 'count' => $counts['type']] : null,
+            'total' => $counts['total'],
+        ];
     }
 
     /**

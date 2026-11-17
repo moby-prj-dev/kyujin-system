@@ -178,6 +178,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 {{-- LPヘッダー --}}
 <div class="lp-header">
     <div class="lp-wrap">
+        {{-- パンくずリスト(画面表示。JSON-LDのBreadcrumbListと同じ階層) --}}
+        <nav aria-label="パンくずリスト" style="font-size:0.75rem;opacity:0.9;margin-bottom:8px;line-height:1.6;">
+            <a href="/" style="color:inherit;">ホーム</a>
+            <span class="mx-1">›</span>
+            @if(!empty($browse['area']))
+                <a href="{{ route('seo.jobs.area', $browse['area']['slug']) }}" style="color:inherit;">{{ $browse['area']['name'] }}の求人</a>
+            @else
+                <a href="{{ route('seo.jobs.okinawa') }}" style="color:inherit;">沖縄の求人</a>
+            @endif
+            <span class="mx-1">›</span><span>この求人</span>
+        </nav>
         <div class="area-badge"><i class="bi bi-geo-alt-fill"></i>{{ $job->jobAreas->first()?->area?->name ?? '未設定' }}</div>
         <h1>{{ $job->title }}</h1>
         @if($job->subtitle)
@@ -302,6 +313,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             @include('partials.recommended_jobs', ['jobs' => $recommendedJobs ?? collect(), 'heading' => 'この地域のおすすめ求人', 'wrap' => 'section-card'])
             {{-- 直接応募できる求人(ベーシック・PRなし) ※PR枠の下 --}}
             @include('partials.recommended_jobs', ['jobs' => $directJobs ?? collect(), 'heading' => 'この地域で直接応募できる求人', 'wrap' => 'section-card', 'pr' => false, 'lead' => 'LINEやフォームから、事業所に直接応募できる求人です。'])
+        @endif
+
+        {{-- ほかの求人を探す(Google検索から直接来た人がサイト内の一覧に移れるように) --}}
+        @if(!empty($browse))
+        <div class="section-card">
+            <div class="section-title"><i class="bi bi-search"></i> ほかの求人を探す</div>
+            <div class="d-flex flex-column gap-2 mt-2">
+                @if($browse['area'])
+                <a href="{{ route('seo.jobs.area', $browse['area']['slug']) }}" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid #d6e4f7;border-radius:8px;text-decoration:none;color:#1a1a2e;font-weight:700;font-size:0.92rem;">
+                    <span><i class="bi bi-geo-alt-fill me-1" style="color:#1a73e8;"></i>{{ $browse['area']['name'] }}の介護・福祉求人を見る<span class="text-muted fw-normal ms-1">（{{ number_format($browse['area']['count']) }}件）</span></span>
+                    <i class="bi bi-chevron-right" style="color:#1a73e8;"></i>
+                </a>
+                @endif
+                @if($browse['type'])
+                <a href="{{ route('seo.jobs.area_jobtype', [$browse['area']['slug'], $browse['type']['slug']]) }}" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid #d6e4f7;border-radius:8px;text-decoration:none;color:#1a1a2e;font-weight:700;font-size:0.92rem;">
+                    <span><i class="bi bi-briefcase-fill me-1" style="color:#1a73e8;"></i>{{ $browse['area']['name'] }}の{{ $browse['type']['name'] }}の求人を見る<span class="text-muted fw-normal ms-1">（{{ number_format($browse['type']['count']) }}件）</span></span>
+                    <i class="bi bi-chevron-right" style="color:#1a73e8;"></i>
+                </a>
+                @endif
+                <a href="{{ route('seo.jobs.okinawa') }}" style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid #d6e4f7;border-radius:8px;text-decoration:none;color:#1a1a2e;font-weight:700;font-size:0.92rem;">
+                    <span><i class="bi bi-list-ul me-1" style="color:#1a73e8;"></i>沖縄の求人をすべて見る<span class="text-muted fw-normal ms-1">（{{ number_format($browse['total']) }}件）</span></span>
+                    <i class="bi bi-chevron-right" style="color:#1a73e8;"></i>
+                </a>
+            </div>
+        </div>
         @endif
 
         {{-- 関連記事(SEO内部リンク+滞在時間UP) --}}
