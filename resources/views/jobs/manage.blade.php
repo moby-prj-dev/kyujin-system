@@ -126,6 +126,10 @@
                         onclick="navigator.clipboard.writeText(document.getElementById('lpUrl').value).then(()=>this.textContent='コピー済み')">
                     コピー
                 </button>
+                <a href="{{ url('/lp/' . $job->token) }}" target="_blank" rel="noopener"
+                   class="btn btn-outline-primary">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>開く
+                </a>
             </div>
         </div>
         @endif
