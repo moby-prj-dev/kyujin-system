@@ -64,7 +64,7 @@ class MasterJobTypeSeeder extends Seeder
             ['category' => '相談支援・ソーシャルワーク', 'name' => '医療ソーシャルワーカー（MSW）', 'slug' => 'medical_social_worker'],
             ['category' => '相談支援・ソーシャルワーク', 'name' => '生活困窮者支援員',             'slug' => 'poverty_support_worker'],
             // 医療・リハビリ職
-            ['category' => '医療・リハビリ職', 'name' => '看護師（福祉施設勤務）', 'slug' => 'nurse_welfare_facility'],
+            ['category' => '医療・リハビリ職', 'name' => '看護師（施設・訪問看護）', 'slug' => 'nurse_welfare_facility'],
             ['category' => '医療・リハビリ職', 'name' => '理学療法士（PT）',       'slug' => 'physical_therapist'],
             ['category' => '医療・リハビリ職', 'name' => '作業療法士（OT）',       'slug' => 'occupational_therapist'],
             ['category' => '医療・リハビリ職', 'name' => '言語聴覚士（ST）',       'slug' => 'speech_therapist'],

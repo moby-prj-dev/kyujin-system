@@ -24,7 +24,7 @@ class ReclassifyHelloworkJobTypes extends Command
         'ケアマネ'           => 'ケアマネジャー（介護支援専門員）',
         'サービス提供責任者' => 'サービス提供責任者',
         'サ責'               => 'サービス提供責任者',
-        '看護'               => '看護師（福祉施設勤務）',
+        '看護'               => '看護師（施設・訪問看護）',
     ];
 
     public function handle(): int
