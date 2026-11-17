@@ -77,6 +77,17 @@
                 @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
+            <div class="mb-3">
+                <label for="referral" class="form-label">当サイトを何でお知りになりましたか <small class="text-muted fw-normal">（任意）</small></label>
+                <select id="referral" name="referral" class="form-select @error('referral') is-invalid @enderror">
+                    <option value="">選択してください</option>
+                    @foreach(\App\Http\Requests\ContactRequest::REFERRALS as $ref)
+                        <option value="{{ $ref }}" @selected(old('referral') === $ref)>{{ $ref }}</option>
+                    @endforeach
+                </select>
+                @error('referral') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
             {{-- ハニーポット（ボット対策・人間には見えない） --}}
             <div style="position:absolute; left:-9999px;" aria-hidden="true">
                 <label for="website">Website</label>

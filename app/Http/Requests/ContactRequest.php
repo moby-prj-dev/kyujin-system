@@ -6,6 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ContactRequest extends FormRequest
 {
+    /** 「当サイトを何で知りましたか」(任意)の選択肢。チラシ・フォーム営業などの効果測定用 */
+    public const REFERRALS = [
+        'Google・Yahoo!などの検索',
+        '自社の求人がケアエントリーに載っているのを見て',
+        '郵送のチラシ・資料',
+        'ケアエントリーからのご案内メール',
+        'SNS（Instagram・Facebookなど）',
+        '知人・取引先の紹介',
+        'その他',
+    ];
+
     public function authorize(): bool
     {
         return true;
@@ -19,6 +30,7 @@ class ContactRequest extends FormRequest
             'company' => ['nullable', 'string', 'max:200'],
             'subject' => ['required', 'string', 'max:200'],
             'message' => ['required', 'string', 'max:2000'],
+            'referral' => ['nullable', 'string', \Illuminate\Validation\Rule::in(self::REFERRALS)],
             // ハニーポット（ボット対策・空欄でなければ拒否）
             'website' => ['nullable', 'max:0'],
         ];
