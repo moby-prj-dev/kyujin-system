@@ -759,6 +759,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="mt-4 mb-0" style="font-size:0.76rem;opacity:.7;">
             <i class="bi bi-shield-check me-1"></i>「試してみよう」という気持ちで始めていただけます
         </p>
+        {{-- 掲載前に確認したい事業所向けの問い合わせ先 --}}
+        <div class="mt-4 pt-3" style="border-top:1px solid rgba(255,255,255,0.25);">
+            <p class="mb-2" style="font-size:0.92rem;font-weight:700;">掲載の前に確認したいことがあれば、お気軽にお問い合わせください</p>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a href="{{ route('contact.show') }}" class="cta-band__btn-secondary"><i class="bi bi-envelope"></i>フォームで問い合わせる</a>
+                <a href="tel:07064019492" class="cta-band__btn-secondary"><i class="bi bi-telephone"></i>070-6401-9492</a>
+            </div>
+            <p class="mt-2 mb-0" style="font-size:0.76rem;opacity:.8;">お電話は平日 10:00〜18:00（担当：岸本）</p>
+        </div>
     </div>
 </section>
 
@@ -773,6 +782,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="{{ route('home') }}">お仕事を探している方</a>
             <a href="{{ route('jobs.resend.show') }}">掲載企業ログイン</a>
             <a href="{{ route('company') }}">運営者情報</a>
+            <a href="{{ route('contact.show') }}">お問い合わせ</a>
             <a href="{{ route('privacy-policy') }}">プライバシーポリシー</a>
             <a href="{{ route('terms') }}">利用規約</a>
             <a href="{{ route('legal') }}">特定商取引法に基づく表記</a>

@@ -499,6 +499,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="{{ route('client') }}">求人掲載をお考えの方</a>
             <a href="{{ route('jobs.resend.show') }}">掲載企業ログイン</a>
             <a href="{{ route('company') }}">運営者情報</a>
+            <a href="{{ route('contact.show') }}">お問い合わせ</a>
             <a href="{{ route('privacy-policy') }}">プライバシーポリシー</a>
             <a href="{{ route('terms') }}">利用規約</a>
             <a href="{{ route('legal') }}">特定商取引法に基づく表記</a>
