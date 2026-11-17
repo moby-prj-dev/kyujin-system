@@ -648,7 +648,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-funnel-fill"></i></div>
                     <p class="merit-card__title">無駄な応募を2段階で減らす</p>
-                    <p class="merit-card__body">求職者の希望条件と募集条件を自動で照合し、合った応募だけをお届けします。さらに「介護福祉士の資格はありますか？」など独自の質問を最大3つ設定でき、応募前に必ず回答してもらえます。</p>
+                    <p class="merit-card__body">応募の前に、求職者が希望する職種・勤務地・雇用形態を確認し、求人と合わない方は応募に進めません。さらに「介護福祉士の資格はありますか？」など独自の質問を最大3つ設定でき、応募前に必ず回答してもらえます。</p>
                 </div>
             </div>
             <div class="col-md-4">
