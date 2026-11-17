@@ -35,6 +35,11 @@
 </div>
 @endif
 
+{{-- 公開直後: 掲載内容(特にAIが作成したタイトル・本文)の確認を促す --}}
+@if(is_array(session('verified')))
+    @include('jobs._published_notice', ['ai' => session('verified')])
+@endif
+
 @if(session('updated'))
 <div class="alert alert-success">求人情報を更新しました。</div>
 @endif
@@ -747,7 +752,7 @@ document.getElementById('applicantList')?.addEventListener('hide.bs.collapse', f
 </div>
 @endif
 
-<form method="POST" action="{{ route('jobs.update', ['token' => $job->manage_token]) }}" enctype="multipart/form-data" autocomplete="off">
+<form id="edit-job" method="POST" action="{{ route('jobs.update', ['token' => $job->manage_token]) }}" enctype="multipart/form-data" autocomplete="off" style="scroll-margin-top:16px;">
 @csrf
 @method('PUT')
 

@@ -25,6 +25,12 @@ class JobVerificationController extends Controller
             return response()->view('jobs.verify_invalid', [], 404);
         }
 
+        // どこをAIが書くか(公開直後の画面で「AIが作成」と示して確認を促すため)。タイトル・本文とも、入力が空ならAIが作る
+        $aiWritten = [
+            'title' => ! ($job->title && $job->title !== '（生成中）'),
+            'body'  => blank($job->free_text),
+        ];
+
         DB::transaction(function () use ($job, $seoGenerator) {
             $job->update([
                 'email_verified_at'       => now(),
@@ -68,6 +74,6 @@ class JobVerificationController extends Controller
         }
 
         return redirect()->route('jobs.manage', ['token' => $job->manage_token])
-            ->with('verified', true);
+            ->with('verified', $aiWritten);
     }
 }
