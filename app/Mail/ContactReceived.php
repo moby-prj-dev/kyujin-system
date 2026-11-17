@@ -25,8 +25,9 @@ class ContactReceived extends Mailable
 
     public function content(): Content
     {
+        // 改行をそのまま見せるためプレーンテキストで送る(HTMLとして送ると改行が消えて1行につながる)
         return new Content(
-            view: 'emails.contact_received',
+            text: 'emails.contact_received',
             // $message はLaravelのメール予約変数(Illuminate\Mail\Message)と衝突するため inquiry に渡す
             with: [...collect($this->data)->except('message')->all(), 'inquiry' => $this->data['message'] ?? ''],
         );
