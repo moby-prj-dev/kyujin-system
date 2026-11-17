@@ -315,8 +315,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             @include('partials.recommended_jobs', ['jobs' => $directJobs ?? collect(), 'heading' => 'この地域で直接応募できる求人', 'wrap' => 'section-card', 'pr' => false, 'lead' => 'LINEやフォームから、事業所に直接応募できる求人です。'])
         @endif
 
-        {{-- ほかの求人を探す(Google検索から直接来た人がサイト内の一覧に移れるように) --}}
-        @if(!empty($browse))
+        {{-- ほかの求人を探す(Google検索から直接来た人がサイト内の一覧に移れるように)
+             ※ハローワーク求人のページのみ。直接掲載(有料顧客)のページから求職者を他社の求人へ流さない --}}
+        @if(!empty($browse) && $job->source === 'hellowork')
         <div class="section-card">
             <div class="section-title"><i class="bi bi-search"></i> ほかの求人を探す</div>
             <div class="d-flex flex-column gap-2 mt-2">
