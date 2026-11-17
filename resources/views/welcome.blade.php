@@ -101,7 +101,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <i class="bi bi-check-circle-fill"></i>30秒で応募完了
                         </span>
                         <span class="hero__feature-item" style="flex:1;min-width:0;font-size:0.78rem;">
-                            <i class="bi bi-bullseye"></i>条件すり合わせで採用率アップ
+                            <i class="bi bi-geo-alt-fill"></i>沖縄の介護・福祉に特化
                         </span>
                     </div>
                 </div>
@@ -128,6 +128,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 </section>
+
+{{-- ②-a おすすめ求人(PR) ※検索フォームの上に表示(有料枠を見られる位置に。スマホは2件以上で横スワイプ) ※スタンダードプランの露出拡大枠・日替わり(料金表記の「おすすめ求人(PR)」と名称を揃える) --}}
+@if(!empty($featuredJobs) && $featuredJobs->isNotEmpty())
+<section class="pr-top" style="background:#fff;border-top:1px solid #e5e9f0;">
+    <div class="container">
+        <p class="articles-section__eyebrow">PICK UP</p>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h2 class="articles-section__heading mb-0">
+                おすすめ求人
+                <span style="display:inline-block;font-size:0.7rem;font-weight:700;color:#6b7280;border:1px solid #c4c9d2;border-radius:3px;padding:0 6px;line-height:1.6;vertical-align:middle;">PR</span>
+            </h2>
+            <a href="{{ route('seo.jobs.okinawa') }}" class="articles-section__more">
+                求人をすべて見る <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        @include('partials.recommended_jobs', ['jobs' => $featuredJobs, 'wrap' => 'none', 'layout' => 'grid', 'swipe' => true])
+    </div>
+</section>
+@endif
 
 {{-- ② 求人検索フォーム --}}
 <section class="search" id="search">
@@ -377,24 +396,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-{{-- ②-b おすすめ求人(PR) ※検索フォームの直後に表示 ※スタンダードプランの露出拡大枠・日替わり(料金表記の「おすすめ求人(PR)」と名称を揃える) --}}
-@if(!empty($featuredJobs) && $featuredJobs->isNotEmpty())
-<section style="background:#fff;padding:56px 0;border-top:1px solid #e5e9f0;">
-    <div class="container">
-        <p class="articles-section__eyebrow">PICK UP</p>
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <h2 class="articles-section__heading mb-0">
-                おすすめ求人
-                <span style="display:inline-block;font-size:0.7rem;font-weight:700;color:#6b7280;border:1px solid #c4c9d2;border-radius:3px;padding:0 6px;line-height:1.6;vertical-align:middle;">PR</span>
-            </h2>
-            <a href="{{ route('seo.jobs.okinawa') }}" class="articles-section__more">
-                求人をすべて見る <i class="bi bi-arrow-right"></i>
-            </a>
-        </div>
-        @include('partials.recommended_jobs', ['jobs' => $featuredJobs, 'wrap' => 'none', 'layout' => 'grid'])
-    </div>
-</section>
-@endif
 
 {{-- ③ 2ndビュー：サービス紹介 --}}
 <section class="points">

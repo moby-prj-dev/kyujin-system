@@ -750,6 +750,15 @@ body {
 /* =====================
    レスポンシブ
 ===================== */
+/* おすすめ求人(PR)・検索フォームの上 */
+.pr-top { padding: 40px 0; }
+@media (max-width: 767px) {
+    .pr-top { padding: 24px 0 20px; }
+    .pr-top .articles-section__heading { font-size: 1.15rem; }
+    /* スマホでは写真を帯状に小さくし、おすすめ求人・検索を上に寄せる */
+    .hero .row.g-5 { --bs-gutter-y: 1.25rem; }
+    .hero__image img { max-height: 130px; object-fit: cover; object-position: center 35%; }
+}
 @media (max-width: 767px) {
     .hero { padding: 40px 0 32px; }
     .hero__visual { margin-top: 30px; }

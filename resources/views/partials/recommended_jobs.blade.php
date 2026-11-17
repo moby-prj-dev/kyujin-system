@@ -7,6 +7,7 @@
       $heading 見出し(省略可)
       $wrap    'section-card'(LPページ) / 'box'(記事ページ) / 'none'(見出しは呼び出し側)
       $layout  'list'(縦並び) / 'grid'(トップページ用カードグリッド)
+      $swipe   true でスマホ(〜575px)のとき、2件以上なら横スワイプの1列表示にする(grid のみ・既定 false)
       $pr      true(既定: 有料枠・PR表記あり) / false(ベーシックの直接応募枠・PR表記なし)
       $lead    見出し下の説明文(省略可)
 --}}
@@ -17,6 +18,7 @@
     $layout  = $layout ?? 'list';
     $pr      = $pr ?? true;
     $lead    = $lead ?? null;
+    $swipe   = ($swipe ?? false) && $layout === 'grid' && $jobs->count() > 1;
     $icon    = $pr ? 'bi-star-fill' : 'bi-send-check-fill';
     $prBadge = '<span style="display:inline-block;font-size:0.62rem;font-weight:700;color:#6b7280;background:#fff;border:1px solid #c4c9d2;border-radius:3px;padding:0 5px;line-height:1.55;letter-spacing:0.04em;vertical-align:middle;">PR</span>';
 @endphp
@@ -32,7 +34,17 @@
         </p>
     @endif
 
-    @if($layout === 'grid')<div class="row g-3">@else<div class="d-flex flex-column gap-2 mt-2">@endif
+    @if($swipe)
+        <style>
+            @media (max-width: 575.98px) {
+                .rec-swipe { flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scrollbar-width: thin; }
+                .rec-swipe > div { flex: 0 0 85%; max-width: 85%; scroll-snap-align: start; }
+            }
+            @media (min-width: 576px) { .rec-swipe-hint { display: none; } }
+        </style>
+        <p class="rec-swipe-hint" style="font-size:0.75rem;color:#6b7280;margin:0 0 6px;"><i class="bi bi-arrow-left-right me-1"></i>横にスワイプして、ほかのおすすめ求人を見られます</p>
+    @endif
+    @if($layout === 'grid')<div class="row g-3{{ $swipe ? ' rec-swipe' : '' }}">@else<div class="d-flex flex-column gap-2 mt-2">@endif
         @foreach($jobs as $recJob)
             @php
                 $recAreas   = $recJob->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->take(2)->implode('・');
