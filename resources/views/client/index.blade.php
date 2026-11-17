@@ -665,6 +665,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで応募へのハードルを下げます。無料のベーシックプランでもご利用いただけます。</p>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="merit-card">
+                    <div class="merit-card__icon"><i class="bi bi-ui-checks"></i></div>
+                    <p class="merit-card__title">応募前に独自の質問で確認<span style="font-size:0.7rem;background:#06c755;color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;">全プラン</span></p>
+                    <p class="merit-card__body">「介護福祉士の資格はありますか？」など、事業所独自の質問を最大3つ設定できます。応募者は応募前に必ず回答するので、条件の合わない応募を減らせます。</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
