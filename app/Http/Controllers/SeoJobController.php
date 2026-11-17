@@ -107,8 +107,6 @@ class SeoJobController extends Controller
         $jobs = $this->orderForListing($query)
             ->paginate(20)->withQueryString();
 
-        $this->logPrImpressions($jobs);
-
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
             ->orderBy('sort_order')
@@ -150,8 +148,6 @@ class SeoJobController extends Controller
 
         $jobs = $this->orderForListing($query)
             ->paginate(20)->withQueryString();
-
-        $this->logPrImpressions($jobs);
 
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
@@ -201,8 +197,6 @@ class SeoJobController extends Controller
 
         $jobs = $this->orderForListing($query)
             ->paginate(20)->withQueryString();
-
-        $this->logPrImpressions($jobs);
 
         $areas = MasterArea::active()
             ->where('prefecture', '沖縄県')
@@ -310,13 +304,6 @@ class SeoJobController extends Controller
         });
     }
 
-    /** 検索結果に表示されたスタンダード(おすすめ求人・PR)カードの表示回数を記録 */
-    private function logPrImpressions($jobs): void
-    {
-        $prJobs = collect($jobs->items())->filter(fn($j) => $j->source !== 'hellowork' && $j->isPrEligible());
-        app(\App\Services\RecommendationImpressionLogger::class)->log($prJobs, 'pr_job', 'search');
-    }
-
     /**
      * 「近くのエリアのおすすめ求人(PR)」: 選択エリアと同じ地域の別市町村のスタンダード求人(最大2件)
      * エリア未選択(沖縄全域)の検索では出さない(全件が一覧に含まれるため)
@@ -328,11 +315,8 @@ class SeoJobController extends Controller
             return collect();
         }
 
-        $jobs = app(\App\Services\RecommendedJobFinder::class)
+        return app(\App\Services\RecommendedJobFinder::class)
             ->forNearbyAreas($areaIds, $searchConditionIds['job_type_ids'] ?? [], 2);
-        app(\App\Services\RecommendationImpressionLogger::class)->log($jobs, 'pr_job', 'search');
-
-        return $jobs;
     }
 
     /** 周辺エリアの求人を並べる対象: 掲載がこの件数未満の市町村 */
@@ -376,10 +360,6 @@ class SeoJobController extends Controller
         $jobs = $this->orderForListing($base->whereNotIn('job_listings.id', $excludeIds))
             ->limit(10)
             ->get();
-
-        // スタンダード(PR表記あり)のカードは表示回数を記録
-        $prJobs = $jobs->filter(fn($j) => $j->source !== 'hellowork' && $j->isPrEligible());
-        app(\App\Services\RecommendationImpressionLogger::class)->log($prJobs, 'pr_job', 'search');
 
         return [
             'jobs'   => $jobs,

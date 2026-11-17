@@ -155,3 +155,4 @@ Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'send']
 
 // クリック計測(求人ページ・記事・トップの応募ボタン/送客枠)
 Route::post('/t/click', [\App\Http\Controllers\ClickTrackController::class, 'store'])->middleware('throttle:120,1')->name('click.track');
+Route::post('/t/impression', [\App\Http\Controllers\ImpressionTrackController::class, 'store'])->middleware('throttle:120,1')->name('impression.track');

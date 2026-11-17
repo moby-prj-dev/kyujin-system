@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             '/webhook/line',
             '/t/click',
+            '/t/impression',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

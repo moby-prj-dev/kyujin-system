@@ -70,10 +70,7 @@ class LpController extends Controller
             ? app(RecommendedJobFinder::class)->forJobDirect($job, 3)
             : collect();
 
-        // 送客枠の表示回数を記録(スタンダードの効果説明・送客効果の測定用)
-        $impressions = app(\App\Services\RecommendationImpressionLogger::class);
-        $impressions->log($recommendedJobs, 'pr_job', 'lp');
-        $impressions->log($directJobs, 'direct_job', 'lp');
+        // 送客枠の表示回数は、カードが画面に映ったときにブラウザから記録する(partials/click_tracker)
 
         return view('lp.show', compact('job', 'relatedArticles', 'recommendedJobs', 'directJobs'));
     }
