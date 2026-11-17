@@ -647,8 +647,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="col-md-4">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-funnel-fill"></i></div>
-                    <p class="merit-card__title">条件マッチングで無駄な応募を減らす</p>
-                    <p class="merit-card__body">応募の際、掲載主様の募集条件と求職者の方の希望条件を自動で照合。条件が合った応募のみメールでお届けします。</p>
+                    <p class="merit-card__title">無駄な応募を2段階で減らす</p>
+                    <p class="merit-card__body">求職者の希望条件と募集条件を自動で照合し、合った応募だけをお届けします。さらに「介護福祉士の資格はありますか？」など独自の質問を最大3つ設定でき、応募前に必ず回答してもらえます。</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -661,15 +661,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="col-md-4">
                 <div class="merit-card">
                     <div class="merit-card__icon"><i class="bi bi-chat-dots-fill"></i></div>
-                    <p class="merit-card__title">LINE応募で応募率アップ<span style="font-size:0.7rem;background:#06c755;color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;">全プラン</span></p>
+                    <p class="merit-card__title">LINE応募で応募率アップ</p>
                     <p class="merit-card__body">求職者が使い慣れたLINEから応募できる仕組みで応募へのハードルを下げます。無料のベーシックプランでもご利用いただけます。</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="merit-card">
-                    <div class="merit-card__icon"><i class="bi bi-ui-checks"></i></div>
-                    <p class="merit-card__title">応募前に独自の質問で確認<span style="font-size:0.7rem;background:#06c755;color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;">全プラン</span></p>
-                    <p class="merit-card__body">「介護福祉士の資格はありますか？」など、事業所独自の質問を最大3つ設定できます。応募者は応募前に必ず回答するので、条件の合わない応募を減らせます。</p>
                 </div>
             </div>
         </div>
