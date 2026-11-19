@@ -34,10 +34,10 @@ class SendRecruitingCheck extends Command
                 ->orWhere(fn($w) => $w->whereNull('recruiting_checked_at')->where('email_verified_at', '<=', $threshold)))
             ->get();
 
-        $bot = 'bot|crawl|spider|slurp|preview|facebookexternalhit|curl|python|headless';
         foreach ($jobs as $job) {
-            $views = DB::table('lp_views')->where('job_id', $job->id)->where('viewed_at', '>=', $threshold)
-                ->where(fn($q) => $q->whereNull('user_agent')->orWhere('user_agent', 'not regexp', $bot))->count();
+            $views = \App\Support\BotTraffic::onlyHumans(
+                DB::table('lp_views')->where('job_id', $job->id)->where('viewed_at', '>=', $threshold), heavy: true
+            )->count();
             $applications = $job->applications()->where('applied_at', '>=', $threshold)->count();
 
             if ($this->option('dry-run')) {

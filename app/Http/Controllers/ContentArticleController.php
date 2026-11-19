@@ -244,8 +244,7 @@ class ContentArticleController extends Controller
     /** 記事の閲覧を記録(ボット・運営者は除外。失敗してもページ表示は妨げない) */
     private function recordView(ContentArticle $article): void
     {
-        $ua = request()->userAgent() ?? '';
-        if ($ua === '' || preg_match(\App\Services\RecommendationImpressionLogger::BOT_UA, $ua) || \App\Support\InternalVisitor::check()) {
+        if (\App\Support\BotTraffic::isBotUa(request()->userAgent()) || \App\Support\BotTraffic::isBotIp(request()->ip()) || \App\Support\InternalVisitor::check()) {
             return;
         }
         try {

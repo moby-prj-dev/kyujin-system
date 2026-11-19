@@ -15,15 +15,11 @@ class ClickReport extends Command
     protected $signature   = 'clicks:report {--days=30 : 集計する日数}';
     protected $description = '応募ボタン・送客枠のクリック数を集計する';
 
-    private const BOT_UA = 'bot|crawl|spider|slurp|preview|facebookexternalhit|curl|python|headless';
-
     public function handle(): int
     {
         $days  = max(1, (int) $this->option('days'));
         $since = now()->subDays($days);
-        $base  = fn() => DB::table('lp_clicks')
-            ->where('clicked_at', '>=', $since)
-            ->where(fn($q) => $q->whereNull('user_agent')->orWhere('user_agent', 'not regexp', self::BOT_UA));
+        $base  = fn() => \App\Support\BotTraffic::onlyHumans(DB::table('lp_clicks')->where('clicked_at', '>=', $since));
 
         $labels = [
             'hw_apply'   => 'ハローワークで応募する',

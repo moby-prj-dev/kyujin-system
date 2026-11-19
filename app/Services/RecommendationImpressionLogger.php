@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Log;
  */
 class RecommendationImpressionLogger
 {
-    public const BOT_UA = '/bot|crawl|spider|slurp|preview|facebookexternalhit|curl|python|headless|lighthouse|monitor/i';
-
     /**
      * カードが画面に映った送客枠を記録する(ブラウザの /t/impression から呼ばれる)。
      * 2026-11-17 までは、ページを開いた時点でサーバー側から記録していた(画面外のカードも数えていた)
@@ -26,8 +24,7 @@ class RecommendationImpressionLogger
             return;
         }
 
-        $ua = request()->userAgent() ?? '';
-        if ($ua === '' || preg_match(self::BOT_UA, $ua)) {
+        if (\App\Support\BotTraffic::isBotUa(request()->userAgent()) || \App\Support\BotTraffic::isBotIp(request()->ip())) {
             return;
         }
 
