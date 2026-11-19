@@ -200,7 +200,7 @@
         </div>
         <div class="col-6 col-md-3">
             <div class="border rounded p-2 text-center h-100">
-                <div class="text-muted small">{{ $slotName }}に表示（30日）</div>
+                <div class="text-muted small">{{ $slotName }}に表示（{{ !empty($metrics['impressionsFrom']) ? \Illuminate\Support\Carbon::parse($metrics['impressionsFrom'])->format('n/j') . '〜' : '30日' }}）</div>
                 <div class="fs-4 fw-bold" style="color:#1a73e8;">{{ number_format($metrics['impressions30']) }}<span class="small text-muted ms-1">回</span></div>
             </div>
         </div>
@@ -213,6 +213,7 @@
     </div>
     <div class="text-muted mt-2" style="font-size:0.8rem;">
         ※ 検索エンジンのロボットや、この管理ページを開いたブラウザからの閲覧は数えていません。<br>
+        ※ 枠への表示は、求人のカードが実際に画面に映ったときだけ数えています（2026年11月17日から）。<br>
         @if($job->isStandard())
         ※「おすすめ求人（PR）枠」は、トップページ・検索結果・ハローワーク求人のページ・お役立ち記事に、広告として「PR」の表示付きで載る枠です。
         @else
