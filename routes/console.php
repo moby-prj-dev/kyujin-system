@@ -32,8 +32,10 @@ Schedule::call(function () {
         ->delete();
 })->dailyAt('04:00')->name('hellowork:cleanup-expired');
 
-// 毎日深夜4時30分：HW原本URLを叩いて削除済み求人を検出→削除(1日50件・約2ヶ月で全件回る)
-Schedule::command('hellowork:cleanup-deleted --limit=50')->dailyAt('04:30');
+// 毎日深夜4時30分：HW原本URLを叩いて削除済み求人を検出→削除
+// 1日200件・約2,200件を11日ほどで一回り(1件1秒の間隔を空けるので5分ほど)。
+// 2026-11-20 までは1日50件で、ハローワークで募集が終わった求人が数週間「公開中」のまま残っていた
+Schedule::command('hellowork:cleanup-deleted --limit=200')->dailyAt('04:30');
 
 // 毎朝5時：Google Indexing API へ未送信URLを通知（クロール促進）
 Schedule::command('indexing:submit --type=all')->dailyAt('05:00');
