@@ -73,7 +73,7 @@
                 @if($recJob->company_name)
                 <div style="font-size:0.75rem;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px;">{{ $recJob->company_name }}</div>
                 @endif
-                <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $recJob->displayTitle() }}</div>
+                <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $recJob->cardTitle() }}</div>
                 <div style="font-size:0.76rem;color:#666;line-height:1.5;">
                     @if($recAreas)<i class="bi bi-geo-alt-fill me-1"></i>{{ $recAreas }}@endif
                     @if($recJobType)@if($recAreas)・@endif{{ $recJobType }}@endif

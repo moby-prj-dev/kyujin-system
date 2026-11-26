@@ -93,6 +93,19 @@ class Job extends Model
         return trim(preg_replace('/\s*[｜|]\s*Care Entry\s*$/u', '', (string) $title));
     }
 
+    /**
+     * 求人カード用のタイトル(カードには会社名と勤務地が別の行に出るので、タイトルで繰り返さない)
+     * 直接掲載の求人は掲載者が付けたタイトルをそのまま出す。
+     * ハローワーク求人は「会社名 職種求人｜市町村」の方が職種が分かりやすいので displayTitle() のまま
+     */
+    public function cardTitle(): string
+    {
+        if ($this->source !== 'hellowork' && $this->title && $this->title !== '（生成中）') {
+            return $this->title;
+        }
+        return $this->displayTitle();
+    }
+
     /** カードで目立たせるアピールポイント(求職者に響きやすい順) */
     private const HIGHLIGHT_TAGS = [
         '未経験OK', '無資格OK', '日勤のみ', '残業ほぼなし', '土日休み', '高時給', '賞与あり',

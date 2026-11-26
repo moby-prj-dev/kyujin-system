@@ -16,7 +16,7 @@
                         <p class="job-card__company">{{ $job->company_name }}</p>
                         <p class="job-card__title">
                             <a href="{{ route('lp.show', $job->token) }}"@if($isPr) data-track="pr_job" data-target-job="{{ $job->id }}"@endif>
-                                {{ $job->displayTitle() }}
+                                {{ $job->cardTitle() }}
                             </a>
                         </p>
                         <div class="job-card__tags">
