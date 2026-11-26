@@ -23,10 +23,14 @@ class BotTraffic
         . '|iPhone OS 13_2_3'                    // Tencent クラウドの収集ツールが使う古い iPhone の偽装
         . '|BusinessContactVerification'
         . '|deploy-check'                        // 運営者の動作確認
-        . '|^Mozilla/5\.0$';                     // 中身のない UA
+        . '|^Mozilla/5\.0$'                      // 中身のない UA
+        . '|^Google$';                           // Google の確認用アクセス(名前が「Google」だけ)
 
-    /** IP の先頭で見分けるロボット(66.249. は Google のクローラー) */
-    public const IP_PREFIXES = ['66.249.'];
+    /**
+     * IP の先頭で見分けるロボット(すべて Google のサーバー。人がここから閲覧することはない)
+     * 66.249. はクローラー。64.233. / 72.14. などは広告の審査や行き先ページの確認(2026-11-25 に広告開始直後に確認)
+     */
+    public const IP_PREFIXES = ['66.249.', '64.233.', '72.14.', '66.102.', '74.125.', '209.85.'];
 
     /** 1日にこれより多く求人ページを開いた IP は収集ツールとみなす(人は多くても1日10件前後) */
     public const HEAVY_VIEWS_PER_DAY = 20;
