@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ReclassifyHelloworkJobTypes extends Command
 {
-    protected $signature = 'hellowork:reclassify-job-types {--dry-run : 移さずに件数と内容だけ表示する}';
+    protected $signature = 'hellowork:reclassify-job-types {--dry-run : 移さずに件数と内容だけ表示する} {--untyped : 職種が空のHW求人に、HwJobTypeMatcher で職種を付ける}';
     protected $description = '介護職員（施設）に入っているHW求人のうち、ケアマネ・サ責・看護を正しい職種に移す';
 
     /** 職種部分にこの言葉があれば移す(上から順に判定) */
@@ -31,6 +31,10 @@ class ReclassifyHelloworkJobTypes extends Command
     {
         $dry   = (bool) $this->option('dry-run');
         $types = MasterJobType::active()->get()->keyBy('name');
+
+        if ($this->option('untyped')) {
+            return $this->fillUntyped($types, $dry);
+        }
         $care  = $types['介護職員（施設）'] ?? null;
         if (! $care) {
             $this->error('介護職員（施設）が見つかりません');
@@ -76,6 +80,41 @@ class ReclassifyHelloworkJobTypes extends Command
         if (! $dry && count($moved) > 0) {
             $this->line('市町村ページの職種の内訳は、集計キャッシュが切れる1時間以内に反映されます。');
         }
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * 職種が1つも付いていないHW求人に、取り込み時と同じ判定(HwJobTypeMatcher)で職種を付ける。
+     * 判定に使う言葉が増えたとき(例: 2026-11-26 に「世話人」「夜間支援」を追加)に、既存の求人へ反映するため
+     */
+    private function fillUntyped($types, bool $dry): int
+    {
+        $jobs = Job::where('source', 'hellowork')
+            ->whereDoesntHave('jobJobTypes')
+            ->get(['id', 'company_name', 'seo_title', 'title']);
+
+        $added = [];
+        foreach ($jobs as $job) {
+            $part = $this->jobPart($job);
+            $name = \App\Support\HwJobTypeMatcher::match($part);
+            $to   = $name ? ($types[$name] ?? null) : null;
+            if (! $to) {
+                continue;
+            }
+            $added[] = [$job->id, $name, $part];
+            if (! $dry) {
+                DB::table('job_job_types')->insertOrIgnore(['job_id' => $job->id, 'job_type_id' => $to->id]);
+            }
+        }
+
+        foreach (collect($added)->groupBy(1) as $name => $rows) {
+            $this->info(($dry ? '[試算] ' : '') . "{$name}: " . count($rows) . '件');
+            foreach ($rows->take(5) as [$id, , $part]) {
+                $this->line("   #{$id} {$part}");
+            }
+        }
+        $this->info(($dry ? '[試算] 職種を付ける対象' : '職種を付けた件数') . ': ' . count($added) . '件 / 職種が空のHW求人 ' . $jobs->count() . '件中');
 
         return self::SUCCESS;
     }
