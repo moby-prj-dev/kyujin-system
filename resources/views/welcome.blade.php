@@ -286,9 +286,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                         </button>
                                     @endforeach
                                 </div>
-                                {{-- カテゴリーごとのチェックグループ --}}
+                                {{-- カテゴリーごとのチェックグループ(選んだ分類と同じ色の箱に入れ、見出しで今どの分類かを示す) --}}
+                                <div class="jt-cat-panel">
                                 @foreach($jobTypesByCategory as $category => $jobTypes)
                                     <div class="jt-cat-group" data-cat="{{ $loop->index }}"@if($category !== $activeCat) style="display:none"@endif>
+                                        <p class="jt-cat-heading">{{ $category }}の職種</p>
                                         <div class="search__check-group">
                                             @foreach($jobTypes as $jobType)
                                                 <label class="search__check-label">
@@ -300,6 +302,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                         </div>
                                     </div>
                                 @endforeach
+                                </div>
                             </div>
                             <div class="tab-pane fade{{ $activeTab === 'emp-types' ? ' show active' : '' }}" id="panel-emp-types">
                                 <div id="tags-emp-types" class="search__selected-tags" style="margin-bottom:8px;"></div>

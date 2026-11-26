@@ -422,6 +422,10 @@ body {
 }
 .jt-cat-pill:hover { color: var(--color-primary); background: #f5f8fc; }
 .jt-cat-pill.active { color: var(--color-primary); border-bottom-color: var(--color-primary); background: #f0f6ff; }
+/* 選んだ分類の職種を、分類ボタンと同じ色の箱に入れる(どのボタンの中身かを見た目で伝える) */
+.jt-cat-pills { margin-bottom: 0; }
+.jt-cat-panel { background: #f0f6ff; border: 1.5px solid #bcd6f5; border-top: none; border-radius: 0 0 12px 12px; padding: 12px 12px 8px; margin-bottom: 6px; }
+.jt-cat-heading { font-size: 0.8rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px; }
 .jt-cat-pill__count {
     font-size: 0.68rem; font-weight: 700; border-radius: 10px;
     padding: 0 6px; min-width: 18px; text-align: center;
@@ -429,7 +433,8 @@ body {
 }
 /* スマホ・タブレットは横スクロールだと右側の分類に気づかれないので、折り返して全部見せる(基本の指定より後に書く) */
 @media (max-width: 991.98px) {
-    .jt-cat-pills { flex-wrap: wrap; overflow-x: visible; gap: 6px; border-bottom: 2px solid #d0e4f7; padding-bottom: 12px; }
+    .jt-cat-pills { flex-wrap: wrap; overflow-x: visible; gap: 6px; border-bottom: none; padding-bottom: 0; margin-bottom: 10px; }
+    .jt-cat-panel { border-top: 1.5px solid #bcd6f5; border-radius: 12px; }
     .jt-cat-pill { border: 1px solid #d0e4f7; border-radius: 16px; margin-bottom: 0; padding: 5px 11px; background: #fff; }
     .jt-cat-pill.active { border: 1.5px solid var(--color-primary); background: #f0f6ff; }
 }
