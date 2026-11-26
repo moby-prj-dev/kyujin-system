@@ -220,7 +220,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     $jobTypeCount  = count(array_filter((array) request('job_types', [])));
                     $empTypeCount  = count(array_filter((array) request('employment_types', [])));
                     $condCount     = count(array_filter(array_map('intval', (array) request('condition_ids', []))));
-                    $appealCount   = count(array_filter(array_map('intval', (array) request('appeal_ids', []))));
                     $requiredCount = $jobTypeCount + $empTypeCount + $condCount;
                     $activeTab = match(true) {
                         $empTypeCount > 0 => 'emp-types',
@@ -348,39 +347,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
 
-                {{-- 重視ポイント アコーディオン --}}
-                <div class="search__acc-item">
-                    <button class="search__acc-btn search__acc-btn--appeals" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#accAppeals"
-                        aria-expanded="{{ $appealCount ? 'true' : 'false' }}">
-                        <span class="search__acc-left">
-                            <i class="bi bi-star me-1"></i>重視ポイント
-                            <span class="search__acc-note">任意・掲載主への参考情報</span>
-                        </span>
-                        <i class="bi bi-chevron-down search__acc-chevron"></i>
-                    </button>
-                    <div class="collapse search__acc-body{{ $appealCount ? ' show' : '' }}" id="accAppeals">
-                        <div id="appeals-tags" class="search__selected-tags" style="margin-bottom:8px;"></div>
-                        @foreach($appealsByCategory as $category => $appeals)
-                            <p class="search__check-category">{{ $category }}</p>
-                            <div class="search__check-group">
-                                @foreach($appeals as $appeal)
-                                    <label class="search__check-label">
-                                        <input type="checkbox" name="appeal_ids[]" value="{{ $appeal->id }}"
-                                            @checked(in_array($appeal->id, (array) request('appeal_ids', [])))>
-                                        {{ $appeal->name }}
-                                    </label>
-                                @endforeach
-                            </div>
-                        @endforeach
-                        <div class="search__acc-close-row">
-                            <button type="button" class="search__acc-close"
-                                onclick="var col=this.closest('.search__acc-item').querySelector('.collapse');bootstrap.Collapse.getOrCreateInstance(col).hide();">
-                                <i class="bi bi-chevron-up me-1"></i>閉じる
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             {{-- 検索ボタン（常にフォーム末尾）--}}
@@ -536,7 +502,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
 
     // ヘッダーボタンで閉じた場合もタイトルへスクロール
-    ['accRequired', 'accAppeals'].forEach(id => {
+    ['accRequired'].forEach(id => {
         document.getElementById(id)?.addEventListener('hidden.bs.collapse', e => {
             if (e.target.id !== id) return;
             document.activeElement?.blur();
@@ -666,24 +632,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
         });
     })();
-
-    // 重視ポイント タグ表示
-    const appealsPanel = document.getElementById('accAppeals');
-    const appealsTagsEl = document.getElementById('appeals-tags');
-    if (appealsPanel) {
-        const cbs = appealsPanel.querySelectorAll('input[type="checkbox"]');
-        const update = () => {
-            const checked = Array.from(cbs).filter(cb => cb.checked);
-            if (appealsTagsEl) {
-                appealsTagsEl.innerHTML = checked.map(cb => {
-                    const label = cb.closest('label');
-                    const text = label ? label.textContent.trim() : '';
-                    return `<span class="search__selected-tag">${text}</span>`;
-                }).join('');
-            }
-        };
-        cbs.forEach(cb => cb.addEventListener('change', update));
-    }
 
     // リセットボタン(過去のlocalStorage残骸もクリア)
     (function () {

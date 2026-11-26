@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContentArticle;
-use App\Models\MasterAppeal;
 use App\Models\MasterArea;
 use App\Models\MasterCondition;
 use App\Models\MasterEmploymentType;
@@ -36,11 +35,6 @@ class HomeController extends Controller
             ->get()
             ->groupBy('category');
 
-        $appealsByCategory = MasterAppeal::active()
-            ->orderBy('sort_order')
-            ->get()
-            ->groupBy('category');
-
         $articles = ContentArticle::published()
             ->orderByDesc('published_at')
             ->limit(3)
@@ -58,7 +52,6 @@ class HomeController extends Controller
             'jobTypesByCategory',
             'employmentTypes',
             'conditionsByCategory',
-            'appealsByCategory',
             'articles',
             'featuredJobs'
         ));
