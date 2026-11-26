@@ -266,7 +266,14 @@
     </div>
     @endif
 
-    @if($job->isPlanLocked())
+    @if($job->isStandard() && $job->canFreeDowngrade())
+    {{-- 無料期間中(はじめての切り替え): ロック中でも無料でベーシックに戻せる --}}
+    <div class="alert alert-success mb-3" style="font-size:0.9rem;">
+        <i class="bi bi-gift me-1"></i>
+        <strong>{{ $job->nextBillingDate()->copy()->subDay()->format('Y年n月j日') }}までなら、無料でベーシックに戻せます</strong><br>
+        <span class="small">はじめてのスタンダード切り替えのため、無料期間中(切り替えた月の月末まで)はいつでもベーシックに戻せます。料金はかかりません。</span>
+    </div>
+    @elseif($job->isPlanLocked())
     {{-- プラン変更ロック中 --}}
     <div class="alert alert-warning mb-3" style="font-size:0.9rem;">
         <i class="bi bi-lock-fill me-1"></i>
@@ -289,10 +296,17 @@
         </ul>
         <p class="small text-muted mb-3">
             <i class="bi bi-info-circle me-1"></i>月3,000円は応募課金1件と同じ額です。応募が1件でも多く発生すれば元が取れる計算になります。<br>
-            <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
+            @if($job->free_downgrade_used_at === null)
+            <i class="bi bi-info-circle me-1"></i>はじめての切り替えなら、切り替えた月の月末までは無料です。その間にベーシックへ戻せば、料金はかかりません。<br>
+            <i class="bi bi-info-circle me-1"></i>無料期間が過ぎたあとは、切り替えから30日間はプランを変更できません(悪用防止のため)。
+            @else
+            <i class="bi bi-info-circle me-1"></i>切り替えから30日間はプランを変更できません(悪用防止のため)。無料期間中のベーシックへの戻しは、すでに1回ご利用済みです。
+            @endif
         </p>
         <form method="POST" action="{{ route('jobs.plan', ['token' => $job->manage_token]) }}"
-              onsubmit="return confirm('スタンダードプランに切替します。よろしいですか?\n\n・月額 3,000円が翌月1日から請求対象になります\n・プラン変更後30日間は再変更できません')">
+              onsubmit="return confirm({{ \Illuminate\Support\Js::from($job->free_downgrade_used_at === null
+                  ? "スタンダードプランに切替します。よろしいですか?\n\n・月額 3,000円は翌月1日から請求対象になります\n・はじめての切り替えなので、今月末までは無料でベーシックに戻せます\n・それ以外は、切り替えから30日間はプランを変更できません"
+                  : "スタンダードプランに切替します。よろしいですか?\n\n・月額 3,000円は翌月1日から請求対象になります\n・切り替えから30日間はプランを変更できません") }})">
             @csrf @method('PATCH')
             <input type="hidden" name="plan" value="standard">
             <button type="submit" class="btn btn-primary" @if($job->isPlanLocked()) disabled @endif>
@@ -307,13 +321,20 @@
         <p class="small text-muted mb-3">
             優先上位表示・おすすめ求人(PR)掲載・追加宛先・分析画面などが使えなくなります(LINE応募は引き続きご利用いただけます)。<br>
             複数求人掲載中の場合、2件目以降は自動的に掲載停止となります。<br>
+            @if($job->canFreeDowngrade())
+            <i class="bi bi-info-circle me-1"></i>無料期間中のため、今ベーシックに戻しても<strong>月額料金はかかりません</strong>。<br>
+            @else
+            <i class="bi bi-info-circle me-1"></i>月の途中で戻した場合、その月の月額料金は日割りしません。翌月1日から月額料金はかかりません。<br>
+            @endif
             <i class="bi bi-info-circle me-1"></i>プラン変更後30日間は再変更できません(悪用防止のため)。
         </p>
         <form method="POST" action="{{ route('jobs.plan', ['token' => $job->manage_token]) }}"
-              onsubmit="return confirm('ベーシックプランに変更します。よろしいですか?\n\n・スタンダード限定機能が使えなくなります\n・プラン変更後30日間は再変更できません')">
+              onsubmit="return confirm({{ \Illuminate\Support\Js::from($job->canFreeDowngrade()
+                  ? "ベーシックプランに変更します。よろしいですか?\n\n・無料期間中なので、月額料金はかかりません\n・スタンダード限定機能は本日で使えなくなります\n・変更後30日間はプランを変更できません"
+                  : "ベーシックプランに変更します。よろしいですか?\n\n・スタンダード限定機能は本日で使えなくなります\n・今月分の月額料金は日割りしません\n・変更後30日間はプランを変更できません") }})">
             @csrf @method('PATCH')
             <input type="hidden" name="plan" value="basic">
-            <button type="submit" class="btn btn-outline-secondary btn-sm" @if($job->isPlanLocked()) disabled @endif>
+            <button type="submit" class="btn btn-outline-secondary btn-sm" @if($job->isPlanLocked() && ! $job->canFreeDowngrade()) disabled @endif>
                 <i class="bi bi-arrow-down me-1"></i>ベーシックに戻す
             </button>
         </form>

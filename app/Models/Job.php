@@ -12,7 +12,7 @@ class Job extends Model
 {
     use SoftDeletes;
     protected $table = 'job_listings';
-    protected $fillable = ['source','hw_job_no','hw_job_url','company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','salary_type','salary_min','salary_max','salary_note','photo_path','status','is_admin_hidden','is_monitor','is_permanently_free','is_featured','featured_started_at','plan','plan_started_at','plan_locked_until','monitor_ends_at','admin_memo','admin_memo_updated_at','token','contact_email','secondary_emails','screener_questions','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at','recruiting_checked_at'];
+    protected $fillable = ['source','hw_job_no','hw_job_url','company_name','title','seo_title','subtitle','lp_tags','meta_description','description_generated','free_text','salary_type','salary_min','salary_max','salary_note','photo_path','status','is_admin_hidden','is_monitor','is_permanently_free','is_featured','featured_started_at','plan','plan_started_at','plan_locked_until','free_downgrade_used_at','monitor_ends_at','admin_memo','admin_memo_updated_at','token','contact_email','secondary_emails','screener_questions','contact_phone','expires_at','paused_at','email_verification_token','email_verified_at','trial_warning_sent_at','expired_notified_at','continued_at','continue_notified_at','recruiting_checked_at'];
 
     const SALARY_TYPES = [
         'monthly' => '月給',
@@ -34,6 +34,7 @@ class Job extends Model
         'recruiting_checked_at' => 'datetime',
         'plan_started_at'       => 'datetime',
         'plan_locked_until'     => 'datetime',
+        'free_downgrade_used_at' => 'datetime',
         'lp_tags'               => 'array',
         'secondary_emails'      => 'array',
         'screener_questions'    => 'array',
@@ -158,6 +159,22 @@ class Job extends Model
     public function isPlanLocked(): bool
     {
         return $this->plan_locked_until && $this->plan_locked_until->isFuture();
+    }
+
+    /**
+     * スタンダードの無料期間中(月額がかかり始める前)に、ロック中でもベーシックへ戻せるか。
+     * お試しで使って合わなかった場合に料金をかけずにやめられるようにする。1回だけ(繰り返して無料で使い続けるのを防ぐ)
+     */
+    public function canFreeDowngrade(): bool
+    {
+        $billingStart = $this->nextBillingDate();
+        if ($billingStart === null || now()->gte($billingStart) || $this->free_downgrade_used_at !== null) {
+            return false;
+        }
+        // 1つの掲載主につき1回限り(同じ連絡先の別の求人で使っていないか)
+        return ! static::where('contact_email', $this->contact_email)
+            ->whereNotNull('free_downgrade_used_at')
+            ->exists();
     }
 
     /**

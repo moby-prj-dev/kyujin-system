@@ -588,6 +588,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <h3 style="font-size:1.35rem;font-weight:900;color:#1a1a2e;margin:0 0 12px;">スタンダード</h3>
                     <p style="font-size:2.2rem;font-weight:900;color:#1a73e8;margin:0;line-height:1;">¥3,000<span style="font-size:1rem;color:#888;font-weight:600;">/月</span></p>
                     <p style="font-size:0.85rem;color:#666;margin-top:8px;margin-bottom:16px;">+ 有効応募 <strong style="color:#1a1a2e;">¥3,000/件</strong> (税別)</p>
+                    <p style="font-size:0.78rem;color:#1a73e8;background:#fff;border:1px dashed #1a73e8;border-radius:8px;padding:6px 10px;margin:-6px 0 14px;line-height:1.6;"><i class="bi bi-gift me-1"></i>はじめての切り替えなら、切り替えた月は無料。その月のうちにベーシックへ戻せば、料金はかかりません。</p>
                     <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;line-height:1.9;">
                         <li><i class="bi bi-star-fill" style="color:#f59e0b;"></i> <strong>ベーシックの内容に加えて</strong></li>
                         <li><i class="bi bi-check-circle-fill" style="color:#1a73e8;"></i> <strong>地域の検索結果で優先上位表示</strong></li>

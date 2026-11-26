@@ -443,8 +443,11 @@ class JobController extends Controller
             return redirect()->route('jobs.manage', ['token' => $token]);
         }
 
+        // 無料期間中(月額がかかり始める前)のベーシック戻しは、ロック中でも1回だけ認める
+        $freeDowngrade = $newPlan === Job::PLAN_BASIC && $job->canFreeDowngrade();
+
         // ロック期間中は変更を弾く(悪用防止)
-        if ($job->isPlanLocked()) {
+        if ($job->isPlanLocked() && ! $freeDowngrade) {
             return redirect()->route('jobs.manage', ['token' => $token])
                 ->withErrors([
                     'plan' => 'プラン変更後30日間は再変更いただけません(' . $job->plan_locked_until->format('Y年n月j日') . 'まで)。ご不便をおかけしますが、頻繁なプラン切替による課金の混乱を防ぐための措置となります。',
@@ -458,6 +461,7 @@ class JobController extends Controller
             'plan_locked_until' => now()->addDays(Job::PLAN_LOCK_DAYS),
             // 旧・注目求人オプション(販売終了)のフラグ掃除: ベーシック戻し時に解除
             ...($newPlan === Job::PLAN_BASIC ? ['is_featured' => false, 'featured_started_at' => null] : []),
+            ...($freeDowngrade ? ['free_downgrade_used_at' => now()] : []),
         ];
         Job::where(function ($q) use ($job) {
             $q->where('contact_email', $job->contact_email)->orWhere('contact_phone', $job->contact_phone);
@@ -467,8 +471,11 @@ class JobController extends Controller
             $nextBilling = now()->copy()->addMonthNoOverflow()->startOfMonth();
             $msg = 'スタンダードプランに切替しました。優先上位表示・おすすめ求人(PR)掲載・複数求人掲載・応募通知の追加宛先・分析画面がご利用いただけます。'
                 . '月額 3,000円 の初回請求日は ' . $nextBilling->format('Y年n月j日') . ' となります(月中の切替は翌月起算)。';
+        } elseif ($freeDowngrade) {
+            $msg = 'ベーシックプランに戻しました。無料期間中のため、月額料金はかかりません。おすすめ求人(PR)などのスタンダード機能は本日で終了します。'
+                . 'なお、次にスタンダードに切り替えた場合は、切り替えから30日間はプランを変更できません。';
         } else {
-            $msg = 'ベーシックプランに戻しました。今月末までスタンダード機能は継続利用いただけます。翌月1日より月額料金は発生しません。';
+            $msg = 'ベーシックプランに戻しました。おすすめ求人(PR)などのスタンダード機能は本日で終了し、翌月1日から月額料金はかかりません(今月分の月額料金は日割りしません)。';
         }
 
         return redirect()->route('jobs.manage', ['token' => $token])->with('plan_updated', $msg);
