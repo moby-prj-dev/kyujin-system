@@ -299,6 +299,8 @@ body {
 @media (max-width: 420px) { .search__detail-toggle { font-size: 0.85rem; padding: 11px 10px; gap: 5px; } }
 @media (max-width: 380px) { .search__detail-toggle .bi-sliders { display: none; } }
 .search__detail { padding-top: 18px; border-top: 1px dashed #c8d8ec; margin-top: 18px; }
+/* パソコンでは職種・雇用形態などの条件を常に表示(スマホ・タブレットはボタンで開く) */
+@media (min-width: 992px) { .search__detail.collapse:not(.show) { display: block; } }
 .search__check-category { font-size: 0.78rem; font-weight: 700; color: var(--color-muted); margin-bottom: 8px; }
 .search__check-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; margin-bottom: 14px; width: 100%; }
 .search__check-label {
@@ -434,6 +436,16 @@ body {
     justify-content: flex-end;
     align-items: center;
     gap: 12px;
+    /* 検索フォームが画面にある間は、画面の下に張り付く(フォームを過ぎたら元の位置に戻る) */
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    margin: 18px -22px -22px;
+    padding: 12px 22px calc(12px + env(safe-area-inset-bottom));
+    background: #f8fafc;
+    border-top: 1px solid #d0e4f7;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 -6px 14px rgba(15, 40, 80, 0.06);
 }
 .search__footer .search__submit {
     width: auto;

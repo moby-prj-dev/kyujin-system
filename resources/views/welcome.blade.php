@@ -203,7 +203,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     + count(array_filter((array) request('employment_types', [])))
                     + count(array_filter(array_map('intval', (array) request('condition_ids', []))));
             @endphp
-            <div>
+            {{-- スマホ・タブレットだけボタンで開く。パソコン(992px以上)は条件を常に表示(CSS) --}}
+            <div class="d-lg-none">
                 <button type="button" class="search__detail-toggle" data-bs-toggle="collapse" data-bs-target="#searchDetail" aria-expanded="false">
                     <i class="bi bi-sliders"></i>職種・雇用形態などで絞り込む
                     @if($detailSelected > 0)
@@ -229,18 +230,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     if ($jobTypeCount > 0) $activeTab = 'job-types';
                 @endphp
 
-                {{-- 絞り込み条件 アコーディオン --}}
-                <div class="search__acc-item">
-                    <button class="search__acc-btn search__acc-btn--sticky" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#accRequired"
-                        aria-expanded="{{ $requiredCount ? 'true' : 'false' }}">
-                        <span class="search__acc-left">
-                            <i class="bi bi-funnel-fill me-1"></i>絞り込み条件
-                            <span class="search__acc-note">職種・雇用形態・勤務条件</span>
-                        </span>
-                        <i class="bi bi-chevron-down search__acc-chevron"></i>
-                    </button>
-                    <div class="collapse search__acc-body{{ $requiredCount ? ' show' : '' }}" id="accRequired">
+                {{-- 絞り込み条件(職種・雇用形態・勤務条件のタブ) --}}
+                <div>
+                    <div class="search__acc-body" id="accRequired">
                         {{-- 必須タブ --}}
                         <div class="search__tabs-wrap">
                             <div class="search__tabs-row">
@@ -338,9 +330,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 @endforeach
                             </div>
                         </div>
-                        <div class="search__acc-close-row">
+                        <div class="search__acc-close-row d-lg-none">
                             <button type="button" class="search__acc-close"
-                                onclick="var col=this.closest('.search__acc-item').querySelector('.collapse');bootstrap.Collapse.getOrCreateInstance(col).hide();">
+                                onclick="bootstrap.Collapse.getOrCreateInstance(document.getElementById('searchDetail')).hide();document.querySelector('.search__detail-toggle')?.scrollIntoView({block:'center'});">
                                 <i class="bi bi-chevron-up me-1"></i>閉じる
                             </button>
                         </div>
@@ -501,57 +493,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
     });
 
-    // ヘッダーボタンで閉じた場合もタイトルへスクロール
-    ['accRequired'].forEach(id => {
-        document.getElementById(id)?.addEventListener('hidden.bs.collapse', e => {
-            if (e.target.id !== id) return;
-            document.activeElement?.blur();
-        });
-    });
-
-
-    // 絞り込み条件ヘッダーをスクロール時に固定（position:fixed + placeholder）
-    (function () {
-        const btn  = document.querySelector('.search__acc-btn--sticky');
-        if (!btn) return;
-        const item = btn.closest('.search__acc-item');
-        let ph     = null;
-
-        function pin() {
-            if (btn.classList.contains('is-pinned')) return;
-            ph = document.createElement('div');
-            ph.style.height = btn.offsetHeight + 'px';
-            item.insertBefore(ph, btn);
-            const r = item.getBoundingClientRect();
-            btn.style.width = item.offsetWidth + 'px';
-            btn.style.left  = r.left + 'px';
-            btn.classList.add('is-pinned');
-        }
-        function unpin() {
-            if (!btn.classList.contains('is-pinned')) return;
-            btn.classList.remove('is-pinned');
-            btn.style.width = '';
-            btn.style.left  = '';
-            ph?.remove();
-            ph = null;
-        }
-
-        window.addEventListener('scroll', () => {
-            if (!document.getElementById('accRequired')?.classList.contains('show')) {
-                unpin(); return;
-            }
-            const r = item.getBoundingClientRect();
-            if (r.top < 0 && r.bottom > btn.offsetHeight) pin();
-            else unpin();
-        }, { passive: true });
-
-        // ウィンドウリサイズ時に幅を更新
-        window.addEventListener('resize', () => {
-            if (!btn.classList.contains('is-pinned')) return;
-            btn.style.width = item.offsetWidth + 'px';
-            btn.style.left  = item.getBoundingClientRect().left + 'px';
-        }, { passive: true });
-    })();
 
     // 絞り込み条件：タブ件数バッジ＋アコーディオン合計バッジ
     const requiredBadge = document.getElementById('badge-required');
