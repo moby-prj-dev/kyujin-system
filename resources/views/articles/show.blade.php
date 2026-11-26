@@ -330,7 +330,7 @@
                                onmouseout="this.style.borderColor='#d6e4f7';this.style.boxShadow='none';">
                                 <div style="font-weight:700;font-size:0.92rem;line-height:1.4;margin-bottom:4px;">{{ $j->cardTitle() }}</div>
                                 <div style="font-size:0.78rem;color:#666;">
-                                    @foreach($j->jobAreas->take(1) as $ja)@if($ja->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}@endif @endforeach
+                                    @php($jAreas = $j->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->take(3)->implode('・'))@if($jAreas)<i class="bi bi-geo-alt-fill me-1"></i>{{ $jAreas }}@endif
                                     @foreach($j->jobJobTypes->take(1) as $jt)@if($jt->jobType)・{{ $jt->jobType->name }}@endif @endforeach
                                     @foreach($j->jobEmploymentTypes->take(1) as $et)@if($et->employmentType)・{{ $et->employmentType->name }}@endif @endforeach
                                 </div>
@@ -368,7 +368,7 @@
                         <a href="{{ route('lp.show', $j->token) }}" class="related-card mb-3" style="border-left:3px solid #06C755;">
                             <p class="related-card__title">{{ $j->cardTitle() }}</p>
                             <p class="related-card__meta mb-0">
-                                @foreach($j->jobAreas->take(1) as $ja)@if($ja->area)<i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}@endif @endforeach
+                                @php($jAreas = $j->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->take(3)->implode('・'))@if($jAreas)<i class="bi bi-geo-alt-fill me-1"></i>{{ $jAreas }}@endif
                                 @foreach($j->jobJobTypes->take(1) as $jt)@if($jt->jobType)・{{ $jt->jobType->name }}@endif @endforeach
                                 @foreach($j->jobEmploymentTypes->take(1) as $et)@if($et->employmentType)・{{ $et->employmentType->name }}@endif @endforeach
                             </p>

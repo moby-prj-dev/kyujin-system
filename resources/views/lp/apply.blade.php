@@ -537,7 +537,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="{{ route('lp.show', $alt->token) }}" class="alt-card">
                 <p class="alt-card__title">{{ $alt->cardTitle() }}</p>
                 <div class="alt-card__tags">
-                    @foreach($alt->jobAreas->take(2) as $ja)
+                    @foreach($alt->jobAreas->take(3) as $ja)
                         @if($ja->area)
                             <span class="alt-card__tag alt-card__tag--area">
                                 <i class="bi bi-geo-alt-fill me-1"></i>{{ $ja->area->name }}

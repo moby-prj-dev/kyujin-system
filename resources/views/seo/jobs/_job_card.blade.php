@@ -23,7 +23,7 @@
                             @if($isNew)
                                 <span class="job-card__tag" style="background:#e53935;color:#fff;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:.5px;">NEW</span>
                             @endif
-                            @foreach($job->jobAreas->take(2) as $ja)
+                            @foreach($job->jobAreas->take(3) as $ja)
                                 @if($ja->area)
                                     <span class="job-card__tag job-card__tag--area">
                                         <i class="bi bi-geo-alt-fill"></i> {{ $ja->area->name }}

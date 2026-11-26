@@ -127,7 +127,7 @@
                 <p class="job-card__company">{{ $s->company_name }}</p>
                 <p class="job-card__title">{{ $s->cardTitle() }}</p>
                 <div class="job-card__tags">
-                    @foreach($s->jobAreas->take(2) as $ja)
+                    @foreach($s->jobAreas->take(3) as $ja)
                         @if($ja->area)
                             <span class="job-card__tag job-card__tag--area">
                                 <i class="bi bi-geo-alt-fill"></i> {{ $ja->area->name }}

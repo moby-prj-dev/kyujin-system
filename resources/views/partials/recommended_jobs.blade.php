@@ -47,8 +47,8 @@
     @if($layout === 'grid')<div class="row g-3{{ $swipe ? ' rec-swipe' : '' }}">@else<div class="d-flex flex-column gap-2 mt-2">@endif
         @foreach($jobs as $recJob)
             @php
-                $recAreas   = $recJob->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->take(2)->implode('・');
-                $recJobType = $recJob->jobJobTypes->first()?->jobType?->name;
+                $recAreas   = $recJob->jobAreas->map(fn($ja) => $ja->area?->name)->filter()->take(3)->implode('・');
+                $recJobType = $recJob->jobJobTypes->map(fn($jt) => $jt->jobType?->name)->filter()->take(2)->implode('・');
                 $recSalary  = $recJob->salaryText();
             @endphp
             @if($layout === 'grid')<div class="col-sm-6 col-lg-4">@endif
