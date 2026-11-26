@@ -288,8 +288,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 </div>
                                 {{-- カテゴリーごとのチェックグループ --}}
                                 @foreach($jobTypesByCategory as $category => $jobTypes)
-                                    <div class="jt-cat-group" data-cat="{{ $loop->index }}"
-                                        {{ $category === $activeCat ? '' : 'style="display:none"' }}>
+                                    <div class="jt-cat-group" data-cat="{{ $loop->index }}"@if($category !== $activeCat) style="display:none"@endif>
                                         <div class="search__check-group">
                                             @foreach($jobTypes as $jobType)
                                                 <label class="search__check-label">
